@@ -18,8 +18,14 @@ RUN apt-get update
 RUN apt-get install -y ros-humble-desktop ros-humble-demo-nodes-cpp
 RUN apt-get install -y python3-argcomplete wget unzip nano build-essential
 
+RUN apt-get install -y vim
+
+RUN apt-get install -y ros-humble-realsense2-camera
 # Configure Enviroment for ROS
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+
+COPY realsense_launch.py realsense_launch.py
+
 
 CMD /bin/bash
 
