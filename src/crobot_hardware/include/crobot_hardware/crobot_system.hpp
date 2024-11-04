@@ -31,7 +31,7 @@
 #include "rclcpp_lifecycle/state.hpp"
 #include "crobot_hardware/visibility_control.h"
 
-#include "crobot_hardware/arduino_comms.hpp"
+#include "crobot_hardware/serial_comm.hpp"
 #include "crobot_hardware/wheel.hpp"
 
 namespace crobot_hardware
@@ -58,7 +58,7 @@ struct Config
 
 
 public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(DiffDriveArduinoHardware);
+  RCLCPP_SHARED_PTR_DEFINITIONS(CrobotHardware)
 
   CROBOT_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_init(
