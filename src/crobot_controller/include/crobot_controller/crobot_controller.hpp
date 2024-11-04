@@ -95,7 +95,7 @@ namespace crobot_controller
         std::shared_ptr<ParamListener> param_listener_;
         Params params_;
 
-        Odometry odometry_;
+        // Odometry odometry_;
 
         rclcpp::Time previous_update_timestamp_{0};
 

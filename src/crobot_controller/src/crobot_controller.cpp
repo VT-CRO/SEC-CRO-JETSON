@@ -36,6 +36,16 @@ namespace crobot_controller
 
     controller_interface::CallbackReturn CrobotController::on_init()
     {
+        try
+        {
+            param_listener_ = std::make_shared<ParamListener>(get_node());
+            params_ = param_listener_->get_params();
+        }
+        catch (const std::exception & e)
+        {
+            fprintf(stderr, "Exception thrown during init stage with message: %s \n", e.what());
+            return controller_interface::CallbackReturn::ERROR;
+        }
         return controller_interface::CallbackReturn::SUCCESS;
     }
 
@@ -45,7 +55,7 @@ namespace crobot_controller
         conf_names.push_back(params_.back_left_wheel_name + "/" + HW_IF_VELOCITY);
         conf_names.push_back(params_.front_left_wheel_name + "/" + HW_IF_VELOCITY);
         conf_names.push_back(params_.back_right_wheel_name + "/" + HW_IF_VELOCITY);
-        conf_names.push_back(params_.front_left_wheel_name + "/" + HW_IF_VELOCITY);
+        conf_names.push_back(params_.front_right_wheel_name + "/" + HW_IF_VELOCITY);
 
         return {interface_configuration_type::INDIVIDUAL, conf_names};
     }
@@ -57,7 +67,7 @@ namespace crobot_controller
         conf_names.push_back(params_.back_left_wheel_name + "/" + feedback_type());
         conf_names.push_back(params_.front_left_wheel_name + "/" + feedback_type());
         conf_names.push_back(params_.back_right_wheel_name + "/" + feedback_type());
-        conf_names.push_back(params_.front_left_wheel_name + "/" + feedback_type());
+        conf_names.push_back(params_.front_right_wheel_name + "/" + feedback_type());
 
         return {interface_configuration_type::INDIVIDUAL, conf_names};
     }
@@ -212,9 +222,84 @@ namespace crobot_controller
         const rclcpp_lifecycle::State &
     )
     {
-        // const auto back_left_result = configure_side("back_left", params_.back_left_wheel_name, registered_back_left_handle);
-        // const auto back_right_result = configure_side("back_right", params_.back_right_wheel_name, registered_back_right_handle);
-        // const auto front_left_result = configure_side("front_left", params_.front_left_wheel_name, registered_front_left_handle);
-        // const auto front_right_result = configure_side("front_right", params_.front_right_wheel_name, registered_front_right_handle);
+
+        // configure wheels
+
+        is_halted - false;
+        subscriber_is_active_ = true;
+
+        RCLCPP_DEBUG(get_node()->get_logger(), "Subscriber and publisher are now active.");
+        return controller_interface::CallbackReturn::SUCCESS;
+    }
+
+    controller_interface::CallbackReturn CrobotController::on_deactivate(
+        const rclcpp_lifecycle::State &
+    )
+    {
+        subscriber_is_active_ = false;
+        if (!is_halted)
+        {
+            halt();
+            is_halted = true;
+        }
+
+        return controller_interface::CallbackReturn::SUCCESS;
+    }
+
+    controller_interface::CallbackReturn CrobotController::on_cleanup(
+        const rclcpp_lifecycle::State &
+    )
+    {
+        if (!reset())
+        {
+            return controller_interface::CallbackReturn::ERROR;
+        }
+        received_velocity_msg_ptr_.set(std::make_shared<Twist>());
+
+        return controller_interface::CallbackReturn::SUCCESS;
+    }
+
+    controller_interface::CallbackReturn CrobotController::on_error(
+        const rclcpp_lifecycle::State &
+    )
+    {
+        if (!reset())
+        {
+            return controller_interface::CallbackReturn::ERROR;
+        }
+
+        return controller_interface::CallbackReturn::SUCCESS;
+    }
+
+    controller_interface::CallbackReturn CrobotController::on_shutdown(
+        const rclcpp_lifecycle::State &
+    )
+    {
+        return controller_interface::CallbackReturn::SUCCESS;
+    }
+
+    bool CrobotController::reset()
+    {
+        // reset odometry
+
+        std::queue<Twist> empty;
+        std::swap(previous_commands_, empty);
+
+        subscriber_is_active_ = false;
+        velocity_command_subscriber_.reset();
+
+        received_velocity_msg_ptr_.set(nullptr);
+        is_halted = false;
+        return true;
+    }
+
+    void CrobotController::halt()
+    {
+        
     }
 }
+
+#include "class_loader/register_macro.hpp"
+
+CLASS_LOADER_REGISTER_CLASS(
+  crobot_controller::CrobotController, controller_interface::ControllerInterface)

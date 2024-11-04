@@ -24,9 +24,9 @@ namespace crobot_hardware
         }
         
         cfg_.back_left_wheel_name = info_.hardware_parameters["back_left_wheel_name"];
-        cfg_.back_right_wheel_name = info_.hardware_parameters["back_left_wheel_name"];
-        cfg_.front_left_wheel_name = info_.hardware_parameters["back_left_wheel_name"];
-        cfg_.front_right_wheel_name = info_.hardware_parameters["back_left_wheel_name"];
+        cfg_.back_right_wheel_name = info_.hardware_parameters["back_right_wheel_name"];
+        cfg_.front_left_wheel_name = info_.hardware_parameters["front_left_wheel_name"];
+        cfg_.front_right_wheel_name = info_.hardware_parameters["front_right_wheel_name"];
 
         cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
         cfg_.device = info_.hardware_parameters["device"];
@@ -49,6 +49,73 @@ namespace crobot_hardware
         wheel_front_left.setup(cfg_.front_left_wheel_name, cfg_.enc_counts_per_rev);
         wheel_front_right.setup(cfg_.front_right_wheel_name, cfg_.enc_counts_per_rev);
 
+
+        for (const hardware_interface::ComponentInfo & joint : info_.joints)
+        {
+            if (joint.command_interfaces.size() != 1)
+            {
+                RCLCPP_FATAL(
+                    rclcpp::get_logger("CrobotHardware"),
+                    "Joint '%s' has %zu command interfaces found. 1 expected.",
+                    joint.name.c_str(),
+                    joint.command_interfaces.size()
+                );
+
+                return hardware_interface::CallbackReturn::ERROR;
+            }
+
+            if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
+            {
+                RCLCPP_FATAL(
+                    rclcpp::get_logger("CrobotHardware"),
+                    "Joint '%s' have %s command interfaces found. '%s' expected.",
+                    joint.name.c_str(),
+                    joint.command_interfaces[0].name.c_str(),
+                    hardware_interface::HW_IF_VELOCITY
+                );
+
+                return hardware_interface::CallbackReturn::ERROR;
+            }
+
+            if (joint.state_interfaces.size() != 2)
+            {
+                RCLCPP_FATAL(
+                    rclcpp::get_logger("CrobotHardware"),
+                    "Joint '%s' has %zu state interfaces found. 2 expected.",
+                    joint.name.c_str(),
+                    joint.state_interfaces.size()
+                );
+
+                return hardware_interface::CallbackReturn::ERROR;
+            }       
+
+            if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+            {
+                RCLCPP_FATAL(
+                    rclcpp::get_logger("CrobotHardware"),
+                    "Joint '%s' have %s state interfaces found. '%s' expected.",
+                    joint.name.c_str(),
+                    joint.state_interfaces[0].name.c_str(),
+                    hardware_interface::HW_IF_VELOCITY
+                );
+
+                return hardware_interface::CallbackReturn::ERROR;
+            }
+
+            if (joint.state_interfaces[1].name != hardware_interface::HW_IF_VELOCITY)
+            {
+                RCLCPP_FATAL(
+                    rclcpp::get_logger("CrobotHardware"),
+                    "Joint '%s' have %s state interfaces found. '%s' expected.",
+                    joint.name.c_str(),
+                    joint.state_interfaces[1].name.c_str(),
+                    hardware_interface::HW_IF_VELOCITY
+                );
+
+                return hardware_interface::CallbackReturn::ERROR;
+            }     
+        }
+
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
@@ -56,15 +123,25 @@ namespace crobot_hardware
     {
         std::vector<hardware_interface::StateInterface> state_interfaces;
 
-        // state_interfaces.emplace_back(hardware_interface::StateInterface(
-        //     wheel_back_left.name, hardware_interface::HW_IF_POSITION, &wheel_back_left.pos));
-        // state_interfaces.emplace_back(hardware_interface::StateInterface(
-        //     wheel_back_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_left.vel));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            wheel_back_left.name, hardware_interface::HW_IF_POSITION, &wheel_back_left.pos));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            wheel_back_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_left.vel));
 
-        // state_interfaces.emplace_back(hardware_interface::StateInterface(
-        //     wheel_r_.name, hardware_interface::HW_IF_POSITION, &wheel_r_.pos));
-        // state_interfaces.emplace_back(hardware_interface::StateInterface(
-        //     wheel_r_.name, hardware_interface::HW_IF_VELOCITY, &wheel_r_.vel));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            wheel_back_right.name, hardware_interface::HW_IF_POSITION, &wheel_back_right.pos));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            wheel_back_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_right.vel));
+
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            wheel_front_left.name, hardware_interface::HW_IF_POSITION, &wheel_front_left.pos));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            wheel_front_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_left.vel));
+
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            wheel_front_right.name, hardware_interface::HW_IF_POSITION, &wheel_front_right.pos));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            wheel_front_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_right.vel));
 
         return state_interfaces;
     }
@@ -73,11 +150,17 @@ namespace crobot_hardware
     {
         std::vector<hardware_interface::CommandInterface> command_interfaces;
 
-        // command_interfaces.emplace_back(hardware_interface::CommandInterface(
-        //     wheel_l_.name, hardware_interface::HW_IF_VELOCITY, &wheel_l_.cmd));
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            wheel_back_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_left.vel));
 
-        // command_interfaces.emplace_back(hardware_interface::CommandInterface(
-        //     wheel_r_.name, hardware_interface::HW_IF_VELOCITY, &wheel_r_.cmd));
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            wheel_back_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_right.vel));
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            wheel_front_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_left.vel));
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            wheel_front_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_right.vel));
 
         return command_interfaces;
     }

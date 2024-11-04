@@ -11,6 +11,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   geometry_msgs
   hardware_interface
   nav_msgs
+  pluginlib
   rclcpp
   rclcpp_lifecycle
   rcpputils
@@ -19,11 +20,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   tf2_msgs
 )
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
@@ -34,18 +31,19 @@ generate_parameter_library(crobot_controller_parameters
   src/crobot_controller_parameters.yaml
 )
 
-add_library(crobot_control SHARED
+add_library(crobot_controller SHARED
   src/crobot_controller.cpp
   src/odometry.cpp
 )
-target_compile_features(crobot_control PUBLIC cxx_std_17)
-target_include_directories(crobot_control PUBLIC
+target_compile_features(crobot_controller PUBLIC cxx_std_17)
+target_include_directories(crobot_controller PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include/crobot_control>
+  $<INSTALL_INTERFACE:include/crobot_controller>
 )
-target_link_libraries(crobot_control PUBLIC crobot_controller_parameters)
-ament_target_dependencies(crobot_control PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
-target_compile_definitions(crobot_control PRIVATE "CROBOT_CONTROL_BUILDING_DLL")
+target_link_libraries(crobot_controller PUBLIC crobot_controller_parameters)
+ament_target_dependencies(crobot_controller PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
+target_compile_definitions(crobot_controller PRIVATE "CROBOT_CONTROL_BUILDING_DLL")
+pluginlib_export_plugin_description_file(controller_interface crobot_controller_plugin.xml)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -69,10 +67,13 @@ install(
   DESTINATION include/crobot_controller
 )
 
-install(TARGETS crobot_control crobot_controller_parameters
+install(TARGETS crobot_controller crobot_controller_parameters
+  EXPORT export_crobot_controller
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
 )
 
+ament_export_targets(export_crobot_controller HAS_LIBRARY_TARGET)
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
