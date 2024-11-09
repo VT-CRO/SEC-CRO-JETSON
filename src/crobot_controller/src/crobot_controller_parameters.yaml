@@ -127,16 +127,6 @@ crobot_controller:
     default_value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
     description: "Odometry covariance for the encoder output of the robot for the speed. These values should be tuned to your robot's sample odometry data, but these values are a good place to start: ``[0.001, 0.001, 0.001, 0.001, 0.001, 0.01]``.",
   }
-  open_loop: {
-    type: bool,
-    default_value: false,
-    description: "If set to true the odometry of the robot will be calculated from the commanded values and not from feedback.",
-  }
-  position_feedback: {
-    type: bool,
-    default_value: true,
-    description: "Is there position feedback from hardware.",
-  }
   enable_odom_tf: {
     type: bool,
     default_value: true,
