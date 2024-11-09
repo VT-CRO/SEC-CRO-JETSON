@@ -84,10 +84,19 @@ namespace crobot_controller
             RCLCPP_INFO(logger, "Parameters were updated");
         }
 
-        // set up odometry
+        const double wheel_separation = params_.wheel_separation_multiplier * params_.wheel_separation;
+        const double back_left_wheel_radius = params_.back_left_wheel_radius_multiplier * params_.wheel_radius;
+        const double back_right_wheel_radius = params_.back_right_wheel_radius_multiplier * params_.wheel_radius;
+        const double front_left_wheel_radius = params_.front_left_wheel_radius_multiplier * params_.wheel_radius;
+        const double front_right_wheel_radius = params_.front_right_wheel_radius_multiplier * params_.wheel_radius;
+
+        odometry_.setWheelParams(wheel_separation, back_left_wheel_radius, back_right_wheel_radius, front_left_wheel_radius, front_right_wheel_radius);
+        odometry_.setVelocityRollingWindowSize(params_.velocity_rolling_window_size);
 
         cmd_vel_timeout_ = std::chrono::milliseconds{static_cast<int>(params_.cmd_vel_timeout * 1000.0)};
         publish_limited_velocity_ = params_.publish_limited_velocity;
+
+        // setup linear and angular limiters
 
         if (!reset())
         {
@@ -232,21 +241,88 @@ namespace crobot_controller
 
         if (params_.open_loop)
         {
-            // odometry_.updateOpenLoop()
+            odometry_.updateOpenLoop(linear_command_x, linear_command_y, angular_command, time);
         } else {
-            // get feedback
+            double back_left_feedback = registered_back_left_handle->feedback.get().get_value();
+            double back_right_feedback = registered_back_right_handle->feedback.get().get_value();
+            double front_left_feedback  = registered_front_left_handle->feedback.get().get_value();
+            double front_right_feedback  = registered_front_right_handle->feedback.get().get_value();
 
-            // check if feedback is valid
+            if (
+                std::isnan(back_left_feedback) || 
+                std::isnan(back_right_feedback) ||
+                std::isnan(front_left_feedback) ||
+                std::isnan(front_right_feedback)
+            )
+            {
+                RCLCPP_ERROR(
+                    logger, "One wheel %s is invalid", feedback_type()
+                );
+                return controller_interface::return_type::ERROR;
+            }
 
-            // update odometry
+            if (params_.position_feedback)
+            {
+                odometry_.update(back_left_feedback, back_right_feedback, front_left_feedback, front_right_feedback, time);
+            } else {
+                odometry_.updateFromVelocity(
+                    back_left_feedback * back_left_wheel_radius * period.seconds(), 
+                    back_right_feedback * back_right_wheel_radius * period.seconds(), 
+                    front_left_feedback * front_left_wheel_radius * period.seconds(), 
+                    front_right_feedback * front_left_wheel_radius * period.seconds(), 
+                    time
+                );
+            }
         }
 
         tf2::Quaternion orientation;
-        // orientation.setRPY(0.0, 0.0, odometry)
+        orientation.setRPY(0.0, 0.0, odometry_.getHeading());
 
         bool should_publish = false;
-        
-        // publish updated odometry if should publish
+        try
+        {
+            if (previous_publish_timestamp_ + publish_period_ < time)
+            {
+                previous_publish_timestamp_ += publish_period_;
+                should_publish = true;
+            }
+        }
+        catch (const std::runtime_error &)
+        {
+            previous_publish_timestamp_ = time;
+            should_publish = true;
+        }
+
+        if (should_publish)
+        {
+            if (realtime_odometry_publisher_->trylock())
+            {
+                auto & odometry_message = realtime_odometry_publisher_->msg_;
+                odometry_message.header.stamp = time;
+                odometry_message.pose.pose.position.x = odometry_.getX();
+                odometry_message.pose.pose.position.y = odometry_.getY();
+                odometry_message.pose.pose.orientation.x = orientation.x();
+                odometry_message.pose.pose.orientation.y = orientation.y();
+                odometry_message.pose.pose.orientation.z = orientation.z();
+                odometry_message.pose.pose.orientation.w = orientation.w();
+                odometry_message.twist.twist.linear.x = odometry_.getLinear();
+                odometry_message.twist.twist.angular.z = odometry_.getAngular();
+                realtime_odometry_publisher_->unlockAndPublish();
+            }
+
+            if (params_.enable_odom_tf && realtime_odometry_transform_publisher_->trylock())
+            {
+                auto & transform = realtime_odometry_transform_publisher_->msg_.transforms.front();
+                transform.header.stamp = time;
+                transform.transform.translation.x = odometry_.getX();
+                transform.transform.translation.y = odometry_.getY();
+                transform.transform.rotation.x = orientation.x();
+                transform.transform.rotation.y = orientation.y();
+                transform.transform.rotation.z = orientation.z();
+                transform.transform.rotation.w = orientation.w();
+                realtime_odometry_transform_publisher_->unlockAndPublish();
+            }
+        }
 
         auto & last_command = previous_commands_.back().twist;
         auto & second_to_last_command = previous_commands_.front().twist;
@@ -309,10 +385,10 @@ namespace crobot_controller
             is_halted = true;
         }
 
-        delete registered_back_left_handle;
-        delete registered_back_right_handle;
-        delete registered_front_left_handle;
-        delete registered_front_right_handle;
+        registered_back_left_handle.reset(nullptr);
+        registered_back_right_handle.reset(nullptr);
+        registered_front_left_handle.reset(nullptr);
+        registered_front_right_handle.reset(nullptr);
 
         return controller_interface::CallbackReturn::SUCCESS;
     }
@@ -350,7 +426,7 @@ namespace crobot_controller
     }
 
     controller_interface::CallbackReturn CrobotController::configure_wheel(
-        const std::string wheel_name, WheelHandle * registered_handle
+        const std::string wheel_name, std::unique_ptr<WheelHandle> & registered_handle
     )
     {
         auto logger = get_node()->get_logger();
@@ -386,22 +462,23 @@ namespace crobot_controller
             return controller_interface::CallbackReturn::ERROR;
         }
 
-        registered_handle = new WheelHandle{std::ref(*state_handle), std::ref(*command_handle)};
+        registered_handle = std::make_unique<CrobotController::WheelHandle>(WheelHandle{std::ref(*state_handle), std::ref(*command_handle)});
 
         return controller_interface::CallbackReturn::SUCCESS;
     }
 
     bool CrobotController::reset()
     {
-        // reset odometry
+        odometry_.resetOdometry();
 
         std::queue<Twist> empty;
         std::swap(previous_commands_, empty);
 
-        delete registered_back_left_handle;
-        delete registered_back_right_handle;
-        delete registered_front_left_handle;
-        delete registered_front_right_handle;
+        registered_back_left_handle.reset(nullptr);
+        registered_back_right_handle.reset(nullptr);
+        registered_front_left_handle.reset(nullptr);
+        registered_front_right_handle.reset(nullptr);
+        
 
         subscriber_is_active_ = false;
         velocity_command_subscriber_.reset();

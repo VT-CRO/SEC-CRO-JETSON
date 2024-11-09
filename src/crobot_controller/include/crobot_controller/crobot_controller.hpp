@@ -84,18 +84,18 @@ namespace crobot_controller
 
         const char * feedback_type() const;
         controller_interface::CallbackReturn configure_wheel(
-            const std::string wheel_name, WheelHandle * registered_handle
+            const std::string wheel_name, std::unique_ptr<WheelHandle> & registered_handle
         );
 
-        WheelHandle* registered_back_left_handle;
-        WheelHandle* registered_back_right_handle;
-        WheelHandle* registered_front_left_handle;
-        WheelHandle* registered_front_right_handle;
+        std::unique_ptr<WheelHandle> registered_back_left_handle;
+        std::unique_ptr<WheelHandle> registered_back_right_handle;
+        std::unique_ptr<WheelHandle> registered_front_left_handle;
+        std::unique_ptr<WheelHandle> registered_front_right_handle;
         
         std::shared_ptr<ParamListener> param_listener_;
         Params params_;
 
-        // Odometry odometry_;
+        Odometry odometry_;
 
         std::chrono::milliseconds cmd_vel_timeout_{500};
 

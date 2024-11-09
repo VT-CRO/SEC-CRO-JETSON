@@ -19,9 +19,9 @@ public:
   explicit Odometry(size_t velocity_rolling_window_size = 10);
 
   void init(const rclcpp::Time & time);
-  bool update(double left_pos, double right_pos, const rclcpp::Time & time);
-  bool updateFromVelocity(double left_vel, double right_vel, const rclcpp::Time & time);
-  void updateOpenLoop(double linear, double angular, const rclcpp::Time & time);
+  bool update(double back_left_pos, double back_right_pos, double front_left_pos, double front_right_pos, const rclcpp::Time & time);
+  bool updateFromVelocity(double back_left_vel, double back_right_vel, double front_left_vel, double front_right_vel, const rclcpp::Time & time);
+  void updateOpenLoop(double linear_x, double linear_y, double angular, const rclcpp::Time & time);
   void resetOdometry();
 
   double getX() const { return x_; }
@@ -30,7 +30,7 @@ public:
   double getLinear() const { return linear_; }
   double getAngular() const { return angular_; }
 
-  void setWheelParams(double wheel_separation, double left_wheel_radius, double right_wheel_radius);
+  void setWheelParams(double wheel_separation, double back_left_wheel_radius, double back_right_wheel_radius, double front_left_wheel_radius, double front_right_wheel_radius);
   void setVelocityRollingWindowSize(size_t velocity_rolling_window_size);
 
 private:
@@ -59,12 +59,16 @@ private:
 
   // Wheel kinematic parameters [m]:
   double wheel_separation_;
-  double left_wheel_radius_;
-  double right_wheel_radius_;
+  double back_left_wheel_radius_;
+  double back_right_wheel_radius_;
+  double front_left_wheel_radius_;
+  double front_right_wheel_radius_;
 
   // Previous wheel position/state [rad]:
-  double left_wheel_old_pos_;
-  double right_wheel_old_pos_;
+  double back_left_wheel_old_pos_;
+  double back_right_wheel_old_pos_;
+  double front_left_wheel_old_pos_;
+  double front_right_wheel_old_pos_;
 
   // Rolling mean accumulators for the linear and angular velocities:
   size_t velocity_rolling_window_size_;
