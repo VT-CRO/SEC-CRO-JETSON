@@ -86,8 +86,8 @@ namespace crobot_controller
 
         // set up odometry
 
-        // cmd_vel_timeout_ = std::chrono::milliseconds{static_case<int>(params_.cmd_vel_timeout * 1000.0)};
-        // publish_limited_velocity_ = params._publish_limited_velocity;
+        cmd_vel_timeout_ = std::chrono::milliseconds{static_cast<int>(params_.cmd_vel_timeout * 1000.0)};
+        publish_limited_velocity_ = params_.publish_limited_velocity;
 
         if (!reset())
         {
@@ -95,6 +95,11 @@ namespace crobot_controller
         }
 
         // setup publish limited velocity
+        if (publish_limited_velocity_)
+        {
+            limited_velocity_publisher_ = get_node()->create_publisher<Twist>(DEFAULT_COMMAND_OUT_TOPIC, rclcpp::SystemDefaultsQoS());
+            realtime_limited_velocity_publisher_ = std::make_shared<realtime_tools::RealtimePublisher<Twist>>(limited_velocity_publisher_);
+        }
 
         const Twist empty_twist;
         received_velocity_msg_ptr_.set(std::make_shared<Twist>(empty_twist));
@@ -123,9 +128,58 @@ namespace crobot_controller
             }
         );
 
-        // set up odometry publisher
+        odometry_publisher_ = get_node()->create_publisher<nav_msgs::msg::Odometry>(DEFAULT_ODOMETRY_TOPIC, rclcpp::SystemDefaultsQoS());
+        realtime_odometry_publisher_ = std::make_shared<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>>(odometry_publisher_);
 
-        // setup odometry and transform publishers
+        std::string tf_prefix = "";
+        if (params_.tf_frame_prefix_enable)
+        {
+            if (params_.tf_frame_prefix != "")
+            {
+                tf_prefix = params_.tf_frame_prefix;
+            } else {
+                tf_prefix = std::string(get_node()->get_namespace());
+            }
+
+            if (tf_prefix == "/")
+            {
+                tf_prefix = "";
+            } else {
+                tf_prefix = tf_prefix + "/";
+            }
+        }
+
+        const auto odom_frame_id = tf_prefix + params_.odom_frame_id;
+        const auto base_frame_id = tf_prefix + params_.base_frame_id;
+
+        auto & odometry_message = realtime_odometry_publisher_->msg_;
+        odometry_message.header.frame_id = odom_frame_id;
+        odometry_message.child_frame_id = base_frame_id;
+
+        publish_rate_ = params_.publish_rate;
+        publish_period_ = rclcpp::Duration::from_seconds(1.0 / publish_rate_);
+
+        odometry_message.twist = geometry_msgs::msg::TwistWithCovariance(rosidl_runtime_cpp::MessageInitialization::ALL);
+
+        constexpr size_t NUM_DIMENSIONS = 0;
+        for (size_t index = 0; index < 6; ++index)
+        {
+            const size_t diagonal_index = NUM_DIMENSIONS * index + index;
+            odometry_message.pose.covariance[diagonal_index] = params_.pose_covariance_diagonal[index];
+            odometry_message.twist.covariance[diagonal_index] = params_.twist_covariance_diagonal[index];
+        }
+
+        odometry_transform_publisher_ = get_node()->create_publisher<tf2_msgs::msg::TFMessage>(
+            DEFAULT_TRANSFORM_TOPIC, rclcpp::SystemDefaultsQoS()
+        );
+        realtime_odometry_transform_publisher_ = std::make_shared<realtime_tools::RealtimePublisher<tf2_msgs::msg::TFMessage>>(
+            odometry_transform_publisher_
+        );
+
+        auto & odometry_transform_message = realtime_odometry_transform_publisher_->msg_;
+        odometry_transform_message.transforms.resize(1);
+        odometry_transform_message.transforms.front().header.frame_id = odom_frame_id;
+        odometry_transform_message.transforms.front().child_frame_id = base_frame_id;
 
         previous_update_timestamp_ = get_node()->get_clock()->now();
         return controller_interface::CallbackReturn::SUCCESS;
@@ -210,10 +264,10 @@ namespace crobot_controller
         const double front_left_wheel_velocity = (linear_command_y + linear_command_x - 12 * (angular_command)) / front_left_wheel_radius;
         const double front_right_wheel_velocity = (linear_command_y + linear_command_x + 12 * (angular_command)) / front_right_wheel_radius;
 
-        // registered_back_left_handle.velocity.get().set_value(back_left_wheel_velocity);
-        // registered_back_right_handle.velocity.get().set_value(back_right_wheel_velocity);
-        // registered_front_left_handle.velocity.get().set_value(front_left_wheel_velocity);
-        // registered_front_right_handle.velocity.get().set_value(front_right_wheel_velocity);
+        registered_back_left_handle->velocity.get().set_value(back_left_wheel_velocity);
+        registered_back_right_handle->velocity.get().set_value(back_right_wheel_velocity);
+        registered_front_left_handle->velocity.get().set_value(front_left_wheel_velocity);
+        registered_front_right_handle->velocity.get().set_value(front_right_wheel_velocity);
 
         return controller_interface::return_type::OK;
     }
@@ -222,10 +276,22 @@ namespace crobot_controller
         const rclcpp_lifecycle::State &
     )
     {
+        const auto bl_result = configure_wheel(params_.back_left_wheel_name, registered_back_left_handle);
+        const auto br_result = configure_wheel(params_.back_right_wheel_name, registered_back_right_handle);
+        const auto fl_result = configure_wheel(params_.front_left_wheel_name, registered_front_left_handle);
+        const auto fr_result = configure_wheel(params_.front_right_wheel_name, registered_front_right_handle);
 
-        // configure wheels
+        if (
+            bl_result == controller_interface::CallbackReturn::ERROR || 
+            br_result == controller_interface::CallbackReturn::ERROR || 
+            fl_result == controller_interface::CallbackReturn::ERROR || 
+            fr_result == controller_interface::CallbackReturn::ERROR
+        )
+        {
+            return controller_interface::CallbackReturn::ERROR;
+        }
 
-        is_halted - false;
+        is_halted = false;
         subscriber_is_active_ = true;
 
         RCLCPP_DEBUG(get_node()->get_logger(), "Subscriber and publisher are now active.");
@@ -242,6 +308,11 @@ namespace crobot_controller
             halt();
             is_halted = true;
         }
+
+        delete registered_back_left_handle;
+        delete registered_back_right_handle;
+        delete registered_front_left_handle;
+        delete registered_front_right_handle;
 
         return controller_interface::CallbackReturn::SUCCESS;
     }
@@ -278,12 +349,59 @@ namespace crobot_controller
         return controller_interface::CallbackReturn::SUCCESS;
     }
 
+    controller_interface::CallbackReturn CrobotController::configure_wheel(
+        const std::string wheel_name, WheelHandle * registered_handle
+    )
+    {
+        auto logger = get_node()->get_logger();
+
+        const auto interface_name = feedback_type();
+        const auto state_handle = std::find_if(
+            state_interfaces_.cbegin(), state_interfaces_.cend(),
+            [&wheel_name, &interface_name](const auto & interface)
+            {
+                return interface.get_prefix_name() == wheel_name && 
+                interface.get_interface_name() == interface_name;
+            }
+        );
+
+        if (state_handle == state_interfaces_.cend())
+        {
+            RCLCPP_ERROR(logger, "Unable to obtain joint state handle for %s", wheel_name.c_str());
+            return controller_interface::CallbackReturn::ERROR;
+        }
+
+        const auto command_handle = std::find_if(
+            command_interfaces_.begin(), command_interfaces_.end(),
+            [&wheel_name](const auto & interface)
+            {
+                return interface.get_prefix_name() == wheel_name && 
+                    interface.get_interface_name() == HW_IF_VELOCITY;
+            }
+        );
+
+        if (command_handle == command_interfaces_.end())
+        {
+            RCLCPP_ERROR(logger, "Unable to obtain joint command handle for %s", wheel_name.c_str());
+            return controller_interface::CallbackReturn::ERROR;
+        }
+
+        registered_handle = new WheelHandle{std::ref(*state_handle), std::ref(*command_handle)};
+
+        return controller_interface::CallbackReturn::SUCCESS;
+    }
+
     bool CrobotController::reset()
     {
         // reset odometry
 
         std::queue<Twist> empty;
         std::swap(previous_commands_, empty);
+
+        delete registered_back_left_handle;
+        delete registered_back_right_handle;
+        delete registered_front_left_handle;
+        delete registered_front_right_handle;
 
         subscriber_is_active_ = false;
         velocity_command_subscriber_.reset();
@@ -295,7 +413,15 @@ namespace crobot_controller
 
     void CrobotController::halt()
     {
-        
+        const auto halt_wheels = [](auto & wheel_handle)
+        {
+            wheel_handle->velocity.get().set_value(0.0);
+        };
+
+        halt_wheels(registered_back_left_handle);
+        halt_wheels(registered_back_right_handle);
+        halt_wheels(registered_front_left_handle);
+        halt_wheels(registered_front_right_handle);
     }
 }
 
