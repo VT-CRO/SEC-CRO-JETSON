@@ -96,7 +96,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://field/meshes/field.stl</uri>
+              <uri>../models/field/meshes/field_tapeless.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -116,7 +116,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://field/meshes/field.dae</uri>
+              <uri>../models/field/meshes/field.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -124,18 +124,18 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>0.111887 -0.03767 0 0 -0 0</pose>
+      <pose>-0.260445 -0.35 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>686 881000000</sim_time>
-      <real_time>31 544432399</real_time>
-      <wall_time>1723087341 999351281</wall_time>
-      <iterations>31351</iterations>
+      <sim_time>257 749000000</sim_time>
+      <real_time>121 13458436</real_time>
+      <wall_time>1731207913 901323501</wall_time>
+      <iterations>120663</iterations>
       <model name='field'>
-        <pose>-0.027242 0.003806 0 0 0 -1.5708</pose>
+        <pose>0.404767 -0.391063 0 0 -0 -1.57079</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose>-0.027242 0.003806 0 0 0 -1.5708</pose>
+          <pose>0.404767 -0.391063 0 0 -0 -1.57079</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -157,7 +157,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>0.604766 6.12919 0.48898 0 0.163643 -1.5278</pose>
+        <pose>-0.097133 0.131603 3.15382 -0 1.2738 -0.04119</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
