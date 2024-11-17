@@ -1,0 +1,353 @@
+<?xml version="1.0"?>
+<robot name="robot" xmlns:xacro="https://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="../inertial_macros.xacro"/>
+
+    <link name="base_link"/>
+
+    <!-- CHASSIS -->
+    <joint name="chassis_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis"/>
+        <origin xyz="0.1425 0.049029809832572719686 0.017149277701974004195"/>
+    </joint>
+
+    <link name="chassis">
+        <visual>
+            <origin xyz="-0.22678900623321562868 -0.097029809832574281936 0.017149277701973920929" rpy="1.57079632679489678 1.570796326794896336 0" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1107-0006-0168_rev1.stl"/>
+            </geometry>
+
+            <material name="1107-0006-0168_rev1_material">
+                <color rgba="0.2313725490196078538 0.38039215686274507888 0.7058823529411765163 1.0"/>
+            </material>
+        </visual>
+
+        <collision>
+            <origin xyz="-0.22678900623321562868 -0.097029809832574281936 0.017149277701973920929" rpy="1.57079632679489678 1.570796326794896336 0" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1107-0006-0168_rev1.stl"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="-0.034789006233210094388 -0.19552980983257298164 0.038649277701974051047" rpy="-8.0454292774045399349e-16 -1.4294063053788782458e-17 2.220446049250302727e-16" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1107-0011-0288_rev1.stl"/>
+            </geometry>
+            
+            <material name="1107-0011-0288_rev1_material">
+                <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+            </material>
+        </visual>
+
+        <collision>
+            <origin xyz="-0.034789006233210094388 -0.19552980983257298164 0.038649277701974051047" rpy="-8.0454292774045399349e-16 -1.4294063053788782458e-17 2.220446049250302727e-16" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1107-0011-0288_rev1.stl"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="-0.22678900623321562868 -0.049029809832572719686 0.017149277701973983379" rpy="1.570796326794896336 1.570796326794896558 0" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1107-0006-0168_rev1.stl"/>
+            </geometry>
+
+            <material name="1107-0006-0168_rev1_material">
+                <color rgba="0.2313725490196078538 0.38039215686274507888 0.7058823529411765163 1.0"/>
+            </material>
+        </visual>
+
+        <collision>
+            <origin xyz="-0.22678900623321562868 -0.049029809832572719686 0.017149277701973983379" rpy="1.570796326794896336 1.570796326794896558 0" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1107-0006-0168_rev1.stl"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="-0.25078900623321537244 0.092470190167426330463 0.038649277701973919208" rpy="1.3877787807813920576e-17 1.4456028966473966021e-16 -3.141592653589793116" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1107-0011-0288_rev1.stl"/>
+            </geometry>
+
+            <material name="1107-0011-0288_rev1_material">
+                <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+            </material>
+        </visual>
+
+        <collision>
+            <origin xyz="-0.25078900623321537244 0.092470190167426330463 0.038649277701973919208" rpy="1.3877787807813920576e-17 1.4456028966473966021e-16 -3.141592653589793116" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1107-0011-0288_rev1.stl"/>
+            </geometry>
+        </collision>
+
+
+        <visual>
+            <origin xyz="-0.058789006233209518959 0.044470190167435287576 0.017149277701973855009" rpy="-1.5886004608257484693e-16 0.0084662956488076885481 1.5707963267948970021" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/ax1e.stl"/>
+            </geometry>
+
+            <material name="ax1e_material">
+                <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+            </material>
+        </visual>
+
+        <collision>
+            <origin xyz="-0.058789006233209518959 0.044470190167435287576 0.017149277701973855009" rpy="-1.5886004608257484693e-16 0.0084662956488076885481 1.5707963267948970021" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/ax1e.stl"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="0.0011109937667903970263 -0.051882427185769658395 0.029015060335948378994" rpy="-1.5885435271852868303e-16 8.2442765107953741009e-16 1.57079632679489678" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/side_panel.stl"/>
+            </geometry>
+
+            <material name="side_panel_material">
+                <color rgba="0.59607843137254901134 0.17647058823529412908 0.050980392156862744391 1.0"/>
+            </material>
+        </visual>
+
+        <collision>
+            <origin xyz="0.0011109937667903970263 -0.051882427185769658395 0.029015060335948378994" rpy="-1.5885435271852868303e-16 8.2442765107953741009e-16 1.57079632679489678" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/side_panel.stl"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="-0.082789006233210338248 -0.091529809832574637873 0.043649277701973951404" rpy="-1.57079632679489678 2.3548726348615098873e-19 6.7043592899550441516e-14" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1116-0040-0088.stl"/>
+            </geometry>
+
+            <material name="1116-0040-0088_material">
+                <color rgba="0.49803921568627451677 0.49803921568627451677 0.49803921568627451677 1.0"/>
+            </material>
+        </visual>
+
+        <collision>
+            <origin xyz="-0.082789006233210338248 -0.091529809832574637873 0.043649277701973951404" rpy="-1.57079632679489678 2.3548726348615098873e-19 6.7043592899550441516e-14" />
+            <geometry>
+                <mesh filename="package://crobot_description/description/drivetrain/1116-0040-0088.stl"/>
+            </geometry>
+        </collision>
+
+        <visual>
+        <origin xyz="0.00361099376679051981 -0.14752980983257277248 0.017149277701974025012" rpy="8.1922455281750408639e-16 -1.3756519300571170561 -1.5707963267948981123" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/ax1e.stl"/>
+        </geometry>
+        <material name="ax1e_material">
+        <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+        </material>
+        </visual>
+        <collision>
+        <origin xyz="0.00361099376679051981 -0.14752980983257277248 0.017149277701974025012" rpy="8.1922455281750408639e-16 -1.3756519300571170561 -1.5707963267948981123" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/ax1e.stl"/>
+        </geometry>
+        </collision>
+        <visual>
+        <origin xyz="-0.28918900623321580623 0.044470190167426440486 0.01714927770197391399" rpy="-2.2308814951604140775e-16 -5.2735593669694324303e-16 1.5707963267948985564" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/ax1e.stl"/>
+        </geometry>
+        <material name="ax1e_material">
+        <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+        </material>
+        </visual>
+        <collision>
+        <origin xyz="-0.28918900623321580623 0.044470190167426440486 0.01714927770197391399" rpy="-2.2308814951604140775e-16 -5.2735593669694324303e-16 1.5707963267948985564" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/ax1e.stl"/>
+        </geometry>
+        </collision>
+        <visual>
+        <origin xyz="-0.23478900623321535823 -0.011529809832573664763 0.041149277701973921428" rpy="1.57079632679489678 -2.9138385136453753542e-16 2.7755575615628849416e-16" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/1116-0040-0088.stl"/>
+        </geometry>
+        <material name="1116-0040-0088_material">
+        <color rgba="0.49803921568627451677 0.49803921568627451677 0.49803921568627451677 1.0"/>
+        </material>
+        </visual>
+        <collision>
+        <origin xyz="-0.23478900623321535823 -0.011529809832573664763 0.041149277701973921428" rpy="1.57079632679489678 -2.9138385136453753542e-16 2.7755575615628849416e-16" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/1116-0040-0088.stl"/>
+        </geometry>
+        </collision>
+        <visual>
+        <origin xyz="-0.28918900623321580623 -0.051882427185774487866 0.029015060335948347769" rpy="0 -0 1.57079632679489678" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/side_panel.stl"/>
+        </geometry>
+        <material name="side_panel_material">
+        <color rgba="0.59607843137254901134 0.17647058823529412908 0.050980392156862744391 1.0"/>
+        </material>
+        </visual>
+        <collision>
+        <origin xyz="-0.28918900623321580623 -0.051882427185774487866 0.029015060335948347769" rpy="0 -0 1.57079632679489678" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/side_panel.stl"/>
+        </geometry>
+        </collision>
+        <visual>
+        <origin xyz="-0.28918900623321575072 -0.14752980983257357739 0.01714927770197391399" rpy="-2.5160266665241081531e-16 -9.1593399531574034078e-16 1.5707963267948981123" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/ax1e.stl"/>
+        </geometry>
+        <material name="ax1e_material">
+        <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+        </material>
+        </visual>
+        <collision>
+        <origin xyz="-0.28918900623321575072 -0.14752980983257357739 0.01714927770197391399" rpy="-2.5160266665241081531e-16 -9.1593399531574034078e-16 1.5707963267948981123" />
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/ax1e.stl"/>
+        </geometry>
+        </collision>
+
+        <xacro:inertial_box mass="0.5" x="0.3" y="0.3" z="0.15">
+            <origin xyz="0 0 0.0" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <gazebo reference="chassis">
+        <material>Gazebo/White</material>
+    </gazebo>
+
+    <!-- BACK RIGHT WHEEL -->
+    <joint name="back_right_wheel_joint" type="continuous">
+        <parent link="chassis"/>
+        <child link="back_right_wheel"/>
+        <origin xyz="-0.042189006233209536134 -0.14752980983257274472 0.017149277701974004195"/>
+    </joint>
+
+    <link name="back_right_wheel">
+        <visual>
+        <origin xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/wheel.stl"/>
+        </geometry>
+        <material name="wheel_material">
+        <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+        </material>
+        </visual>
+        <collision>
+        <origin xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/wheel.stl"/>
+        </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="back_right_wheel">
+        <material>Gazebo/Blue</material>
+        <mu1 value="0.0"/>
+        <mu2 value="0.0"/>
+    </gazebo>
+
+    <joint name="back_left_wheel_joint" type="continuous">
+        <parent link="chassis"/>
+        <child link="back_left_wheel"/>
+        <origin xyz="-0.28418900623321580179 -0.1475298098325736329 0.01714927770197391399"/>
+    </joint>
+
+    <link name="back_left_wheel">
+        <visual>
+        <origin xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/wheel.stl"/>
+        </geometry>
+        <material name="wheel_material">
+        <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+        </material>
+        </visual>
+
+        <collision>
+        <origin xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/wheel.stl"/>
+        </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="back_left_wheel">
+        <material>Gazebo/Blue</material>
+        <mu1 value="0.0"/>
+        <mu2 value="0.0"/>
+    </gazebo>
+
+    <joint name="front_left_wheel_joint" type="continuous">
+        <parent link="chassis"/>
+        <child link="front_left_wheel"/>
+        <origin xyz="-0.28418900623321574628 0.044470190167426433547 0.01714927770197391399"/>
+    </joint>
+
+    <link name="front_left_wheel">
+        <visual>
+        <origin xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/wheel.stl"/>
+        </geometry>
+        <material name="wheel_material">
+        <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+        </material>
+        </visual>
+
+        <collision>
+        <origin xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/wheel.stl"/>
+        </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="front_left_wheel">
+        <material>Gazebo/Blue</material>
+        <mu1 value="0.0"/>
+        <mu2 value="0.0"/>
+    </gazebo>
+
+    <joint name="front_right_wheel_joint" type="continuous">
+        <parent link="chassis"/>
+        <child link="front_right_wheel"/>
+        <origin xyz="-0.042189006233211430452 0.044470190167435287576 0.017149277701973858479"/>
+    </joint>
+
+    <link name="front_right_wheel">
+        <visual>
+        <origin xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/wheel.stl"/>
+        </geometry>
+        <material name="wheel_material">
+        <color rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0"/>
+        </material>
+        </visual>
+
+        <collision>
+        <origin xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://crobot_description/description/drivetrain/wheel.stl"/>
+        </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="front_right_wheel">
+        <material>Gazebo/Blue</material>
+        <mu1 value="0.0"/>
+        <mu2 value="0.0"/>
+    </gazebo>
+
+
+</robot>

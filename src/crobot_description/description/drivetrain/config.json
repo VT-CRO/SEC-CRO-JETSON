@@ -1,0 +1,6 @@
+{
+    "documentId": "d5b765525106dc7222414f12",
+    "outputFormat": "urdf",
+    "assemblyName": "Drivetrain",
+    "packageName": "crobot_description/description/drivetrain"
+}
