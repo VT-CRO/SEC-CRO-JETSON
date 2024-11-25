@@ -5,6 +5,7 @@
     <xacro:arg name="sim_mode" default="false"/>
 
     <xacro:include filename="robot_core.xacro"/>
+    <!-- <xacro:include filename="drivetrain/robot.urdf"/> -->
 
     <xacro:if value="$(arg use_ros2_control)">
         <xacro:include filename="ros2_control.xacro"/>

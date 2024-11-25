@@ -3,8 +3,9 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable, DeclareLaunchArgument, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import EnvironmentVariable, LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessExit
@@ -17,6 +18,23 @@ def generate_launch_description():
 
     package_name='crobot_gazebo'
 
+    models_folder=os.path.join(
+        get_package_share_directory(package_name), 'models'
+    )
+
+    worlds_folder=os.path.join(
+        get_package_share_directory(package_name), 'worlds'
+    )
+
+    robot_meshes_folder=os.path.join(
+        get_package_share_directory('crobot_description'), 'description', 'drivetrain'
+    )
+    
+    print(models_folder)
+
+    # world = LaunchConfiguration('world')
+    # world = os.path.join(worlds_folder, 'mining_mayhem.world')
+
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory(package_name), 'launch', 'rsp.launch.py'
@@ -28,7 +46,10 @@ def generate_launch_description():
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py'
-        )]), launch_arguments={'extra_gazebo_args': '--ros-args --params-file ' + gazebo_params_file}.items()
+        )]), launch_arguments={
+            'extra_gazebo_args': '--verbose --ros-args --params-file ' + gazebo_params_file,
+            # 'world_name': [PathJoinSubstitution([worlds_folder, LaunchConfiguration('world_file')])],
+        }.items()
     )
 
     spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
@@ -58,6 +79,15 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        # DeclareLaunchArgument(
+        #     'world',
+        #     default_value='',
+        #     description='World file to load'
+        # ),
+        # SetLaunchConfiguration(name='world_file', 
+        #                        value=[LaunchConfiguration('world'), 
+        #                               TextSubstitution(text='.sdf')]),
+        SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=[EnvironmentVariable('GAZEBO_MODEL_PATH'), ':', models_folder, ':', robot_meshes_folder]),
         rsp,
         gazebo,
         spawn_entity,
