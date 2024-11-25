@@ -25,6 +25,10 @@ def generate_launch_description():
     worlds_folder=os.path.join(
         get_package_share_directory(package_name), 'worlds'
     )
+
+    robot_meshes_folder=os.path.join(
+        get_package_share_directory('crobot_description'), 'description', 'drivetrain'
+    )
     
     print(models_folder)
 
@@ -43,7 +47,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py'
         )]), launch_arguments={
-            'extra_gazebo_args': '--ros-args --params-file ' + gazebo_params_file,
+            'extra_gazebo_args': '--verbose --ros-args --params-file ' + gazebo_params_file,
             # 'world_name': [PathJoinSubstitution([worlds_folder, LaunchConfiguration('world_file')])],
         }.items()
     )
@@ -83,7 +87,7 @@ def generate_launch_description():
         # SetLaunchConfiguration(name='world_file', 
         #                        value=[LaunchConfiguration('world'), 
         #                               TextSubstitution(text='.sdf')]),
-        SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=[EnvironmentVariable('GAZEBO_MODEL_PATH'), ':', models_folder]),
+        SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=[EnvironmentVariable('GAZEBO_MODEL_PATH'), ':', models_folder, ':', robot_meshes_folder]),
         rsp,
         gazebo,
         spawn_entity,
