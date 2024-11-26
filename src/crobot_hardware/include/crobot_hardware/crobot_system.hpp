@@ -33,6 +33,7 @@
 
 #include "crobot_hardware/serial_comm.hpp"
 #include "crobot_hardware/wheel.hpp"
+#include "crobot_hardware/deadwheel_odom.hpp"
 
 namespace crobot_hardware
 {
@@ -103,6 +104,8 @@ private:
   Wheel wheel_back_right;
   Wheel wheel_front_left;
   Wheel wheel_front_right;
+
+  DeadWheelOdom deadwheels;
 };
 
 }  // namespace CROBOT_HARDWARE

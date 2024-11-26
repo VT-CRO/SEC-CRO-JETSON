@@ -22,6 +22,8 @@ add_library(
   crobot_hardware
   SHARED
   src/crobot_system.cpp
+  src/serial_comm.cpp
+  src/crobot_hardware.cpp
 )
 target_compile_features(crobot_hardware PUBLIC cxx_std_17)
 target_include_directories(crobot_hardware PUBLIC

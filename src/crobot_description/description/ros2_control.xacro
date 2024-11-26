@@ -56,6 +56,12 @@
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
             </joint>
+
+            <sensor name="deadwheel_odom">
+                <state_interface name="deadwheel_odom_x"/>
+                <state_interface name="deadwheel_odom_y"/>
+                <state_interface name="deadwheel_odom_th"/>
+            </sensor>
         </ros2_control>
     </xacro:unless>
 

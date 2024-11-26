@@ -116,6 +116,15 @@ namespace crobot_hardware
             }     
         }
 
+        for (const hardware_interface::ComponentInfo & sensor : info_.sensors)
+        {
+            RCLCPP_INFO(
+                    rclcpp::get_logger("CrobotHardware"),
+                    "Found sensor '%s'",
+                    sensor.name.c_str()
+                );
+        }
+
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
@@ -142,6 +151,18 @@ namespace crobot_hardware
             wheel_front_right.name, hardware_interface::HW_IF_POSITION, &wheel_front_right.pos));
         state_interfaces.emplace_back(hardware_interface::StateInterface(
             wheel_front_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_right.vel));
+
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            "deadwheel_odom", "deadwheel_odom_x", &deadwheels.pos_x
+        ));
+
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            "deadwheel_odom", "deadwheel_odom_y", &deadwheels.pos_y
+        ));
+
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            "deadwheel_odom", "deadwheel_odom_th", &deadwheels.pos_th
+        ));
 
         return state_interfaces;
     }
@@ -174,7 +195,7 @@ namespace crobot_hardware
         {
             comms_.disconnect();
         }
-        comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
+        comms_.connect(cfg_.device, cfg_.timeout_ms);
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Successfully configured!");
 
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -205,7 +226,7 @@ namespace crobot_hardware
         }
         if (cfg_.pid_p > 0)
         {
-            comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
+            // comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
         }
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Successfully activated!");
 
