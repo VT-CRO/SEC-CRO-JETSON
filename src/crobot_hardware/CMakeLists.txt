@@ -5,22 +5,53 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(INCLUDE_DEPENDS
+  hardware_interface
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
+)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+foreach(Dependency IN ITEMS ${INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
+add_library(
+  crobot_hardware
+  SHARED
+  src/crobot_system.cpp
+  src/serial_comm.cpp
+  src/crobot_hardware.cpp
+)
+target_compile_features(crobot_hardware PUBLIC cxx_std_17)
+target_include_directories(crobot_hardware PUBLIC
+$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include/crobot_hardware>
+)
+ament_target_dependencies(
+  crobot_hardware PUBLIC
+  ${INCLUDE_DEPENDS}
+)
+
+pluginlib_export_plugin_description_file(hardware_interface crobot_hardware.xml)
+
+install(
+  DIRECTORY include/
+  DESTINATION include/crobot_hardware
+)
+install(TARGETS crobot_hardware
+  EXPORT export_crobot_hardware
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+if (BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
 endif()
 
+ament_export_targets(export_crobot_hardware HAS_LIBRARY_TARGET)
+ament_export_dependencies(${INCLUDE_DEPENDS})
 ament_package()

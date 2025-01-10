@@ -19,38 +19,38 @@
  * library cannot have, but the consuming code must have inorder to link.
  */
 
-#ifndef DIFFDRIVE_ARDUINO__VISIBILITY_CONTROL_H_
-#define DIFFDRIVE_ARDUINO__VISIBILITY_CONTROL_H_
+#ifndef CROBOT_HARDWARE__VISIBILITY_CONTROL_H_
+#define CROBOT_HARDWARE__VISIBILITY_CONTROL_H_
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
 
 #if defined _WIN32 || defined __CYGWIN__
 #ifdef __GNUC__
-#define DIFFDRIVE_ARDUINO_EXPORT __attribute__((dllexport))
-#define DIFFDRIVE_ARDUINO_IMPORT __attribute__((dllimport))
+#define CROBOT_HARDWARE_EXPORT __attribute__((dllexport))
+#define CROBOT_HARDWARE_IMPORT __attribute__((dllimport))
 #else
-#define DIFFDRIVE_ARDUINO_EXPORT __declspec(dllexport)
-#define DIFFDRIVE_ARDUINO_IMPORT __declspec(dllimport)
+#define CROBOT_HARDWARE_EXPORT __declspec(dllexport)
+#define CROBOT_HARDWARE_IMPORT __declspec(dllimport)
 #endif
-#ifdef DIFFDRIVE_ARDUINO_BUILDING_DLL
-#define DIFFDRIVE_ARDUINO_PUBLIC DIFFDRIVE_ARDUINO_EXPORT
+#ifdef CROBOT_HARDWARE_BUILDING_DLL
+#define CROBOT_HARDWARE_PUBLIC CROBOT_HARDWARE_EXPORT
 #else
-#define DIFFDRIVE_ARDUINO_PUBLIC DIFFDRIVE_ARDUINO_IMPORT
+#define CROBOT_HARDWARE_PUBLIC CROBOT_HARDWARE_IMPORT
 #endif
-#define DIFFDRIVE_ARDUINO_PUBLIC_TYPE DIFFDRIVE_ARDUINO_PUBLIC
-#define DIFFDRIVE_ARDUINO_LOCAL
+#define CROBOT_HARDWARE_PUBLIC_TYPE CROBOT_HARDWARE_PUBLIC
+#define CROBOT_HARDWARE_LOCAL
 #else
-#define DIFFDRIVE_ARDUINO_EXPORT __attribute__((visibility("default")))
-#define DIFFDRIVE_ARDUINO_IMPORT
+#define CROBOT_HARDWARE_EXPORT __attribute__((visibility("default")))
+#define CROBOT_HARDWARE_IMPORT
 #if __GNUC__ >= 4
-#define DIFFDRIVE_ARDUINO_PUBLIC __attribute__((visibility("default")))
-#define DIFFDRIVE_ARDUINO_LOCAL __attribute__((visibility("hidden")))
+#define CROBOT_HARDWARE_PUBLIC __attribute__((visibility("default")))
+#define CROBOT_HARDWARE_LOCAL __attribute__((visibility("hidden")))
 #else
-#define DIFFDRIVE_ARDUINO_PUBLIC
-#define DIFFDRIVE_ARDUINO_LOCAL
+#define CROBOT_HARDWARE_PUBLIC
+#define CROBOT_HARDWARE_LOCAL
 #endif
-#define DIFFDRIVE_ARDUINO_PUBLIC_TYPE
+#define CROBOT_HARDWARE_PUBLIC_TYPE
 #endif
 
-#endif  // DIFFDRIVE_ARDUINO__VISIBILITY_CONTROL_H_
+#endif  // CROBOT_HARDWARE__VISIBILITY_CONTROL_H_

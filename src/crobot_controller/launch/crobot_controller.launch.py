@@ -12,13 +12,6 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    # Get URDF via xacro
-    rsp = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory('crobot_description'), 'launch', 'rsp.launch.py'
-        )]), launch_arguments={'use_sim_time': 'false', 'use_ros2_control': 'true'}.items()
-    )
-
     robot_controllers = PathJoinSubstitution(
         [
             FindPackageShare("crobot_controller"),
@@ -57,7 +50,6 @@ def generate_launch_description():
     )
 
     nodes = [
-        rsp,
         control_node,
         joint_state_broadcaster_spawner,
         delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,

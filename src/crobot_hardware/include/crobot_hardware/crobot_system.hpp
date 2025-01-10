@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef DIFFDRIVE_ARDUINO__DIFFBOT_SYSTEM_HPP_
-#define DIFFDRIVE_ARDUINO__DIFFBOT_SYSTEM_HPP_
+#ifndef CROBOT_HARDWARE__DIFFBOT_SYSTEM_HPP_
+#define CROBOT_HARDWARE__DIFFBOT_SYSTEM_HPP_
 
 #include <memory>
 #include <string>
@@ -29,20 +29,23 @@
 #include "rclcpp/time.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
-#include "diffdrive_arduino/visibility_control.h"
+#include "crobot_hardware/visibility_control.h"
 
-#include "diffdrive_arduino/arduino_comms.hpp"
-#include "diffdrive_arduino/wheel.hpp"
+#include "crobot_hardware/serial_comm.hpp"
+#include "crobot_hardware/wheel.hpp"
+#include "crobot_hardware/deadwheel_odom.hpp"
 
-namespace diffdrive_arduino
+namespace crobot_hardware
 {
-class DiffDriveArduinoHardware : public hardware_interface::SystemInterface
+class CrobotHardware : public hardware_interface::SystemInterface
 {
 
 struct Config
 {
-  std::string left_wheel_name = "";
-  std::string right_wheel_name = "";
+  std::string back_left_wheel_name = "";
+  std::string back_right_wheel_name = "";
+  std::string front_left_wheel_name = "";
+  std::string front_right_wheel_name = "";
   float loop_rate = 0.0;
   std::string device = "";
   int baud_rate = 0;
@@ -56,51 +59,55 @@ struct Config
 
 
 public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(DiffDriveArduinoHardware);
+  RCLCPP_SHARED_PTR_DEFINITIONS(CrobotHardware)
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_init(
     const hardware_interface::HardwareInfo & info) override;
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_configure(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_cleanup(
     const rclcpp_lifecycle::State & previous_state) override;
 
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_activate(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_deactivate(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   hardware_interface::return_type read(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
-  DIFFDRIVE_ARDUINO_PUBLIC
+  CROBOT_HARDWARE_PUBLIC
   hardware_interface::return_type write(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
 private:
 
-  ArduinoComms comms_;
+  SerialComm comms_;
   Config cfg_;
-  Wheel wheel_l_;
-  Wheel wheel_r_;
+  Wheel wheel_back_left;
+  Wheel wheel_back_right;
+  Wheel wheel_front_left;
+  Wheel wheel_front_right;
+
+  DeadWheelOdom deadwheels;
 };
 
-}  // namespace diffdrive_arduino
+}  // namespace CROBOT_HARDWARE
 
-#endif  // DIFFDRIVE_ARDUINO__DIFFBOT_SYSTEM_HPP_
+#endif  // CROBOT_HARDWARE__DIFFBOT_SYSTEM_HPP_

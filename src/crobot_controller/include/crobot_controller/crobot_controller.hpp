@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "controller_interface/controller_interface.hpp"
-#include "crobot_controller/visibility_control.h"
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "odometry.hpp"
@@ -25,6 +24,8 @@
 #include "realtime_tools/realtime_publisher.h"
 #include "tf2_msgs/msg/tf_message.hpp"
 
+#include "crobot_controller/visibility_control.h"
+#include "crobot_controller/odometry.hpp"
 #include "crobot_controller_parameters.hpp"
 
 namespace crobot_controller
@@ -75,22 +76,59 @@ namespace crobot_controller
             const rclcpp_lifecycle::State &previous_state) override;
 
     protected:
+        struct WheelHandle
+        {
+            std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback;
+            std::reference_wrapper<hardware_interface::LoanedCommandInterface> velocity;
+        };
+
         const char * feedback_type() const;
-        bool reset();
-        void halt();
-        
-        bool is_halted = false;
+        controller_interface::CallbackReturn configure_wheel(
+            const std::string wheel_name, std::unique_ptr<WheelHandle> & registered_handle
+        );
+
+        std::unique_ptr<WheelHandle> registered_back_left_handle;
+        std::unique_ptr<WheelHandle> registered_back_right_handle;
+        std::unique_ptr<WheelHandle> registered_front_left_handle;
+        std::unique_ptr<WheelHandle> registered_front_right_handle;
         
         std::shared_ptr<ParamListener> param_listener_;
         Params params_;
 
-        rclcpp::Time previous_update_timestamp_{0};
+        Odometry odometry_;
 
         std::chrono::milliseconds cmd_vel_timeout_{500};
-        realtime_tools::RealtimeBox<std::shared_ptr<Twist>> received_velocity_msg_ptr_{nullptr};
-        std::queue<Twist> previous_commands_;
+
+        std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Odometry>> odometry_publisher_ = nullptr;
+        std::shared_ptr<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>>
+            realtime_odometry_publisher_ = nullptr;
+
+        std::shared_ptr<rclcpp::Publisher<tf2_msgs::msg::TFMessage>> odometry_transform_publisher_ = nullptr;
+        std::shared_ptr<realtime_tools::RealtimePublisher<tf2_msgs::msg::TFMessage>> realtime_odometry_transform_publisher_ = nullptr;
+
         bool subscriber_is_active_ = false;
         rclcpp::Subscription<Twist>::SharedPtr velocity_command_subscriber_ = nullptr;
+
+        realtime_tools::RealtimeBox<std::shared_ptr<Twist>> received_velocity_msg_ptr_{nullptr};
+
+        std::queue<Twist> previous_commands_;
+
+        // speed limiters
+
+        bool publish_limited_velocity_ = false;
+        std::shared_ptr<rclcpp::Publisher<Twist>> limited_velocity_publisher_ = nullptr;
+        std::shared_ptr<realtime_tools::RealtimePublisher<Twist>> realtime_limited_velocity_publisher_ = nullptr;
+
+        rclcpp::Time previous_update_timestamp_{0};
+
+        double publish_rate_ = 50.0;
+        rclcpp::Duration publish_period_ = rclcpp::Duration::from_nanoseconds(0);
+        rclcpp::Time previous_publish_timestamp_{0, 0, RCL_CLOCK_UNINITIALIZED};
+        
+        bool is_halted = false;
+
+        bool reset();
+        void halt();
     };
 }
 

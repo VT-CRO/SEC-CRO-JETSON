@@ -1,20 +1,25 @@
 controller_manager:
   ros__parameters:
     update_rate: 30
-    # use_sim_time: true
     
-    diff_drive_controller:
-      type: diff_drive_controller/DiffDriveController
+    crobot_controller:
+      type: crobot_controller/CrobotController
 
     joint_broad:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-diff_drive_controller:
+crobot_controller:
   ros__parameters:
-    publish_rate: 50.0
-    base_frame_id: base_link
-    left_wheel_names: ['front_left_wheel_joint', 'back_left_wheel_joint']
-    right_wheel_names: ['front_right_wheel_joint', 'back_right_wheel_joint']
-    wheel_separation: 0.35
+    front_left_wheel_name: "front_left_wheel_joint"
+    back_left_wheel_name: "back_left_wheel_joint"
+    front_right_wheel_name: "front_right_wheel_joint"
+    back_right_wheel_name: "back_right_wheel_joint"
+    open_loop: false
+    position_feedback: true
+    wheel_separation: 0.05
+    wheel_separation_multiplier: 1.0
     wheel_radius: 0.05
-    use_stamped_vel: false
+    back_left_wheel_radius_multiplier: 1.0
+    back_right_wheel_radius_multiplier: 1.0
+    front_left_wheel_radius_multiplier: 1.0
+    front_right_wheel_radius_multiplier: 1.0
