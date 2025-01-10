@@ -71,3 +71,12 @@ ros2 launch crobot_bringup bringup.launch.py
 
 See the individual package README's for additional information on configuration.
 
+# Trouble shooting
+
+if the april tags folder is empty try these commands
+
+```
+$ git submodule init
+
+$ git submodule update
+```
