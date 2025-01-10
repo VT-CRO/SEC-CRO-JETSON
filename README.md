@@ -34,7 +34,27 @@ Navigate to the workspace folder and run the following commands
 $ sudo apt update
 $ source install/setup.bash
 $ rosdep update
-$ rosdep --install-from-paths src -y --ignore-src
+$ rosdep install --from-paths src --ignore-src -r -y
+```
+
+### Building 
+The first time you build this repo, build the behaviour tree packages first
+
+```
+$ colcon build --packages-select btcpp_ros2_interfaces behaviortree_ros2
+
+$ source install/setup.bash
+
+$ colcon build
+```
+
+Whenever you change something in the package you must rebuild and source.
+Make sure you are in the ws folder before running these commands 
+
+```
+$ colcon build
+
+$ source install/setup.bash 
 ```
 
 ### How to Run
@@ -50,3 +70,4 @@ ros2 launch crobot_bringup bringup.launch.py
 ```
 
 See the individual package README's for additional information on configuration.
+
