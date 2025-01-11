@@ -60,3 +60,13 @@ Currently, a few behaviors have been designed to work with the crobot autonomy s
         - goal_pos: a list of numbers containing the goal pose of the robot formatted as "x, y, heading".
 
 All behavior trees are loaded from the `trees` directory and `bt_default.xml` is executed when no tree is specified.
+
+## TODO:
+- Add some extra error handling for the GoToPose behavior
+- Define an end behavior that keeps the robot in an idle state at the end of execution
+- Add an inputMap parameter for localization mode
+- When mapping replace rtabmap with amcl
+- Create a convenience plugin for swithcing between mapping and localization mode in RVIZ
+
+## Resources:
+- Tuning Tips for rtabmap: https://github.com/introlab/rtabmap/wiki/Change-parameters
