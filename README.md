@@ -13,7 +13,7 @@ The following packages were made to support the application:
 - crobot_gazebo: Contains launch files for launching a simulated robot
 - crobot_controller: Defines a controller to translate user/task inputs to actuator commands
 - crobot_hardware: Defines the interface between the crobot_controller and actuator hardware
-- crobot_navigation: Containing autonomous behaviors and routines for Behavior Tree
+- crobot_navigation: Contains autonomous behaviors and routines for Behavior Tree
 - crobot_bringup: Contains a set of centralized launch files that spawn all the necessary packages for a full autonomous robot in either simulation or using real hardware
 
 ## Hardware Requirements
@@ -50,3 +50,13 @@ ros2 launch crobot_bringup bringup.launch.py
 ```
 
 See the individual package README's for additional information on configuration.
+
+## Resources
+
+- Nav2 Docs: https://docs.nav2.org/
+- rtabmap Docs: http://wiki.ros.org/rtabmap_ros (These docs are a bit outdated, but give a good idea of how rtabmap fits into everything)
+- ros2_control Docs: https://control.ros.org/rolling/index.html
+- behaviortree Docs: https://www.behaviortree.dev/docs/intro
+- integrating ROS2 with behaviortree: https://www.behaviortree.dev/docs/ros2_integration/
+- behaviortree wrapper for ROS2: https://github.com/BehaviorTree/BehaviorTree.ROS2
+
