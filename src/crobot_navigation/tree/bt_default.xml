@@ -1,10 +1,10 @@
 <root BTCPP_format="4" >
     <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
-            <GoToPosition   name="navigate_to_pose_action_client" goal_pose="2;2;0"/>
-            <GoToPosition   name="navigate_to_pose_action_client" goal_pose="2;-2;0"/>
-            <GoToPosition   name="navigate_to_pose_action_client" goal_pose="-2;-2;0"/>
-            <GoToPosition   name="navigate_to_pose_action_client" goal_pose="-2;2;0"/>
+            <GoToPose   name="navigate_to_pose_action_client" goalPose="2;2;0"/>
+            <GoToPose   name="navigate_to_pose_action_client" goalPose="2;-2;0"/>
+            <GoToPose   name="navigate_to_pose_action_client" goalPose="-2;-2;0"/>
+            <GoToPose   name="navigate_to_pose_action_client" goalPose="-2;2;0"/>
         </Sequence>
     </BehaviorTree>
 </root>

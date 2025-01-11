@@ -8,6 +8,7 @@ endif()
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_action
+  rclcpp_components
   nav2_msgs
   behaviortree_cpp
   behaviortree_ros2
@@ -42,7 +43,7 @@ if(BUILD_TESTING)
 endif()
 
 install(
-  DIRECTORY tree launch config
+  DIRECTORY tree launch config maps
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -54,6 +55,5 @@ install(
 install(TARGETS crobot_navigation_node
   DESTINATION lib/${PROJECT_NAME}
 )
-
 
 ament_package()

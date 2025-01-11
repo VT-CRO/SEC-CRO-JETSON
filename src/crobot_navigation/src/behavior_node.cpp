@@ -34,14 +34,13 @@ void BehaviorNode::create_behavior_tree()
 {
     BT::BehaviorTreeFactory factory;
 
-    auto node = std::make_shared<rclcpp::Node>("navigate_to_pose_action_client");
-    BT::RosNodeParams params;
-    params.nh = node;
-    params.default_port_value = "navigate_to_pose";
-    params.server_timeout = 3000ms;
-    params.wait_for_server_timeout = 3000ms;
+    BT::NodeBuilder builder = 
+        [=](const std::string &name, const BT::NodeConfiguration &config)
+        {
+            return std::make_unique<GoToPose>(name, config, shared_from_this());
+        };
 
-    factory.registerNodeType<GoToPosition>("GoToPosition", params);
+    factory.registerBuilder<GoToPose>("GoToPose", builder);
 
     tree_ = factory.createTreeFromFile(bt_xml_dir + "/bt_default.xml");
 }
@@ -61,6 +60,8 @@ void BehaviorNode::update_behavior_tree()
         RCLCPP_INFO(this->get_logger(), "Navigation Failed");
         // timer_->cancel();
     }
+
+    RCLCPP_INFO(this->get_logger(), "Ticked once");
 }
 
 int main(int argc, char **argv)
