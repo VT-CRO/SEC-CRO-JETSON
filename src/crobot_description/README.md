@@ -9,3 +9,6 @@ This package contains the URDF files for the crobot. Also includes a mesh and UR
 
 ## Launch Files
 - `rsp.launch.py` - Launches robot state publisher to broadcast the robot description (to be used by Gazebo or to visualize in RVIZ)
+
+## Resources
+- Setting up hardware interfaces in robot description: https://github.com/ros-controls/roadmap/blob/master/design_drafts/hardware_access.md

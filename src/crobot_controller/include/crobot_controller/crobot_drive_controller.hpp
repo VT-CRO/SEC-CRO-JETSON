@@ -85,9 +85,15 @@ namespace crobot_controller
             REAR_LEFT = 3
         };
 
+        enum DeadWheelIndex :  std::size_t
+        {
+            DEADWHEEL_X = 0,
+            DEADWHEEL_Y = 1,
+            DEADWHEEL_HEADING = 2
+        };
+
         std::vector<std::string> command_joint_names_;
         std::vector<std::string> state_joint_names_;
-        std::vector<std::string> reference_names_;
 
         rclcpp::Subscription<ControllerReferenceMsg>::SharedPtr ref_cmd_subscriber_ = nullptr;
         realtime_tools::RealtimeBuffer<std::shared_ptr<ControllerReferenceMsg>> input_ref_;

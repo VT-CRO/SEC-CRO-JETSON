@@ -56,42 +56,50 @@ namespace crobot_controller
     {
         params_ = param_listener_->get_params();
 
-        auto prepare_lists_with_joint_names = 
-            [&command_joints = this->command_joint_names_, &state_joints = this->state_joint_names_](
-                const std::size_t index, const std::string & command_joint_name,
-                const std::string & state_joint_name
+        auto prepare_command_interfaces_list = 
+            [&command_joints = this->command_joint_names_](
+                const std::size_t index, const std::string & command_joint_name
             )
         {
             command_joints[index] = command_joint_name;
-            if (state_joint_name.empty())
-            {
-                state_joints[index] = command_joint_name;
-            } else {
-                state_joints[index] = state_joint_name;
-            }
         };
 
         command_joint_names_.resize(4);
-        state_joint_names_.resize(4);
 
-        prepare_lists_with_joint_names(
-            FRONT_LEFT, params_.front_left_wheel_command_joint_name,
-            params_.front_left_wheel_state_joint_name
+        prepare_command_interfaces_list(
+            FRONT_LEFT, params_.front_left_wheel_command_joint_name
         );
-        prepare_lists_with_joint_names(
-            FRONT_RIGHT, params_.front_right_wheel_command_joint_name,
-            params_.front_right_wheel_state_joint_name
+        prepare_command_interfaces_list(
+            FRONT_RIGHT, params_.front_right_wheel_command_joint_name
         );
-        prepare_lists_with_joint_names(
-            REAR_LEFT, params_.rear_left_wheel_command_joint_name,
-            params_.rear_left_wheel_state_joint_name
+        prepare_command_interfaces_list(
+            REAR_LEFT, params_.rear_left_wheel_command_joint_name
         );
-        prepare_lists_with_joint_names(
-            REAR_RIGHT, params_.rear_right_wheel_command_joint_name,
-            params_.rear_right_wheel_state_joint_name
+        prepare_command_interfaces_list(
+            REAR_RIGHT, params_.rear_right_wheel_command_joint_name
         );
 
         // configure deadwheels
+
+        auto prepare_state_interfaces_list = 
+            [&state_joints = this->state_joint_names_](
+                const std::size_t index, const std::string & state_joint_name
+            )
+        {
+            state_joints[index] = state_joint_name;
+        };
+
+        state_joint_names_.resize(3);
+
+        prepare_state_interfaces_list(
+            DEADWHEEL_X, params_.deadwheel_x_state_name
+        );
+        prepare_state_interfaces_list(
+            DEADWHEEL_Y, params_.deadwheel_y_state_name
+        );
+        prepare_state_interfaces_list(
+            DEADWHEEL_HEADING, params_.deadwheel_heading_state_name
+        );
 
         auto subscribers_qos = rclcpp::SystemDefaultsQoS();
         subscribers_qos.keep_last(1);
@@ -208,9 +216,9 @@ namespace crobot_controller
         state_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
         state_interfaces_config.names.reserve(state_joint_names_.size());
-        for (const auto & joint : state_joint_names_)
+        for (const auto & state_if : state_joint_names_)
         {
-            state_interfaces_config.names.push_back(joint + "/" + hardware_interface::HW_IF_VELOCITY);
+            state_interfaces_config.names.push_back(state_if);
         }
 
         return state_interfaces_config;
@@ -253,26 +261,26 @@ namespace crobot_controller
             current_ref->twist.angular.z = 0.0;
         }
 
-        const double wheel_front_left_state_vel = state_interfaces_[FRONT_LEFT].get_value();
-        const double wheel_front_right_state_vel = state_interfaces_[FRONT_RIGHT].get_value();
-        const double wheel_rear_right_state_vel = state_interfaces_[REAR_RIGHT].get_value();
-        const double wheel_rear_left_state_vel = state_interfaces_[REAR_LEFT].get_value();
+        // const double wheel_front_left_state_vel = state_interfaces_[FRONT_LEFT].get_value();
+        // const double wheel_front_right_state_vel = state_interfaces_[FRONT_RIGHT].get_value();
+        // const double wheel_rear_right_state_vel = state_interfaces_[REAR_RIGHT].get_value();
+        // const double wheel_rear_left_state_vel = state_interfaces_[REAR_LEFT].get_value();
 
         double cmd_x = current_ref->twist.linear.x;
         double cmd_y = current_ref->twist.linear.y;
         double cmd_w = current_ref->twist.angular.z;
         
         // FORWARD KINEMATICS: Update Odometry
-        if (
-            !std::isnan(wheel_front_left_state_vel) && !std::isnan(wheel_front_right_state_vel) &&
-            !std::isnan(wheel_rear_left_state_vel) && !std::isnan(wheel_rear_right_state_vel)
-        )
-        {
+        // if (
+        //     !std::isnan(wheel_front_left_state_vel) && !std::isnan(wheel_front_right_state_vel) &&
+        //     !std::isnan(wheel_rear_left_state_vel) && !std::isnan(wheel_rear_right_state_vel)
+        // )
+        // {
             // odometry_.update(
             //      wheel_front_left_state_vel, wheel_rear_left_state_vel, wheel_rear_right_state_vel,
             //      wheel_front_right_state_vel, period.secconds()
             // );
-        }
+        // }
 
         // INVERSE KINEMATICS: Compute wheel velocities
         if (

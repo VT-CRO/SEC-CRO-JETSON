@@ -47,32 +47,34 @@ crobot_controller:
   }
 
   # State joint names
-  front_left_wheel_state_joint_name: {
+  deadwheel_x_state_name: {
     type: string,
     default_value: "",
     description: "(optional) Specifies a joint name for reading states of front left wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
     read_only: true,
+    validation: {
+      not_empty<>: null,
+    }
   }
 
-  front_right_wheel_state_joint_name: {
+  deadwheel_y_state_name: {
     type: string,
     default_value: "",
-    description: "(optional) Specifies a joint name for reading states of front right wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
+    description: "(optional) Specifies a joint name for reading states of front left wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
     read_only: true,
+    validation: {
+      not_empty<>: null,
+    }
   }
 
-  rear_right_wheel_state_joint_name: {
+  deadwheel_heading_state_name: {
     type: string,
     default_value: "",
-    description: "(optional) Specifies a joint name for reading states of rear right wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
+    description: "(optional) Specifies a joint name for reading states of front left wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
     read_only: true,
-  }
-
-  rear_left_wheel_state_joint_name: {
-    type: string,
-    default_value: "",
-    description: "(optional) Specifies a joint name for reading states of rear left wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
-    read_only: true,
+    validation: {
+      not_empty<>: null,
+    }
   }
 
   kinematics:
