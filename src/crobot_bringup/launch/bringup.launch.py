@@ -45,7 +45,7 @@ def generate_launch_description():
     robot_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["crobot_controller", "--controller-manager", "/controller_manager"],
+        arguments=["crobot_drive_controller", "--controller-manager", "/controller_manager"],
     )
 
     # Delay start of robot_controller after `joint_state_broadcaster`
