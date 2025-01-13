@@ -161,6 +161,7 @@ namespace crobot_controller
 
     void CrobotDriveController::reference_callback(const std::shared_ptr<ControllerReferenceMsg> msg)
     {
+
         if (msg->header.stamp.sec == 0 && msg->header.stamp.nanosec == 0u)
         {
             RCLCPP_WARN(
@@ -182,9 +183,9 @@ namespace crobot_controller
                 rclcpp::Time(msg->header.stamp).seconds(), age_of_last_command.seconds(),
                 ref_timeout_.seconds()
             );
-        }
 
-        reset_controller_reference_msg(msg, get_node());
+            reset_controller_reference_msg(msg, get_node());
+        }
     }
 
     controller_interface::InterfaceConfiguration CrobotDriveController::command_interface_configuration() const
@@ -225,7 +226,7 @@ namespace crobot_controller
     }
 
     controller_interface::CallbackReturn CrobotDriveController::on_deactivate(
-        const rclcpp_lifecycle::State &previous_state
+        const rclcpp_lifecycle::State & // previous_state
     )
     {
         for (size_t i = 0; i < NUM_CMD_INTERFACES; ++i)
@@ -237,7 +238,7 @@ namespace crobot_controller
     }
 
     controller_interface::return_type CrobotDriveController::update(
-        const rclcpp::Time & time, const rclcpp::Duration &period
+        const rclcpp::Time & time, const rclcpp::Duration & // period
     )
     {
 
@@ -245,7 +246,7 @@ namespace crobot_controller
 
         const auto age_of_last_command = time - (current_ref)->header.stamp;
 
-        if (age_of_last_command > ref_timeout_)
+        if (age_of_last_command > ref_timeout_ && ref_timeout_!= rclcpp::Duration::from_seconds(0))
         {
             current_ref->twist.linear.x = 0.0;
             current_ref->twist.linear.y = 0.0;
@@ -289,11 +290,11 @@ namespace crobot_controller
 
             velocity_in_center_frame_linear_x_ =
                 velocity_in_base_frame_wrt_center_frame_.x() +
-                linear_trans_from_base_to_center.y() * cmd_y;
+                linear_trans_from_base_to_center.y() * cmd_w;
             velocity_in_center_frame_linear_y_ =
                 velocity_in_base_frame_wrt_center_frame_.y() -
-                linear_trans_from_base_to_center.x() * cmd_y;
-            velocity_in_center_frame_angular_z_ = cmd_y;
+                linear_trans_from_base_to_center.x() * cmd_w;
+            velocity_in_center_frame_angular_z_ = cmd_w;
 
             const double wheel_front_left_vel =
                 1.0 / params_.kinematics.wheels_radius *
@@ -320,6 +321,9 @@ namespace crobot_controller
             command_interfaces_[FRONT_RIGHT].set_value(wheel_front_right_vel);
             command_interfaces_[REAR_LEFT].set_value(wheel_rear_left_vel);
             command_interfaces_[REAR_RIGHT].set_value(wheel_rear_right_vel);
+
+            // ss << "Setting Wheel Speeds: " << wheel_front_left_vel << " " << wheel_front_right_vel << " " << wheel_rear_left_vel << " " << wheel_rear_right_vel;
+            
         } else {
             command_interfaces_[FRONT_LEFT].set_value(0.0);
             command_interfaces_[FRONT_RIGHT].set_value(0.0);

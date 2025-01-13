@@ -16,4 +16,5 @@ crobot_drive_controller:
     rear_right_wheel_command_joint_name: "back_right_wheel_joint"
 
     kinematics:
-      wheels_radius: 1.0
+      wheels_radius: 0.05
+      sum_of_robot_center_projection_on_X_Y_axis: 0.25

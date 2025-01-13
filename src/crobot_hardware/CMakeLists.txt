@@ -21,7 +21,7 @@ endforeach()
 add_library(
   crobot_hardware
   SHARED
-  src/crobot_system.cpp
+  src/crobot_hardware_system.cpp
   src/serial_comm.cpp
   src/crobot_hardware.cpp
 )
