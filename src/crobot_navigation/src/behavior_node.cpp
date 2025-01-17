@@ -2,6 +2,7 @@
 #include <behaviortree_ros2/bt_action_node.hpp>
 
 #include "crobot_navigation/behaviors/go_to_position.hpp"
+#include "crobot_navigation/behaviors/start.hpp"
 
 using namespace std::chrono_literals;
 
@@ -34,13 +35,20 @@ void BehaviorNode::create_behavior_tree()
 {
     BT::BehaviorTreeFactory factory;
 
-    BT::NodeBuilder builder = 
+    BT::NodeBuilder start_builder = 
+        [=](const std::string &name, const BT::NodeConfiguration &config)
+        {
+            return std::make_unique<StartBehavior>(name, config, shared_from_this());
+        };
+
+    BT::NodeBuilder go_to_pose_builder = 
         [=](const std::string &name, const BT::NodeConfiguration &config)
         {
             return std::make_unique<GoToPose>(name, config, shared_from_this());
         };
 
-    factory.registerBuilder<GoToPose>("GoToPose", builder);
+    factory.registerBuilder<StartBehavior>("Start", start_builder);
+    factory.registerBuilder<GoToPose>("GoToPose", go_to_pose_builder);
 
     tree_ = factory.createTreeFromFile(bt_xml_dir + "/bt_default.xml");
 }

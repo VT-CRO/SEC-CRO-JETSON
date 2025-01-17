@@ -26,7 +26,11 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
 endforeach()
 
 include_directories(include)
-add_executable(crobot_navigation_node src/behavior_node.cpp src/go_to_position.cpp)
+add_executable(crobot_navigation_node 
+  src/behavior_node.cpp 
+  src/go_to_position.cpp
+  src/start.cpp
+)
 ament_target_dependencies(crobot_navigation_node ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_link_libraries(crobot_navigation_node ${YAML_CPP_LIBRARIES})
 
