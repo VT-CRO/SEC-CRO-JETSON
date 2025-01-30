@@ -243,7 +243,7 @@ namespace crobot_hardware
     }
 
     hardware_interface::return_type CrobotHardware::read(
-        const rclcpp::Time &, const rclcpp::Duration & period
+        const rclcpp::Time &, const rclcpp::Duration & /* period */
     )
     {
         if (!comms_.connected())

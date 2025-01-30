@@ -20,7 +20,7 @@ bool GoToPosition::setGoal(BT::RosActionNode<NavigateToPose>::Goal &goal)
     return true;
 }
 
-BT::NodeStatus GoToPosition::onResultReceived(const WrappedResult &wr)
+BT::NodeStatus GoToPosition::onResultReceived(const WrappedResult & /*wr*/)
 {
     return BT::NodeStatus::SUCCESS;
 }
@@ -31,7 +31,7 @@ BT::NodeStatus GoToPosition::onFailure(BT::ActionNodeErrorCode error)
     return BT::NodeStatus::FAILURE;
 }
 
-BT::NodeStatus GoToPosition::onFeedback(const std::shared_ptr<const Feedback> feedback)
+BT::NodeStatus GoToPosition::onFeedback(const std::shared_ptr<const Feedback> /* feedback */)
 {
     return BT::NodeStatus::RUNNING;
 }

@@ -21,13 +21,13 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "odometry.hpp"
 #include "rclcpp_lifecycle/state.hpp"
-#include "realtime_tools/realtime_buffer.h"
-#include "realtime_tools/realtime_publisher.h"
+#include "realtime_tools/realtime_buffer.hpp"
+#include "realtime_tools/realtime_publisher.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
 
 #include "crobot_controller/visibility_control.h"
 #include "crobot_controller/odometry.hpp"
-#include "crobot_drive_controller_parameters.hpp"
+#include "crobot_controller/crobot_drive_controller_parameters.hpp"
 
 namespace crobot_controller
 {
