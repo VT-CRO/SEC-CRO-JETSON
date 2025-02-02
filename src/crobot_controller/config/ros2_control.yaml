@@ -8,6 +8,9 @@ controller_manager:
     joint_broad:
       type: joint_state_broadcaster/JointStateBroadcaster
 
+    gpio_controller:
+      type: gpio_controllers/GpioCommandController
+
 crobot_drive_controller:
   ros__parameters:
     front_left_wheel_command_joint_name: "front_left_wheel_joint"
@@ -22,3 +25,15 @@ crobot_drive_controller:
     kinematics:
       wheels_radius: 0.05
       sum_of_robot_center_projection_on_X_Y_axis: 0.25
+
+gpio_controller:
+  ros__parameters:
+    gpios:
+      - crobot_systems
+    command_interfaces:
+      crobot_systems:
+        - interfaces:
+          - bin_intake
+          - beacon
+          - start_robot
+          # - start_led
