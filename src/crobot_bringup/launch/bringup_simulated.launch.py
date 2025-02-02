@@ -19,7 +19,12 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('crobot_gazebo'), 'launch', 'launch_sim.launch.py'
         )]),
-        launch_arguments={'use_sim_time': 'true'}.items()
+        launch_arguments={
+            'use_sim_time': 'true',
+            'world': os.path.join(
+                get_package_share_directory('crobot_gazebo'), 'worlds', 'mining_mayhem.world'
+            )
+        }.items()
     )
 
     slam = IncludeLaunchDescription(

@@ -2,25 +2,26 @@
 #define GO_TO_POSITION_HPP_
 
 #include <rclcpp/rclcpp.hpp>
-#include <behaviortree_ros2/bt_action_node.hpp>
+#include "rclcpp_action/rclcpp_action.hpp"
 #include <nav2_msgs/action/navigate_to_pose.hpp>
-
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-using NavigateToPose = nav2_msgs::action::NavigateToPose;
-using GoalHandleNav = rclcpp_action::ClientGoalHandle<NavigateToPose>;
+#include "behaviortree_cpp/behavior_tree.h"
 
-namespace BT
-{
-    template <> inline nav2_msgs::action::NavigateToPose_Goal convertFromString(StringView str)
+using NavPose = nav2_msgs::action::NavigateToPose;
+using NavGoal = nav2_msgs::action::NavigateToPose_Goal;
+using GoalHandleNav = rclcpp_action::ClientGoalHandle<NavPose>;
+
+namespace BT{
+    template <> inline NavGoal convertFromString(StringView str)
     {
         auto parts = splitString(str, ';');
         if (parts.size() != 3)
         {
             throw RuntimeError("invalid input");
         } else {
-            auto navGoal = NavigateToPose::Goal();
+            auto navGoal = NavPose::Goal();
             navGoal.pose.header.frame_id = "map";
             navGoal.pose.pose.position.x = convertFromString<float>(parts[0]);
             navGoal.pose.pose.position.y = convertFromString<float>(parts[1]);
@@ -34,27 +35,28 @@ namespace BT
     }
 }
 
-
-class GoToPosition : public BT::RosActionNode<NavigateToPose>
+class GoToPose : public BT::StatefulActionNode
 {
     public:
-        GoToPosition(const std::string& name, const BT::NodeConfig& config, const BT::RosNodeParams& params);
+        GoToPose(const std::string& name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr);
 
-        static BT::PortsList providedPorts()
-        {
-            // do stuff;
-            return {
-                BT::InputPort<nav2_msgs::action::NavigateToPose_Goal>("goal_pose")
-            };
-        }
+        static BT::PortsList providedPorts();
 
-        bool setGoal(RosActionNode<NavigateToPose>::Goal& goal) override;
+        BT::NodeStatus onStart() override;
 
-        BT::NodeStatus onResultReceived(const WrappedResult& wr) override;
+        BT::NodeStatus onRunning() override;
 
-        virtual BT::NodeStatus onFailure(BT::ActionNodeErrorCode error) override;
+        void onHalted() override;
 
-        BT::NodeStatus onFeedback(const std::shared_ptr<const Feedback> feedback);
+    private:
+        rclcpp::Node::SharedPtr node_ptr_;
+        rclcpp_action::Client<NavPose>::SharedPtr action_client_ptr_;
+
+        bool  done_flag_;
+
+        NavGoal _goal;
+
+        void nav_to_pose_callback(const GoalHandleNav::WrappedResult &result);
 };
 
 #endif
