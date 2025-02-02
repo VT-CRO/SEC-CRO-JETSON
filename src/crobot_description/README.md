@@ -35,3 +35,7 @@ To modify the camera position and orientation, navigate to the corresponding cam
 [TODO: ADD PICTURE]
 
 To change the position of the camera relative to the robots center, simply edit the `xyz` parameter in the origin tag. Modifying the `rpy` parameter changes the orientation. For reference, the forward facing orientation of the camera with respect to the robot's center is `"0 0 0"` and positive angles in the y-axis pitch the camera down. When modifying this file also be sure not to change the orientation of the camera_optical joint from its default orientation of `"${-pi/2} 0 ${-pi/2}"`. This angle has been set so that the camera image is not inverted, so only change this orientation if you know what you're doing.
+
+## Resources
+- Setting up hardware interfaces in robot description: https://github.com/ros-controls/roadmap/blob/master/design_drafts/hardware_access.md
+

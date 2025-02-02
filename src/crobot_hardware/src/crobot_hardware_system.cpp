@@ -1,4 +1,4 @@
-#include "crobot_hardware/crobot_system.hpp"
+#include "crobot_hardware/crobot_hardware_system.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -8,6 +8,8 @@
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
+
+using json = nlohmann::json;
 
 namespace crobot_hardware
 {
@@ -29,7 +31,7 @@ namespace crobot_hardware
         cfg_.front_right_wheel_name = info_.hardware_parameters["front_right_wheel_name"];
 
         cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
-        cfg_.device = info_.hardware_parameters["device"];
+        cfg_.device = info_.hardware_parameters["dev"];
         cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
         cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
         cfg_.enc_counts_per_rev = std::stoi(info_.hardware_parameters["enc_counts_per_rev"]);
@@ -161,7 +163,7 @@ namespace crobot_hardware
         ));
 
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            "deadwheel_odom", "deadwheel_odom_th", &deadwheels.pos_th
+            "deadwheel_odom", "deadwheel_odom_heading", &deadwheels.pos_th
         ));
 
         return state_interfaces;
@@ -172,16 +174,16 @@ namespace crobot_hardware
         std::vector<hardware_interface::CommandInterface> command_interfaces;
 
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
-            wheel_back_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_left.vel));
+            wheel_back_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_left.cmd));
 
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
-            wheel_back_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_right.vel));
+            wheel_back_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_back_right.cmd));
 
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
-            wheel_front_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_left.vel));
+            wheel_front_left.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_left.cmd));
 
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
-            wheel_front_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_right.vel));
+            wheel_front_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_right.cmd));
 
         return command_interfaces;
     }
@@ -195,6 +197,7 @@ namespace crobot_hardware
         {
             comms_.disconnect();
         }
+        RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Attempting to connect to device %s...", cfg_.device.c_str());
         comms_.connect(cfg_.device, cfg_.timeout_ms);
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Successfully configured!");
 
@@ -243,15 +246,34 @@ namespace crobot_hardware
     }
 
     hardware_interface::return_type CrobotHardware::read(
-        const rclcpp::Time &, const rclcpp::Duration & period
+        const rclcpp::Time &, const rclcpp::Duration & /* period */
     )
     {
+        static char read_buff[100];
+
         if (!comms_.connected())
         {
+            RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"), "Hardware not connected!");
             return hardware_interface::return_type::ERROR;
         }
 
+        std::string s(read_buff);
+
         // read encoder values
+        std::size_t n = comms_.readBytes(read_buff, 100);
+        RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Read %ld bytes: %s", n, s.c_str());
+
+        json j = json::parse(s, nullptr, false);
+
+        if (!j.is_discarded())
+        {
+            deadwheels.pos_x = j["deadwheel_stats"]["x"];
+            deadwheels.pos_y = j["deadwheel_stats"]["y"];
+            deadwheels.pos_th = j["deadwheel_stats"]["heading"];
+            start_led = j["start_led"];
+        } else {
+            RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Could not parse message!");
+        }
 
         return hardware_interface::return_type::OK;
     }
@@ -262,10 +284,29 @@ namespace crobot_hardware
     {
         if (!comms_.connected())
         {
+            RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"), "Hardware not connected!");
             return hardware_interface::return_type::ERROR;
         }
 
-        // write motor speeds
+        json j;
+
+        j["motor_speeds"] = {
+            wheel_front_right.cmd,
+            wheel_front_left.cmd,
+            wheel_back_right.cmd,
+            wheel_back_left.cmd
+        };
+
+        j["lower_beacon"] = lower_beacon;
+        j["run"] = run;
+        j["bin_intake"] = bin_intake;
+
+        std::string s = j.dump();
+        // std::string s = "hello!\n";
+
+        comms_.writeBytes(s.c_str(), s.size());
+        
+        RCLCPP_INFO(rclcpp::get_logger("(CrobotHardware)"), "Sent Data: %s", s.c_str());
 
         return hardware_interface::return_type::OK;
     }
