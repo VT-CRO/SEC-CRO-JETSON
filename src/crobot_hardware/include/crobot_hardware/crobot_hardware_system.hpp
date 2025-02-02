@@ -29,14 +29,22 @@
 #include "rclcpp/time.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
-#include "crobot_hardware/visibility_control.h"
+#include <nlohmann/json.hpp>
 
-#include "crobot_hardware/serial_comm.hpp"
+#include "crobot_hardware/visibility_control.h"
 #include "crobot_hardware/wheel.hpp"
 #include "crobot_hardware/deadwheel_odom.hpp"
+#include "crobot_hardware/serial_comm.hpp"
 
 namespace crobot_hardware
 {
+
+typedef enum {
+  BIN_STOP = 0,
+  BIN_INGEST = 1,
+  BIN_EJECT = 3
+} bin_intake_state_t;
+
 class CrobotHardware : public hardware_interface::SystemInterface
 {
 
@@ -105,7 +113,18 @@ private:
   Wheel wheel_front_left;
   Wheel wheel_front_right;
 
+  double wheel_bl;
+  double wheel_br;
+  double wheel_fl;
+  double wheel_fr;
+
   DeadWheelOdom deadwheels;
+
+  bool bin_intake = false;
+  bool lower_beacon = false;
+  bool run = false;
+  bin_intake_state_t start_led = BIN_STOP;
+
 };
 
 }  // namespace CROBOT_HARDWARE

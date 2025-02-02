@@ -85,7 +85,7 @@ namespace crobot_controller
             REAR_LEFT = 3
         };
 
-        enum DeadWheelIndex :  std::size_t
+        enum DeadWheelIndex : std::size_t
         {
             DEADWHEEL_X = 0,
             DEADWHEEL_Y = 1,
