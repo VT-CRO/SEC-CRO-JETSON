@@ -34,7 +34,12 @@ Navigate to the workspace folder and run the following commands
 $ sudo apt update
 $ source install/setup.bash
 $ rosdep update
-$ rosdep --install-from-paths src -y --ignore-src
+$ rosdep install-from-paths src -y --ignore-src -r
+
+```
+### How to build 
+```
+$ colcon build --continue-on-error
 ```
 
 ### How to Run
