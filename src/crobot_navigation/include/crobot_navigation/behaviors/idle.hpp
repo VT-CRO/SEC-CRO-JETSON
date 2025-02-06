@@ -5,6 +5,8 @@
 #include "std_msgs/msg/bool.hpp"
 
 #include "behaviortree_cpp/behavior_tree.h"
+#include "control_msgs/msg/dynamic_interface_group_values.hpp"
+#include "control_msgs/msg/interface_value.hpp"
 
 class IdleBehavior : public BT::SyncActionNode
 {
@@ -14,12 +16,15 @@ class IdleBehavior : public BT::SyncActionNode
         BT::NodeStatus tick() override;
 
     private:
+        using DynamicInterface = control_msgs::msg::DynamicInterfaceGroupValues;
+        using InterfaceValue = control_msgs::msg::InterfaceValue;
+
+        rclcpp::Publisher<DynamicInterface>::SharedPtr publisher_;
         using BoolMsg = std_msgs::msg::Bool;
          
         rclcpp::Node::SharedPtr node_ptr_;
-        rclcpp::TimerBase::SharedPtr timer_;
 
-        bool _isIdle;
+        // bool val;
 };
 
 #endif

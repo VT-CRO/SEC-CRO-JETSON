@@ -13,8 +13,16 @@ StartBehavior::StartBehavior(const std::string& name, const BT::NodeConfig& conf
 IdleBehavior::tick()
 {
     // publish false
-	BoolMsg msg;
-	msg.data = false;
-	publisher_->publish(msg);
-	return BT::NodeStatus::RUNNING;
+	auto msg = DynamicInterface();
+    msg.interface_groups = {"crobot_systems"};
+
+    auto interface = InterfaceValue();
+    interface.interface_names = {"robot_start"};
+
+	interface.values = {0};
+    msg.interface_values = {interface};
+
+    publisher_-> publish(msg);
+
+    return BT::NodeStatus::SUCCESS;
 }
