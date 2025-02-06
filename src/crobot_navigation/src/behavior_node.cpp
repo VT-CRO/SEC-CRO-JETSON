@@ -3,6 +3,7 @@
 
 #include "crobot_navigation/behaviors/go_to_position.hpp"
 #include "crobot_navigation/behaviors/start.hpp"
+#include "crobot_navigation/behaviors/set_beacon.hpp"
 
 using namespace std::chrono_literals;
 
@@ -47,8 +48,15 @@ void BehaviorNode::create_behavior_tree()
             return std::make_unique<GoToPose>(name, config, shared_from_this());
         };
 
+    BT::NodeBuilder set_beacon_builder = 
+        [=](const std::string &name, const BT::NodeConfiguration &config)
+        {
+            return std::make_unique<SetBeacon>(name, config, shared_from_this());
+        };
+
     factory.registerBuilder<StartBehavior>("Start", start_builder);
     factory.registerBuilder<GoToPose>("GoToPose", go_to_pose_builder);
+    factory.registerBuilder<GoToPose>("SetBeacon", set_beacon_builder);
 
     tree_ = factory.createTreeFromFile(bt_xml_dir + "/bt_default.xml");
 }
