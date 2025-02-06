@@ -17,7 +17,7 @@ IdleBehavior::tick()
     msg.interface_groups = {"crobot_systems"};
 
     auto interface = InterfaceValue();
-    interface.interface_names = {"robot_start"};
+    interface.interface_names = {"start_robot"};
 
 	interface.values = {0};
     msg.interface_values = {interface};
