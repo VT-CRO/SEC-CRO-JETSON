@@ -85,3 +85,7 @@ int SerialComm::readBytes(char * buff, int numBytes) {
         return -1;
     }
 }
+
+void SerialComm::flush() {
+    tcflush(fd, TCIOFLUSH);
+}

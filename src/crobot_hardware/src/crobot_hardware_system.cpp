@@ -198,7 +198,9 @@ namespace crobot_hardware
             comms_.disconnect();
         }
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Attempting to connect to device %s...", cfg_.device.c_str());
+        
         comms_.connect(cfg_.device, cfg_.timeout_ms);
+        comms_.flush();
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Successfully configured!");
 
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -257,23 +259,23 @@ namespace crobot_hardware
             return hardware_interface::return_type::ERROR;
         }
 
-        std::string s(read_buff);
-
-        // read encoder values
+        // // read encoder values
         std::size_t n = comms_.readBytes(read_buff, 100);
+        // comms_.flush();
+        std::string s(read_buff);
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Read %ld bytes: %s", n, s.c_str());
 
-        json j = json::parse(s, nullptr, false);
+        // json j = json::parse(s, nullptr, false);
 
-        if (!j.is_discarded())
-        {
-            deadwheels.pos_x = j["deadwheel_stats"]["x"];
-            deadwheels.pos_y = j["deadwheel_stats"]["y"];
-            deadwheels.pos_th = j["deadwheel_stats"]["heading"];
-            start_led = j["start_led"];
-        } else {
-            RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Could not parse message!");
-        }
+        // if (!j.is_discarded())
+        // {
+        //     deadwheels.pos_x = j["deadwheel_stats"]["x"];
+        //     deadwheels.pos_y = j["deadwheel_stats"]["y"];
+        //     deadwheels.pos_th = j["deadwheel_stats"]["heading"];
+        //     start_led = j["start_led"];
+        // } else {
+        //     RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Could not parse message!");
+        // }
 
         return hardware_interface::return_type::OK;
     }
@@ -288,25 +290,25 @@ namespace crobot_hardware
             return hardware_interface::return_type::ERROR;
         }
 
-        json j;
+        // json j;
 
-        j["motor_speeds"] = {
-            wheel_front_right.cmd,
-            wheel_front_left.cmd,
-            wheel_back_right.cmd,
-            wheel_back_left.cmd
-        };
+        // j["motor_speeds"] = {
+        //     wheel_front_right.cmd,
+        //     wheel_front_left.cmd,
+        //     wheel_back_right.cmd,
+        //     wheel_back_left.cmd
+        // };
 
-        j["lower_beacon"] = lower_beacon;
-        j["run"] = run;
-        j["bin_intake"] = bin_intake;
+        // j["lower_beacon"] = lower_beacon;
+        // j["run"] = run;
+        // j["bin_intake"] = bin_intake;
 
-        std::string s = j.dump();
-        // std::string s = "hello!\n";
+        // std::string s = j.dump();
+        std::string s = "hello!\n";
 
         comms_.writeBytes(s.c_str(), s.size());
         
-        RCLCPP_INFO(rclcpp::get_logger("(CrobotHardware)"), "Sent Data: %s", s.c_str());
+        // RCLCPP_INFO(rclcpp::get_logger("(CrobotHardware)"), "Sent Data: %s", s.c_str());
 
         return hardware_interface::return_type::OK;
     }

@@ -22,6 +22,8 @@ public:
 
   int readBytes(char * buff, int numBytes);
 
+  void flush();
+
 private:
   int fd;
   int timeout_ms_;
