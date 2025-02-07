@@ -11,6 +11,11 @@ class SetBeacon : public BT::SyncActionNode
 public:
   SetBeacon(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr);
 
+  static BT::PortsList providedPorts()
+  {
+    return { BT::InputPort<std::string>("setBeacon")};
+  }
+
   // You must override the virtual function tick()
   BT::NodeStatus tick() override;
 
@@ -20,7 +25,7 @@ private:
 
   rclcpp::Publisher<DynamicInterface>::SharedPtr publisher_;
 
-  float val;
+  float val;  // Ensure val is declared as float
 
   rclcpp::Node::SharedPtr node_ptr_;
 

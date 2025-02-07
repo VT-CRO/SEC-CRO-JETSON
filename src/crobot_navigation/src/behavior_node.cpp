@@ -56,7 +56,7 @@ void BehaviorNode::create_behavior_tree()
 
     factory.registerBuilder<StartBehavior>("Start", start_builder);
     factory.registerBuilder<GoToPose>("GoToPose", go_to_pose_builder);
-    factory.registerBuilder<GoToPose>("SetBeacon", set_beacon_builder);
+    factory.registerBuilder<SetBeacon>("SetBeacon", set_beacon_builder);
 
     tree_ = factory.createTreeFromFile(bt_xml_dir + "/bt_default.xml");
 }
