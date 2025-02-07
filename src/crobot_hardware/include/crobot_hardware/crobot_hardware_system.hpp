@@ -40,6 +40,11 @@ namespace crobot_hardware
 {
 
 typedef enum {
+  REQUEST = 0,
+  WRITE = 1
+} comm_message_t;
+
+typedef enum {
   BIN_STOP = 0,
   BIN_INGEST = 1,
   BIN_EJECT = 3
