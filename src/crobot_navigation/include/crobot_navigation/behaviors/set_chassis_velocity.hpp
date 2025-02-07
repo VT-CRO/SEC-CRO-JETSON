@@ -1,9 +1,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "behaviortree_cpp/behavior_tree.h"
-#include "geometry_msgs/msg/Twist.msg"
-#include "geometry_msgs/Vector3.msg"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 
-using Twist = geometry_msgs::msg::Twist;
+using Twist = geometry_msgs::msg::TwistStamped;
 
 namespace BT {
   template <> inline Twist convertFromString(StringView str) {
@@ -14,15 +13,15 @@ namespace BT {
         }
         else
         {
-            auto linear = Twist::Vector3::linear();
-            auto angular = Twist::Vector3::angular();
+            auto twist = Twist();
 
-            linear.x = convertFromString<double>(parts[0]);
-            linear.y = convertFromString<double>(parts[1]);
 
-            angular.z = convertFromString<double>(parts[2]);
+            twist.twist.linear.x = convertFromString<double>(parts[0]);
+            twist.twist.linear.y = convertFromString<double>(parts[1]);
 
-            return ;
+            twist.twist.angular.z = convertFromString<double>(parts[2]);
+
+            return twist;
         }
   }
 }
@@ -34,7 +33,9 @@ class SetChassisVelocity : public BT::SyncActionNode
 public:
   SetChassisVelocity(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr);
 
-  static PortsList providedPorts();
+  static BT::PortsList providedPorts() {
+    return { BT::InputPort<Twist>("target") };
+  }
 
   // You must override the virtual function tick()
   BT::NodeStatus tick() override;

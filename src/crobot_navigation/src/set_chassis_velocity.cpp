@@ -1,21 +1,21 @@
 #include "crobot_navigation/behaviors/set_chassis_velocity.hpp"
 
-SetChassisVelocity(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr):
-        BT::SyncActionNode(name, {}),
+SetChassisVelocity::SetChassisVelocity(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr):
+        BT::SyncActionNode(name, {config}),
         node_ptr_(node_ptr)
 {
-
-}
-
-static PortsList SetChassisVelocity::providedPorts() {
-    return { InputPort<Twist>("target") };
+    publisher_ = node_ptr_-> create_publisher<Twist>("/crobot_drive_controller/cmd_vel_stamped", 10);
 }
 
 BT::NodeStatus SetChassisVelocity::tick() 
 {
     
-    
+    auto res = getInput<Twist>("target");
 
+    if ( !res ) {
+        throw BT::RuntimeError("error reading port [target]: ", res.error());
+    } 
+    publisher_->publish(res.value());
 
     return BT::NodeStatus::SUCCESS;
 }
