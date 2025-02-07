@@ -15,6 +15,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   yaml-cpp
   tf2
   tf2_geometry_msgs
+  control_msgs
 )
 
 # find dependencies
@@ -30,6 +31,8 @@ add_executable(crobot_navigation_node
   src/behavior_node.cpp 
   src/go_to_position.cpp
   src/start.cpp
+  src/set_beacon.cpp
+  src/set_chassis_velocity.cpp
 )
 ament_target_dependencies(crobot_navigation_node ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_link_libraries(crobot_navigation_node ${YAML_CPP_LIBRARIES})
@@ -47,7 +50,7 @@ if(BUILD_TESTING)
 endif()
 
 install(
-  DIRECTORY tree launch config maps
+  DIRECTORY tree launch config 
   DESTINATION share/${PROJECT_NAME}
 )
 
