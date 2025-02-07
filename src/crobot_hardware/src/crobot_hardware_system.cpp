@@ -272,7 +272,7 @@ namespace crobot_hardware
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Read %ld bytes: %s", n, s.c_str());
         comms_.flush();
 
-        json j = json::parse(s, nullptr, false);
+        j = json::parse(s, nullptr, false);
 
         if (!j.is_discarded())
         {
