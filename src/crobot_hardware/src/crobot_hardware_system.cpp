@@ -166,6 +166,10 @@ namespace crobot_hardware
             "deadwheel_odom", "deadwheel_odom_heading", &deadwheels.pos_th
         ));
 
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            "crobot_systems", "start_led", &start_led
+        ));
+
         return state_interfaces;
     }
 
@@ -184,6 +188,18 @@ namespace crobot_hardware
 
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
             wheel_front_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_right.cmd));
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            "crobot_systems", "bin_intake", &bin_intake
+        ));
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            "crobot_systems", "beacon", &lower_beacon
+        ));
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            "crobot_systems", "start_robot", &run
+        ));
 
         return command_interfaces;
     }

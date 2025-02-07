@@ -62,6 +62,15 @@
                 <state_interface name="deadwheel_odom_y"/>
                 <state_interface name="deadwheel_odom_heading"/>
             </sensor>
+
+            <gpio name="crobot_systems">
+                <command_interface name="bin_intake"/>
+                <command_interface name="beacon"/>
+                <command_interface name="start_robot"/>
+                <state_interface name="start_led">
+                    <param name="initial_value">0.0</param>
+                </state_interface>
+            </gpio>
         </ros2_control>
     </xacro:unless>
 

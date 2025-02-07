@@ -125,10 +125,10 @@ private:
 
   DeadWheelOdom deadwheels;
 
-  bool bin_intake = false;
-  bool lower_beacon = false;
-  bool run = false;
-  bin_intake_state_t start_led = BIN_STOP;
+  double bin_intake = 0;
+  double lower_beacon = 0;
+  double run = 0;
+  double start_led = 0;
 
 };
 
