@@ -198,7 +198,9 @@ namespace crobot_hardware
             comms_.disconnect();
         }
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Attempting to connect to device %s...", cfg_.device.c_str());
+        
         comms_.connect(cfg_.device, cfg_.timeout_ms);
+        comms_.flush();
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Successfully configured!");
 
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -257,11 +259,18 @@ namespace crobot_hardware
             return hardware_interface::return_type::ERROR;
         }
 
-        std::string s(read_buff);
+        json j;
+        j["header"]["message_type"] = REQUEST;
+
+        std::string req = j.dump();
+
+        comms_.writeBytes(req.c_str(), req.size());
 
         // read encoder values
         std::size_t n = comms_.readBytes(read_buff, 100);
+        std::string s(read_buff);
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Read %ld bytes: %s", n, s.c_str());
+        comms_.flush();
 
         json j = json::parse(s, nullptr, false);
 
@@ -289,6 +298,7 @@ namespace crobot_hardware
         }
 
         json j;
+        j["header"]["message_type"] = WRITE;
 
         j["motor_speeds"] = {
             wheel_front_right.cmd,
@@ -302,7 +312,6 @@ namespace crobot_hardware
         j["bin_intake"] = bin_intake;
 
         std::string s = j.dump();
-        // std::string s = "hello!\n";
 
         comms_.writeBytes(s.c_str(), s.size());
         
