@@ -14,6 +14,8 @@ StartBehavior::StartBehavior(const std::string &name, const BT::NodeConfig& conf
 
     RCLCPP_INFO(node_ptr_->get_logger(), "Created subscriber.");
 
+    publisher_ = node_ptr_-> create_publisher<DynamicInterface>("/gpio_controller/commands", 10);
+
     _shouldStart = false;
 }
 
@@ -35,6 +37,18 @@ BT::NodeStatus StartBehavior::onRunning()
 {
     if (_shouldStart) {
         timer_->cancel();
+
+        auto msg = DynamicInterface();
+        msg.interface_groups = {"crobot_systems"};
+
+        auto interface = InterfaceValue();
+        interface.interface_names = {"start_robott"};
+
+        interface.values = {1};
+        msg.interface_values = {interface};
+
+        publisher_-> publish(msg);
+
         RCLCPP_INFO(node_ptr_->get_logger(), "Starting routine...");
         return BT::NodeStatus::SUCCESS;
     } else {
