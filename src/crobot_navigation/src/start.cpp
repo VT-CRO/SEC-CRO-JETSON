@@ -14,14 +14,14 @@ StartBehavior::StartBehavior(const std::string &name, const BT::NodeConfig& conf
 
     RCLCPP_INFO(node_ptr_->get_logger(), "Created subscriber.");
 
-    publisher_ = node_ptr_-> create_publisher<DynamicInterface>("/gpio_controller/commands", 10);
+    publisher_ = node_ptr_->create_publisher<DynamicInterface>("/gpio_controller/commands", 10);
 
     _shouldStart = false;
 }
 
 BT::NodeStatus StartBehavior::onStart()
 {
-     const auto timer_period = std::chrono::seconds(5);
+     const auto timer_period = std::chrono::seconds(10);
 
     timer_ = node_ptr_->create_wall_timer(
         timer_period,
@@ -42,14 +42,20 @@ BT::NodeStatus StartBehavior::onRunning()
         msg.interface_groups = {"crobot_systems"};
 
         auto interface = InterfaceValue();
-        interface.interface_names = {"start_robott"};
+        interface.interface_names = {"start_robot"};
 
-        interface.values = {1};
+        interface.values = {1.0};
         msg.interface_values = {interface};
+
+        RCLCPP_INFO(node_ptr_->get_logger(), "Publishing: Group: %s, Interface: %s, Value: %f",
+            msg.interface_groups[0].c_str(),
+            interface.interface_names[0].c_str(),
+            interface.values[0]);
 
         publisher_-> publish(msg);
 
         RCLCPP_INFO(node_ptr_->get_logger(), "Starting routine...");
+        rclcpp::sleep_for(std::chrono::milliseconds(50)); // Give ROS time to process
         return BT::NodeStatus::SUCCESS;
     } else {
         return BT::NodeStatus::RUNNING;
