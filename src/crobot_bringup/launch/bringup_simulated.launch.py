@@ -17,8 +17,8 @@ def generate_launch_description():
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            os.path.join(get_package_share_directory('crobot_gazebo'), 'launch', 'launch_sim.launch.py'
-        )]),
+            os.path.join(get_package_share_directory('crobot_gazebo'), 'launch', 'launch_sim.launch.py')
+        ]),
         launch_arguments={
             'use_sim_time': 'true',
             'world': os.path.join(
@@ -59,9 +59,28 @@ def generate_launch_description():
         ]
     )
 
+    # Add the apriltag_ros node here
+    apriltag_node = Node(
+        package='apriltag_ros',
+        executable='apriltag_node',
+        name='apriltag_node',
+        output='screen',
+        remappings=[
+            ('/image_rect', '/camera/image_raw'),
+            ('/camera_info', '/camera/camera_info')
+        ],
+        parameters=[{
+            'tags_36h11': os.path.join(
+                get_package_share_directory('apriltag_ros'),
+                'cfg', 'tags_36h11.yaml'
+            )
+        }]
+    )
+
     return LaunchDescription([
         gazebo,
         slam,
         nav,
-        twist_mux
+        twist_mux,
+        apriltag_node  # Add apriltag node to launch description
     ])
