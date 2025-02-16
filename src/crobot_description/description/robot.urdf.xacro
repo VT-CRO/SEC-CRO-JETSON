@@ -5,7 +5,7 @@
     <xacro:arg name="sim_mode" default="false"/>
 
     <xacro:include filename="robot_core.xacro"/>
-    <!-- <xacro:include filename="drivetrain/robot.urdf"/> -->
+    <xacro:include filename="depth_camera.xacro"/>
 
     <xacro:if value="$(arg use_ros2_control)">
         <xacro:include filename="ros2_control.xacro"/>
@@ -13,7 +13,5 @@
     <xacro:unless value="$(arg use_ros2_control)">
         <xacro:include filename="gazebo_control.xacro"/>
     </xacro:unless>
-
-    <xacro:include filename="depth_camera.xacro"/>
 
 </robot>

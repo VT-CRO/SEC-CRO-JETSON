@@ -11,7 +11,7 @@
                 <param name="front_right_wheel_name">front_right_wheel_joint</param>
                 <param name="back_right_wheel_name">back_right_wheel_joint</param>
                 <param name="loop_rate">30.0</param>
-                <param name="dev">/dev/ttyACM0</param>
+                <param name="dev">/dev/ttyTHS1</param>
                 <param name="baud_rate">57600</param>
                 <param name="timeout_ms">1000</param>
                 <param name="enc_counts_per_rev">3450</param>
@@ -60,8 +60,17 @@
             <sensor name="deadwheel_odom">
                 <state_interface name="deadwheel_odom_x"/>
                 <state_interface name="deadwheel_odom_y"/>
-                <state_interface name="deadwheel_odom_th"/>
+                <state_interface name="deadwheel_odom_heading"/>
             </sensor>
+
+            <gpio name="crobot_systems">
+                <command_interface name="bin_intake"/>
+                <command_interface name="beacon"/>
+                <command_interface name="start_robot"/>
+                <state_interface name="start_led">
+                    <param name="initial_value">0.0</param>
+                </state_interface>
+            </gpio>
         </ros2_control>
     </xacro:unless>
 

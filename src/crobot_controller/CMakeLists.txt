@@ -18,6 +18,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   realtime_tools
   tf2
   tf2_msgs
+  tf2_geometry_msgs
 )
 
 find_package(ament_cmake REQUIRED)
@@ -27,12 +28,12 @@ endforeach()
 add_compile_definitions(RCPPUTILS_VERSION_MAJOR=${rcpputils_VERSION_MAJOR})
 add_compile_definitions(RCPPUTILS_VERSION_MINOR=${rcpputils_VERSION_MINOR})
 
-generate_parameter_library(crobot_controller_parameters
-  src/crobot_controller_parameters.yaml
+generate_parameter_library(crobot_drive_controller_parameters
+  src/crobot_drive_controller_parameters.yaml
 )
 
 add_library(crobot_controller SHARED
-  src/crobot_controller.cpp
+  src/crobot_drive_controller.cpp
   src/odometry.cpp
 )
 target_compile_features(crobot_controller PUBLIC cxx_std_17)
@@ -40,7 +41,7 @@ target_include_directories(crobot_controller PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/crobot_controller>
 )
-target_link_libraries(crobot_controller PUBLIC crobot_controller_parameters)
+target_link_libraries(crobot_controller PUBLIC crobot_drive_controller_parameters)
 ament_target_dependencies(crobot_controller PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_compile_definitions(crobot_controller PRIVATE "CROBOT_CONTROL_BUILDING_DLL")
 pluginlib_export_plugin_description_file(controller_interface crobot_controller_plugin.xml)
@@ -67,7 +68,7 @@ install(
   DESTINATION include/crobot_controller
 )
 
-install(TARGETS crobot_controller crobot_controller_parameters
+install(TARGETS crobot_controller crobot_drive_controller_parameters
   EXPORT export_crobot_controller
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib

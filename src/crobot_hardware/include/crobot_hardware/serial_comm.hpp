@@ -18,9 +18,11 @@ public:
 
   bool connected() const;
 
-  void writeBytes(const uint8_t* bytes, int numBytes);
+  void writeBytes(const char* bytes, int numBytes);
 
-  int readBytes(uint8_t * buff, int numBytes);
+  int readBytes(char * buff, int numBytes);
+
+  void flush();
 
 private:
   int fd;

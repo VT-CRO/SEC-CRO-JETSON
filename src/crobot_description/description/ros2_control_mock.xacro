@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="https://www.ros.org/wiki/xacro">
+
+    <ros2_control name="Crobot" type="system">
+        <hardware>
+            <plugin>mock_components/GenericSystem</plugin>
+            
+            <param name="calculate_dynamics">true</param>
+            <param name="custom_interface_with_following_offset"></param>
+            <param name="disable_commands">false</param>
+            <param name="mock_gpio_commands">false</param>
+            <param name="mock_sensor_commands">false</param>
+            <param name="position_state_following_offset">0.0</param>
+        </hardware>
+
+        <joint name="front_left_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <joint name="front_right_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <joint name="back_left_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <joint name="back_right_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <sensor name="deadwheel_odom">
+            <state_interface name="deadwheel_odom_x"/>
+            <state_interface name="deadwheel_odom_y"/>
+            <state_interface name="deadwheel_odom_heading"/>
+        </sensor>
+
+        <gpio name="crobot_systems">
+            <command_interface name="bin_intake"/>
+            <command_interface name="beacon"/>
+            <command_interface name="start_robot"/>
+            <state_interface name="start_led">
+                <param name="initial_value">0.0</param>
+            </state_interface>
+        </gpio>
+    </ros2_control>
+   
+</robot>

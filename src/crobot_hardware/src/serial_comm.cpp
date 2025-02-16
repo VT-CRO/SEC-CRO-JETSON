@@ -45,8 +45,8 @@ void SerialComm::connect(const std::string &serial_device, int32_t)
     port_options.c_cc[VMIN]  = VMIN;       // Read at least 1 character
     port_options.c_cc[VTIME] = 0;           // Wait indefinetly
 
-    cfsetispeed(&port_options, 115200);    // Set Read  Speed
-    cfsetospeed(&port_options, 115200);    // Set Write Speed
+    cfsetispeed(&port_options, B115200);    // Set Read  Speed
+    cfsetospeed(&port_options, B115200);    // Set Write Speed
 
     int att = tcsetattr(fd, TCSANOW, &port_options);
 
@@ -72,16 +72,20 @@ bool SerialComm::connected() const
 }
 
 
-void SerialComm::writeBytes(const uint8_t* bytes, int numBytes) {
+void SerialComm::writeBytes(const char* bytes, int numBytes) {
     if (connected()) {
         write(fd, bytes, numBytes);
     }
 }
 
-int SerialComm::readBytes(uint8_t * buff, int numBytes) {
+int SerialComm::readBytes(char * buff, int numBytes) {
     if (connected()) {
         return read(fd, buff, numBytes);
     } else {
         return -1;
     }
+}
+
+void SerialComm::flush() {
+    tcflush(fd, TCIOFLUSH);
 }

@@ -2,6 +2,9 @@
 #include <behaviortree_ros2/bt_action_node.hpp>
 
 #include "crobot_navigation/behaviors/go_to_position.hpp"
+#include "crobot_navigation/behaviors/start.hpp"
+#include "crobot_navigation/behaviors/set_beacon.hpp"
+#include "crobot_navigation/behaviors/set_chassis_velocity.hpp"
 
 using namespace std::chrono_literals;
 
@@ -34,14 +37,34 @@ void BehaviorNode::create_behavior_tree()
 {
     BT::BehaviorTreeFactory factory;
 
-    auto node = std::make_shared<rclcpp::Node>("navigate_to_pose_action_client");
-    BT::RosNodeParams params;
-    params.nh = node;
-    params.default_port_value = "navigate_to_pose";
-    params.server_timeout = 3000ms;
-    params.wait_for_server_timeout = 3000ms;
+    BT::NodeBuilder start_builder = 
+        [=](const std::string &name, const BT::NodeConfiguration &config)
+        {
+            return std::make_unique<StartBehavior>(name, config, shared_from_this());
+        };
 
-    factory.registerNodeType<GoToPosition>("GoToPosition", params);
+    BT::NodeBuilder go_to_pose_builder = 
+        [=](const std::string &name, const BT::NodeConfiguration &config)
+        {
+            return std::make_unique<GoToPose>(name, config, shared_from_this());
+        };
+
+    BT::NodeBuilder set_beacon_builder = 
+        [=](const std::string &name, const BT::NodeConfiguration &config)
+        {
+            return std::make_unique<SetBeacon>(name, config, shared_from_this());
+        };
+
+    BT::NodeBuilder set_chassis_velocity_builder = 
+        [=](const std::string &name, const BT::NodeConfiguration &config)
+        {
+            return std::make_unique<SetChassisVelocity>(name, config, shared_from_this());
+        };
+
+    factory.registerBuilder<StartBehavior>("Start", start_builder);
+    factory.registerBuilder<GoToPose>("GoToPose", go_to_pose_builder);
+    factory.registerBuilder<SetBeacon>("SetBeacon", set_beacon_builder);
+    factory.registerBuilder<SetChassisVelocity>("SetChassisVelocity", set_chassis_velocity_builder);
 
     tree_ = factory.createTreeFromFile(bt_xml_dir + "/bt_default.xml");
 }
@@ -61,6 +84,8 @@ void BehaviorNode::update_behavior_tree()
         RCLCPP_INFO(this->get_logger(), "Navigation Failed");
         // timer_->cancel();
     }
+
+    RCLCPP_INFO(this->get_logger(), "Ticked once");
 }
 
 int main(int argc, char **argv)

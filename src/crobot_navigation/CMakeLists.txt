@@ -8,12 +8,14 @@ endif()
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_action
+  rclcpp_components
   nav2_msgs
   behaviortree_cpp
   behaviortree_ros2
   yaml-cpp
   tf2
   tf2_geometry_msgs
+  control_msgs
 )
 
 # find dependencies
@@ -25,7 +27,13 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
 endforeach()
 
 include_directories(include)
-add_executable(crobot_navigation_node src/behavior_node.cpp src/go_to_position.cpp)
+add_executable(crobot_navigation_node 
+  src/behavior_node.cpp 
+  src/go_to_position.cpp
+  src/start.cpp
+  src/set_beacon.cpp
+  src/set_chassis_velocity.cpp
+)
 ament_target_dependencies(crobot_navigation_node ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_link_libraries(crobot_navigation_node ${YAML_CPP_LIBRARIES})
 
@@ -42,7 +50,7 @@ if(BUILD_TESTING)
 endif()
 
 install(
-  DIRECTORY tree launch config
+  DIRECTORY tree launch config 
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -54,6 +62,5 @@ install(
 install(TARGETS crobot_navigation_node
   DESTINATION lib/${PROJECT_NAME}
 )
-
 
 ament_package()

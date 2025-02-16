@@ -1,10 +1,16 @@
 <root BTCPP_format="4" >
     <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
-            <GoToPosition   name="navigate_to_pose_action_client" goal_pose="2;2;0"/>
-            <GoToPosition   name="navigate_to_pose_action_client" goal_pose="2;-2;0"/>
-            <GoToPosition   name="navigate_to_pose_action_client" goal_pose="-2;-2;0"/>
-            <GoToPosition   name="navigate_to_pose_action_client" goal_pose="-2;2;0"/>
+            <Start name="start"/>
+            <SetBeacon   name="setBeacon" setBeacon="true"/>
+            <SetChassisVelocity name="set_vel" target="0;0;0"/>
+            <!-- <GoToPose   name="navigate_to_pose_action_client1" goalPose="2;2;0"/> -->
+            
+            <!-- <Start      name="start"/>
+            
+            <GoToPose   name="navigate_to_pose_action_client2" goalPose="2;-2;0"/>
+            <GoToPose   name="navigate_to_pose_action_client3" goalPose="-2;-2;0"/>
+            <GoToPose   name="navigate_to_pose_action_client4" goalPose="-2;2;0"/> -->
         </Sequence>
     </BehaviorTree>
 </root>

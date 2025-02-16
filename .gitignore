@@ -1,6 +1,8 @@
 *.pyc
 *.iml
 *.swp
+*.mdf
+*.ldf
 .project
 .pydevproject
 .DS_Store

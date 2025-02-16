@@ -1,5 +1,5 @@
 <library path="crobot_controller">
-    <class name="crobot_controller/CrobotController" type="crobot_controller::CrobotController" base_class_type="controller_interface::ControllerInterface">
+    <class name="crobot_controller/CrobotDriveController" type="crobot_controller::CrobotDriveController" base_class_type="controller_interface::ControllerInterface">
         <description>
             The crobot drive controller
         </description>
