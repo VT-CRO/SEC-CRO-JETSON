@@ -3,77 +3,44 @@
 
 #include <cmath>
 
-#include "rclcpp/time.hpp"
-// \note The versions conditioning is added here to support the source-compatibility with Humble
-#if RCPPUTILS_VERSION_MAJOR >= 2 && RCPPUTILS_VERSION_MINOR >= 6
-#include "rcpputils/rolling_mean_accumulator.hpp"
-#else
-#include "rcppmath/rolling_mean_accumulator.hpp"
-#endif
-
 namespace crobot_controller
 {
 class Odometry
 {
 public:
-  explicit Odometry(size_t velocity_rolling_window_size = 10);
+  explicit Odometry();
 
-  void init(const rclcpp::Time & time);
-  bool update(double back_left_pos, double back_right_pos, double front_left_pos, double front_right_pos, const rclcpp::Time & time);
-  bool updateFromVelocity(double back_left_vel, double back_right_vel, double front_left_vel, double front_right_vel, const rclcpp::Time & time);
-  void updateOpenLoop(double linear_x, double linear_y, double angular, const rclcpp::Time & time);
+  bool updatePos(long leftTicks, long rightTicks, long auxTicks long front_left_pos const rclcpp::Time & time);
   void resetOdometry();
 
-  double getX() const { return x_; }
-  double getY() const { return y_; }
-  double getHeading() const { return heading_; }
-  double getLinear() const { return linear_; }
-  double getAngular() const { return angular_; }
-
-  void setWheelParams(double wheel_separation, double back_left_wheel_radius, double back_right_wheel_radius, double front_left_wheel_radius, double front_right_wheel_radius);
-  void setVelocityRollingWindowSize(size_t velocity_rolling_window_size);
+  double getX() const { return _x; }
+  double getY() const { return _y; }
+  double getHeading() const { return _heading; }
 
 private:
-// \note The versions conditioning is added here to support the source-compatibility with Humble
-#if RCPPUTILS_VERSION_MAJOR >= 2 && RCPPUTILS_VERSION_MINOR >= 6
-  using RollingMeanAccumulator = rcpputils::RollingMeanAccumulator<double>;
-#else
-  using RollingMeanAccumulator = rcppmath::RollingMeanAccumulator<double>;
-#endif
+  // Current pos:
+  double _x;        //   [cm]
+  double _y;        //   [cm]
+  double _heading;  //   [rad]
 
-  void integrateRungeKutta2(double linear, double angular);
-  void integrateExact(double linear, double angular);
-  void resetAccumulators();
+  float _PI; //pi
 
-  // Current timestamp:
-  rclcpp::Time timestamp_;
+  float _R; // Odo Wheel Radius [cm]
+  short _N; // Ticks per revolution Encoder Revolution (4096)
+  float _B; // The distance between the midpoints of the left and right wheel and the aux wheel [cm]
+  float _L; // The distance between the center of the left and right wheels [cm]
+  float _CM_PER_TICK; // What the name says [cm]
 
-  // Current pose:
-  double x_;        //   [m]
-  double y_;        //   [m]
-  double heading_;  // [rad]
 
-  // Current velocity:
-  double linear_;   //   [m/s]
-  double angular_;  // [rad/s]
+  // The tick values of each encoder in the current iteration
+  long _currentLeftPosition;
+  long _currentRightPosition;
+  long _currentAuxPosition;
 
-  // Wheel kinematic parameters [m]:
-  double wheel_separation_;
-  double back_left_wheel_radius_;
-  double back_right_wheel_radius_;
-  double front_left_wheel_radius_;
-  double front_right_wheel_radius_;
-
-  // Previous wheel position/state [rad]:
-  double back_left_wheel_old_pos_;
-  double back_right_wheel_old_pos_;
-  double front_left_wheel_old_pos_;
-  double front_right_wheel_old_pos_;
-
-  // Rolling mean accumulators for the linear and angular velocities:
-  size_t velocity_rolling_window_size_;
-  RollingMeanAccumulator linear_accumulator_;
-  RollingMeanAccumulator angular_accumulator_;
+  // The tick values of each encoder from the previous iteration
+  long _prevLeftPosition;
+  long _prevRightPosition;
+  long _prevAuxPosition;
 };
 
 }  // namespace diff_drive_controller
