@@ -1,3 +1,8 @@
 {
-    "cmake.sourceDirectory": "/mnt/c/Users/msoli/Documents/vt-cro/SEC-CRO-JETSON/src/crobot_navigation"
+    "cmake.sourceDirectory": "/mnt/c/Users/msoli/Documents/vt-cro/SEC-CRO-JETSON/src/crobot_navigation",
+    "files.associations": {
+        "*.ejs": "html",
+        "chrono": "cpp",
+        "optional": "cpp"
+    }
 }

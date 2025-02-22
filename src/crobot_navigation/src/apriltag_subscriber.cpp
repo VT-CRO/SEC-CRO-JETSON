@@ -1,24 +1,40 @@
-#include "apriltag_subscriber.hpp"
+#include "crobot_navigation/behaviors/apriltag_subscriber.hpp"
 
-AprilTagSubscriber::AprilTagSubscriber(const std::string& name, const BT::NodeConfiguration& config)
-    : BT::SyncActionNode(name, config), node_(std::make_shared<rclcpp::Node>("april_tag_subscriber"))
-{
-    subscription_ = node_->create_subscription<std_msgs::msg::Int32MultiArray>(
-        "/detections", 10, std::bind(&AprilTagSubscriber::topic_callback, this, std::placeholders::_1));
+AprilTagSubscriberNode::AprilTagSubscriberNode(const std::string &name, const BT::NodeConfiguration &config)
+    : BT::SyncActionNode(name, config), node_(std::make_shared<rclcpp::Node>("apriltag_subscriber")) {
+    
+    subscription_ = node_->create_subscription<apriltag_msgs::msg::AprilTagDetectionArray>(
+        "/detections", 10, std::bind(&AprilTagSubscriberNode::callback, this, std::placeholders::_1));
+    
+    executor_.add_node(node_);
+    spin_thread_ = std::thread([this]() { executor_.spin(); });
 }
 
-BT::PortsList AprilTagSubscriber::providedPorts() {
-    return { BT::OutputPort<std::vector<int>>("detected_ids") };
+AprilTagSubscriberNode::~AprilTagSubscriberNode() {
+    executor_.cancel();
+    if (spin_thread_.joinable()) {
+        spin_thread_.join();
+    }
 }
 
-BT::NodeStatus AprilTagSubscriber::tick() {
-    if (!last_detected_ids_.empty()) {
-        setOutput("detected_ids", last_detected_ids_);
+BT::NodeStatus AprilTagSubscriberNode::tick() {
+    if (!last_detected_id_.has_value()) {
+        return BT::NodeStatus::FAILURE;
+    } else {
+        setOutput("id", last_detected_id_.value());
         return BT::NodeStatus::SUCCESS;
     }
-    return BT::NodeStatus::FAILURE;
 }
 
-void AprilTagSubscriber::topic_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg) {
-    last_detected_ids_ = msg->data;
+BT::PortsList AprilTagSubscriberNode::providedPorts() {
+    return {BT::OutputPort<int>("id")};
 }
+
+void AprilTagSubscriberNode::callback(const apriltag_msgs::msg::AprilTagDetectionArray::SharedPtr msg) {
+    if (!msg->detections.empty()) {
+        last_detected_id_ = msg->detections[0].id;
+        RCLCPP_INFO(node_->get_logger(), "Detected AprilTag ID: %d", last_detected_id_.value());
+    }
+}
+
+

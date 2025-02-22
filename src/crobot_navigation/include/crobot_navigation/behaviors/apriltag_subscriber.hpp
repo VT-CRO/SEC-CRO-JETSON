@@ -2,23 +2,28 @@
 #define APRILTAG_SUBSCRIBER_HPP
 
 #include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/int32_multi_array.hpp>
 #include <behaviortree_cpp/bt_factory.h>
+#include <apriltag_msgs/msg/april_tag_detection_array.hpp>
+#include <optional>
+#include <thread>
 
-class AprilTagSubscriber : public BT::SyncActionNode {
+class AprilTagSubscriberNode : public BT::SyncActionNode {
 public:
-    AprilTagSubscriber(const std::string& name, const BT::NodeConfiguration& config);
-
-    static BT::PortsList providedPorts();
+    AprilTagSubscriberNode(const std::string &name, const BT::NodeConfiguration &config);
+    ~AprilTagSubscriberNode();
 
     BT::NodeStatus tick() override;
 
-private:
-    void topic_callback(const std_msgs::msg::Int32MultiArray::SharedPtr msg);
+    static BT::PortsList providedPorts();
 
-    rclcpp::Node::SharedPtr node_;
-    rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr subscription_;
-    std::vector<int> last_detected_ids_;
+private:
+    void callback(const apriltag_msgs::msg::AprilTagDetectionArray::SharedPtr msg);
+
+    std::shared_ptr<rclcpp::Node> node_;
+    rclcpp::Subscription<apriltag_msgs::msg::AprilTagDetectionArray>::SharedPtr subscription_;
+    rclcpp::executors::SingleThreadedExecutor executor_;
+    std::thread spin_thread_;
+    std::optional<int> last_detected_id_;
 };
 
-#endif // APRILTAG_SUBSCRIBER_HPP
+#endif // APRILTAG_SUBSCRIBER_NODE_HPP
