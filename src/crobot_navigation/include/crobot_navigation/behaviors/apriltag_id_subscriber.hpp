@@ -27,7 +27,7 @@ private:
     thread spin_thread_;
     optional<int> last_detected_id_;
     string positions [5] = {"0.0;0.0;0.0", "1.0;1.0;1.0", "2.0;2.0;2.0", "3.0;3.0;3.0","4.0;4.0;4.0"};
-    boolean detection;
+    bool detection;
 };
 
 #endif // APRILTAG_ID_SUBSCRIBER_NODE_HPP
