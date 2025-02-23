@@ -34,7 +34,7 @@ add_executable(crobot_navigation_node
   src/start.cpp
   src/set_beacon.cpp
   src/set_chassis_velocity.cpp
-  src/apriltag_subscriber.cpp
+  src/apriltag_id_subscriber.cpp
 )
 ament_target_dependencies(crobot_navigation_node ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_link_libraries(crobot_navigation_node ${YAML_CPP_LIBRARIES})
