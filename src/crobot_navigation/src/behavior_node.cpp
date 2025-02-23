@@ -5,6 +5,7 @@
 #include "crobot_navigation/behaviors/start.hpp"
 #include "crobot_navigation/behaviors/set_beacon.hpp"
 #include "crobot_navigation/behaviors/set_chassis_velocity.hpp"
+#include "crobot_navigation/behaviors/apriltag_subscriber.hpp"
 
 using namespace std::chrono_literals;
 
