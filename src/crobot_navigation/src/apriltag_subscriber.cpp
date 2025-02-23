@@ -1,7 +1,7 @@
 #include "crobot_navigation/behaviors/apriltag_subscriber.hpp"
 // using namespace std;
 
-AprilTagSubscriberNode::AprilTagSubscriberNode(const std::string &name, const BT::NodeConfiguration &config, rclcpp:Node::SharedPtr node_ptr))
+AprilTagSubscriberNode::AprilTagSubscriberNode(const std::string &name, const BT::NodeConfiguration &config, rclcpp::Node::SharedPtr node_ptr))
     : BT::SyncActionNode(name, config), node_(std::make_shared<rclcpp::Node>("apriltag_subscriber")), node_ptr(node_ptr) {
     
     subscription_ = node_->create_subscription<apriltag_msgs::msg::AprilTagDetectionArray>(
