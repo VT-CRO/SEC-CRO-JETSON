@@ -7,7 +7,7 @@
 //     _y(0.0),
 //     _heading(0.0),
 
-//     _PI(2.0*acos(0.0));
+//     _PI(2.0*acos(0.0)),
 
 //     _R(1.6),
 //     _N(4096),
@@ -26,7 +26,7 @@
     
 // }
 
-// bool Odometry::updatePos(double back_left_pos, double back_right_pos, double front_left_pos, double front_right_pos, const rclcpp::Time & time)
+// bool Odometry::updatePos(double back_left_pos, double back_right_pos, double front_left_pos, double front_right_pose)
 // {
 //     // TODO
 //     return false;

@@ -10,7 +10,7 @@ class Odometry
 public:
   explicit Odometry();
 
-  bool updatePos(long leftTicks, long rightTicks, long auxTicks long front_left_pos const rclcpp::Time & time);
+  bool updatePos(long leftTicks, long rightTicks, long auxTicks, long front_left_pos);
   void resetOdometry();
 
   double getX() const { return _x; }
