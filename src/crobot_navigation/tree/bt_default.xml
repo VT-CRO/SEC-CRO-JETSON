@@ -4,6 +4,7 @@
             <Start name="start"/>
             <SetBeacon   name="setBeacon" setBeacon="true"/>
             <SetChassisVelocity name="set_vel" target="0;0;0"/>
+            <AprilTagSubscriberID id="{id}" positions="{aprilTagPosition}"/>
         </Sequence>
     </BehaviorTree>
 </root>

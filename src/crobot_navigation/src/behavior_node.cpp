@@ -62,10 +62,17 @@ void BehaviorNode::create_behavior_tree()
             return std::make_unique<SetChassisVelocity>(name, config, shared_from_this());
         };
 
+    BT::NodeBuilder apriltag_id_subscriber_builder = 
+        [=](const std::string &name, const BT::NodeConfiguration &config)
+        {
+            return std::make_unique<AprilTagSubscriberID>(name, config, shared_from_this());
+        };
+
     factory.registerBuilder<StartBehavior>("Start", start_builder);
     factory.registerBuilder<GoToPose>("GoToPose", go_to_pose_builder);
     factory.registerBuilder<SetBeacon>("SetBeacon", set_beacon_builder);
     factory.registerBuilder<SetChassisVelocity>("SetChassisVelocity", set_chassis_velocity_builder);
+    factory.registerBuilder<AprilTagSubscriberID>("AprilTagSubscriberID", apriltag_id_subscriber_builder);
 
     tree_ = factory.createTreeFromFile(bt_xml_dir + "/bt_default.xml");
 }
