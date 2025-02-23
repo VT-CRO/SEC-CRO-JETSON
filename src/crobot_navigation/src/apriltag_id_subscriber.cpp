@@ -19,6 +19,9 @@ AprilTagSubscriberID::~AprilTagSubscriberID() {
 }
 
 BT::NodeStatus AprilTagSubscriberID::tick() {
+    if (!detection) {
+        return BT::NodeStatus::RUNNING;
+    }
     if (!last_detected_id_.has_value()) {
         return BT::NodeStatus::FAILURE;
     } else {
@@ -34,6 +37,7 @@ BT::PortsList AprilTagSubscriberID::providedPorts() {
 
 void AprilTagSubscriberID::callback(const apriltag_msgs::msg::AprilTagDetectionArray::SharedPtr msg) {
     if (!msg->detections.empty()) {
+        detection = true;
         last_detected_id_ = msg->detections[0].id;
         RCLCPP_INFO(node_->get_logger(), "Detected AprilTag ID: %d", last_detected_id_.value());
     }
