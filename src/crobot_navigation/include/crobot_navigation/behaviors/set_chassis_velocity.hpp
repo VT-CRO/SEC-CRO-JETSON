@@ -34,7 +34,7 @@ public:
   SetChassisVelocity(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr);
 
   static BT::PortsList providedPorts() {
-    return { BT::InputPort<Twist>("target"), BT::InputPort<int>("duration_s") };
+    return { BT::InputPort<Twist>("target"), BT::InputPort<double>("duration_s") };
   }
 
   // You must override the virtual function tick()

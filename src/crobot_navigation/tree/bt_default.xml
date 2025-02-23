@@ -4,15 +4,19 @@
             <SequenceWithMemory name="root_sequence">
                 <Start name="start"/>
                 <SetBeacon   name="setBeacon" setBeacon="true"/>
-                <SetChassisVelocity name="set_vel" target="-0.1;0;0" duration_s="3"/>
+                <SetChassisVelocity name="set_vel" target="0.13;0;0" duration_s="2.9"/>
                 <SetBinIntake   name="setBinIntake1" setBinIntake="true"/>
                 <SetBeacon   name="setBeacon" setBeacon="true"/>
-                <SetChassisVelocity name="set_vel" target="0;0.1;0" duration_s="10"/>
+                <SetChassisVelocity name="set_vel" target="0;0.12;0" duration_s="4"/>
                 <SetBinIntake   name="setBinIntake2" setBinIntake="false"/>
                 <SetBeacon   name="setBeacon" setBeacon="false"/>
-                <SetChassisVelocity name="set_vel" target="0;0;0.5" duration_s="3"/>
-                <!-- <SetChassisVelocity name="set_vel" target="0.1;0;0" duration_s="3"/>
-                <SetChassisVelocity name="set_vel" target="0.1;0;0" duration_s="3"/>
+                <SetChassisVelocity name="set_vel" target="0;-0.16;0" duration_s="3"/>
+                <SetChassisVelocity name="set_vel" target="0;0;0.67" duration_s="11"/>
+                <SetChassisVelocity name="set_vel" target="-0.13;0;0" duration_s="2"/>
+                <SetChassisVelocity name="set_vel" target="0;0;0.1" duration_s="1"/>
+                <SetChassisVelocity name="set_vel" target="0;0;0" duration_s="10"/>
+                <!--<SetChassisVelocity name="set_vel" target="0.13;0;0" duration_s="2"/>
+                <SetChassisVelocity name="set_vel" target="-0.1;0;0" duration_s="3"/>
                 <SetChassisVelocity name="set_vel" target="0.1;0;0" duration_s="3"/> -->
                 <!-- <GoToPose   name="navigate_to_pose_action_client1" goalPose="2;2;0"/> -->
                 

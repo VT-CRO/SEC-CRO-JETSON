@@ -12,7 +12,7 @@ BT::NodeStatus SetChassisVelocity::tick()
 {
     
     auto res = getInput<Twist>("target");
-    auto res_sleep = getInput<int>("duration_s");
+    auto res_sleep = getInput<double>("duration_s");
 
     if ( !res || !res_sleep ) {
         throw BT::RuntimeError("error reading port [target]: ", res.error());
