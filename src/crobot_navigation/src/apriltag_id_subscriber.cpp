@@ -2,33 +2,50 @@
 // using namespace std;
 
 AprilTagSubscriberID::AprilTagSubscriberID(const std::string &name, const BT::NodeConfiguration &config, rclcpp::Node::SharedPtr node_ptr)
-    : BT::SyncActionNode(name, config), node_(node_ptr) {
+    : BT::StatefulActionNode(name, config), node_(node_ptr) {
     
     subscription_ = node_->create_subscription<apriltag_msgs::msg::AprilTagDetectionArray>(
         "/detections", 10, std::bind(&AprilTagSubscriberID::callback, this, std::placeholders::_1));
-    
-    // executor_.add_node(node_);
-    // spin_thread_ = std::thread([this]() { executor_.spin(); });
 }
 
 AprilTagSubscriberID::~AprilTagSubscriberID() {
-    // executor_.cancel();
-    // if (spin_thread_.joinable()) {
-    //     spin_thread_.join();
-    // }
 }
 
-BT::NodeStatus AprilTagSubscriberID::tick() {
+// BT::NodeStatus AprilTagSubscriberID::tick() {
+//     if (!detection) {
+//         return BT::NodeStatus::RUNNING;
+//     }
+//     if (!last_detected_id.has_value()) {
+//         return BT::NodeStatus::FAILURE;
+//     } else {
+//         setOutput("id", last_detected_id.value());
+//         setOutput("position", positions[last_detected_id.value()]);
+//         return BT::NodeStatus::SUCCESS;
+//     }
+// }
+
+BT::NodeStatus AprilTagSubscriberID::onStart() {
+    detection = false;
+    last_detected_id.reset();
+
+    return BT::NodeStatus::RUNNING;
+}
+
+BT::NodeStatus AprilTagSubscriberID::onRunning() {
     if (!detection) {
         return BT::NodeStatus::RUNNING;
-    }
-    if (!last_detected_id_.has_value()) {
+    } 
+    if (!last_detected_id.has_value()) {
         return BT::NodeStatus::FAILURE;
     } else {
-        setOutput("id", last_detected_id_.value());
-        setOutput("position", positions[last_detected_id_.value()]);
+        setOutput("id", last_detected_id.value());
+        setOutput("position", positions[last_detected_id.value()]);
         return BT::NodeStatus::SUCCESS;
     }
+}
+
+BT::NodeStatus AprilTagSubscriberID::onHalted() {
+    detection = false;
 }
 
 BT::PortsList AprilTagSubscriberID::providedPorts() {
@@ -38,8 +55,8 @@ BT::PortsList AprilTagSubscriberID::providedPorts() {
 void AprilTagSubscriberID::callback(const apriltag_msgs::msg::AprilTagDetectionArray::SharedPtr msg) {
     if (!msg->detections.empty()) {
         detection = true;
-        last_detected_id_ = msg->detections[0].id;
-        RCLCPP_INFO(node_->get_logger(), "Detected AprilTag ID: %d", last_detected_id_.value());
+        last_detected_id = msg->detections[0].id;
+        RCLCPP_INFO(node_->get_logger(), "Detected AprilTag ID: %d", last_detected_id.value());
     }
 }
 
