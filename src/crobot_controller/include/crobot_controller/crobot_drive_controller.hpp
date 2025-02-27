@@ -27,7 +27,7 @@
 
 #include "crobot_controller/visibility_control.h"
 #include "crobot_controller/odometry.hpp"
-#include "crobot_drive_controller_parameters.hpp"
+#include <crobot_controller/crobot_drive_controller_parameters.hpp>
 
 namespace crobot_controller
 {

@@ -32,6 +32,7 @@ add_executable(crobot_navigation_node
   src/go_to_position.cpp
   src/start.cpp
   src/set_beacon.cpp
+  src/set_bin_intake.cpp
   src/set_chassis_velocity.cpp
 )
 ament_target_dependencies(crobot_navigation_node ${THIS_PACKAGE_INCLUDE_DEPENDS})

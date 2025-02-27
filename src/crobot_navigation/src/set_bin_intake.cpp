@@ -1,6 +1,6 @@
-#include "crobot_navigation/behaviors/set_beacon.hpp"
+#include "crobot_navigation/behaviors/set_bin_intake.hpp"
 
-SetBeacon::SetBeacon(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr) :
+SetBinIntake::SetBinIntake(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr) :
       BT::SyncActionNode(name, config),  // Fix the constructor initialization list
       node_ptr_(node_ptr)
 {
@@ -9,15 +9,15 @@ SetBeacon::SetBeacon(const std::string &name, const BT::NodeConfig& config, rclc
 
 // static BT::PortsList SetBeacon::providedPorts() 
 
-  BT::NodeStatus SetBeacon::tick() 
+  BT::NodeStatus SetBinIntake::tick() 
   {
-    auto setBeacon = getInput<std::string>("setBeacon");
+    auto setBinIntake = getInput<std::string>("setBinIntake");
 
-    if ( !setBeacon ) {
-      throw BT::RuntimeError("error reading port [setBeacon]: ", setBeacon.error());
+    if ( !setBinIntake ) {
+      throw BT::RuntimeError("error reading port [setBinIntake]: ", setBinIntake.error());
     }
 
-    if (setBeacon.value() == "true") {
+    if (setBinIntake.value() == "true") {
       val = 1;
     } else {
       val = 0;
@@ -27,7 +27,7 @@ SetBeacon::SetBeacon(const std::string &name, const BT::NodeConfig& config, rclc
     msg.interface_groups = {"crobot_systems"};
 
     auto interface = InterfaceValue();
-    interface.interface_names = {"beacon"};
+    interface.interface_names = {"bin_intake"};
 
     interface.values = {val};
     msg.interface_values = {interface};

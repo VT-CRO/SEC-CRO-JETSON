@@ -1,4 +1,5 @@
 #include "crobot_navigation/behaviors/set_chassis_velocity.hpp"
+#include "unistd.h"
 
 SetChassisVelocity::SetChassisVelocity(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr):
         BT::SyncActionNode(name, {config}),
@@ -11,11 +12,14 @@ BT::NodeStatus SetChassisVelocity::tick()
 {
     
     auto res = getInput<Twist>("target");
+    auto res_sleep = getInput<double>("duration_s");
 
-    if ( !res ) {
+    if ( !res || !res_sleep ) {
         throw BT::RuntimeError("error reading port [target]: ", res.error());
     } 
     publisher_->publish(res.value());
+
+    sleep(res_sleep.value());
 
     return BT::NodeStatus::SUCCESS;
 }
