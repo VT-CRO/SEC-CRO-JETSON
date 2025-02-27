@@ -16,7 +16,7 @@ public:
 
     BT::NodeStatus onStart() override;
     BT::NodeStatus onRunning() override;
-    BT::NodeStatus onHalted() override;
+    void onHalted() override;
 
     static BT::PortsList providedPorts();
 

@@ -31,7 +31,7 @@ BT::NodeStatus AprilTagSubscriberID::onRunning() {
     }
 }
 
-BT::NodeStatus AprilTagSubscriberID::onHalted() {
+void AprilTagSubscriberID::onHalted() {
     detection = false;
 }
 
