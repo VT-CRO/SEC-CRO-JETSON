@@ -11,19 +11,6 @@ AprilTagSubscriberID::AprilTagSubscriberID(const std::string &name, const BT::No
 AprilTagSubscriberID::~AprilTagSubscriberID() {
 }
 
-// BT::NodeStatus AprilTagSubscriberID::tick() {
-//     if (!detection) {
-//         return BT::NodeStatus::RUNNING;
-//     }
-//     if (!last_detected_id.has_value()) {
-//         return BT::NodeStatus::FAILURE;
-//     } else {
-//         setOutput("id", last_detected_id.value());
-//         setOutput("position", positions[last_detected_id.value()]);
-//         return BT::NodeStatus::SUCCESS;
-//     }
-// }
-
 BT::NodeStatus AprilTagSubscriberID::onStart() {
     detection = false;
     last_detected_id.reset();

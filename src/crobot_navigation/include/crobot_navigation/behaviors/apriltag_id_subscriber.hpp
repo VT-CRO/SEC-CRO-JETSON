@@ -7,14 +7,13 @@
 #include <optional>
 #include <thread>
 #include <vector>
-using namespace std;
+// using namespace std;
 
 class AprilTagSubscriberID : public BT::StatefulActionNode {
 public:
     AprilTagSubscriberID(const std::string &name, const BT::NodeConfiguration &config, rclcpp::Node::SharedPtr node_ptr);
     ~AprilTagSubscriberID();
 
-    // BT::NodeStatus tick() override;
     BT::NodeStatus onStart() override;
     BT::NodeStatus onRunning() override;
     BT::NodeStatus onHalted() override;
@@ -24,11 +23,10 @@ public:
 private:
     void callback(const apriltag_msgs::msg::AprilTagDetectionArray::SharedPtr msg);
 
-    shared_ptr<rclcpp::Node> node_;
+    std::shared_ptr<rclcpp::Node> node_;
     rclcpp::Subscription<apriltag_msgs::msg::AprilTagDetectionArray>::SharedPtr subscription_;
-    rclcpp::executors::SingleThreadedExecutor executor_;
-    optional<int> last_detected_id;
-    string positions [5] = {"0.0;0.0;0.0", "1.0;1.0;1.0", "2.0;2.0;2.0", "3.0;3.0;3.0","4.0;4.0;4.0"};
+    std::optional<int> last_detected_id;
+    std::string positions [5] = {"0.0;0.0;0.0", "1.0;1.0;1.0", "2.0;2.0;2.0", "3.0;3.0;3.0","4.0;4.0;4.0"};
     bool detection = false;
 };
 
