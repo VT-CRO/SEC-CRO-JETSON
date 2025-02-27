@@ -324,7 +324,7 @@ namespace crobot_hardware
         };
 
         j["lower_beacon"] = lower_beacon;
-        j["run"] = 1;
+        j["run"] = run;
         j["bin_intake"] = bin_intake;
 
         std::string s = j.dump();
