@@ -26,7 +26,7 @@ BT::NodeStatus GoToPose::onStart()
     }
 
     std::stringstream ss;
-    ss << "Sending goal: " << _goal.pose.pose.position.x << " " << _goal.pose.pose.position.y;
+    ss << "Sending goal: " << _goal.pose.pose.position.x << " " << _goal.pose.pose.position.y << " " << _goal.pose.pose.orientation.z;
     RCLCPP_INFO(node_ptr_->get_logger(), ss.str().c_str());
 
     auto send_goal_options = rclcpp_action::Client<NavPose>::SendGoalOptions();

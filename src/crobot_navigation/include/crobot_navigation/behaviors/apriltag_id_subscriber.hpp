@@ -4,10 +4,18 @@
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/bt_factory.h>
 #include <apriltag_msgs/msg/april_tag_detection_array.hpp>
+#include <nav2_msgs/action/navigate_to_pose.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+
 #include <optional>
 #include <thread>
 #include <vector>
 // using namespace std;
+using NavPose = nav2_msgs::action::NavigateToPose;
+using NavGoal = nav2_msgs::action::NavigateToPose_Goal;
+
+NavGoal MakeNavGoal(float x, float y, float th);
 
 class AprilTagSubscriberID : public BT::StatefulActionNode {
 public:
@@ -26,7 +34,7 @@ private:
     std::shared_ptr<rclcpp::Node> node_;
     rclcpp::Subscription<apriltag_msgs::msg::AprilTagDetectionArray>::SharedPtr subscription_;
     std::optional<int> last_detected_id;
-    std::string positions [5] = {"0.0;0.0;0.0", "1.0;1.0;1.0", "2.0;2.0;2.0", "3.0;3.0;3.0","4.0;4.0;4.0"};
+    NavGoal positions [5] = {MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0)};
     bool detection = false;
 };
 
