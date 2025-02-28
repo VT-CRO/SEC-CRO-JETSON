@@ -2,15 +2,15 @@
 
 #include "crobot_navigation/behaviors/idle.hpp"
 
-StartBehavior::StartBehavior(const std::string& name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr)
-    : BT::StatefulActionNode(name, config),
+IdleBehavior::IdleBehavior(const std::string& name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr)
+    : BT::SyncActionNode(name, config),
     node_ptr_(node_ptr)
 {
     // create publisher, topic /run
 	node_ptr->create_publisher<BoolMsg>("/run", 10);
 }
 
-IdleBehavior::tick()
+BT::NodeStatus IdleBehavior::tick()
 {
     // publish false
 	auto msg = DynamicInterface();
