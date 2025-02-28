@@ -10,12 +10,12 @@ class Odometry
 public:
   explicit Odometry();
 
-  bool updatePos(long leftTicks, long rightTicks, long auxTicks, long front_left_pos);
+  bool updatePos(long leftTicks, long rightTicks, long auxTicks);
   void resetOdometry();
 
-  double getX() const { return _x; }
-  double getY() const { return _y; }
-  double getHeading() const { return _heading; }
+  double getX();
+  double getY();
+  double getHeading();
 
 private:
   // Current pos:
