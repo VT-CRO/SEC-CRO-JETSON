@@ -92,14 +92,18 @@ namespace crobot_controller
         state_joint_names_.resize(3);
 
         prepare_state_interfaces_list(
-            DEADWHEEL_X, params_.deadwheel_x_state_name
+            DEADWHEEL_LEFT, params_.deadwheel_left_state_name
         );
         prepare_state_interfaces_list(
-            DEADWHEEL_Y, params_.deadwheel_y_state_name
+            DEADWHEEL_RIGHT, params_.deadwheel_right_state_name
         );
         prepare_state_interfaces_list(
-            DEADWHEEL_HEADING, params_.deadwheel_heading_state_name
+            DEADWHEEL_CENTER, params_.deadwheel_center_state_name
         );
+        
+        // prepare_state_interfaces_list(
+        //     DEADWHEEL_HEADING, params_.deadwheel_heading_state_name
+        // );
 
         auto subscribers_qos = rclcpp::SystemDefaultsQoS();
         subscribers_qos.keep_last(1);
@@ -261,26 +265,26 @@ namespace crobot_controller
             current_ref->twist.angular.z = 0.0;
         }
 
-        // const double wheel_front_left_state_vel = state_interfaces_[FRONT_LEFT].get_value();
-        // const double wheel_front_right_state_vel = state_interfaces_[FRONT_RIGHT].get_value();
-        // const double wheel_rear_right_state_vel = state_interfaces_[REAR_RIGHT].get_value();
-        // const double wheel_rear_left_state_vel = state_interfaces_[REAR_LEFT].get_value();
+        const long deadwheel_left_state = state_interfaces_[DEADWHEEL_LEFT].get_value();
+        const long deadwheel_right_state = state_interfaces_[DEADWHEEL_RIGHT].get_value();
+        const long deadwheel_center_state = state_interfaces_[DEADWHEEL_CENTER].get_value();
 
         double cmd_x = current_ref->twist.linear.x;
         double cmd_y = current_ref->twist.linear.y;
         double cmd_w = current_ref->twist.angular.z;
         
         // FORWARD KINEMATICS: Update Odometry
-        // if (
-        //     !std::isnan(wheel_front_left_state_vel) && !std::isnan(wheel_front_right_state_vel) &&
-        //     !std::isnan(wheel_rear_left_state_vel) && !std::isnan(wheel_rear_right_state_vel)
-        // )
-        // {
-            // odometry_.update(
-            //      wheel_front_left_state_vel, wheel_rear_left_state_vel, wheel_rear_right_state_vel,
-            //      wheel_front_right_state_vel, period.secconds()
-            // );
-        // }
+        if (
+            !std::isnan(deadwheel_left_state) && !std::isnan(deadwheel_right_state) &&
+            !std::isnan(deadwheel_center_state)
+        )
+        {
+            odometry_.updatePos(
+                 deadwheel_left_state,
+                 deadwheel_right_state,
+                 deadwheel_center_state
+            );
+        }
 
         // INVERSE KINEMATICS: Compute wheel velocities
         if (
@@ -342,6 +346,28 @@ namespace crobot_controller
         // update + publish tf
 
         // publish odometry
+        tf2::Quaternion orientation;
+        orientation.setRPY(0.0, 0.0, odometry_.getHeading());
+
+        if (rt_odom_state_publisher_->trylock())
+        {
+            rt_odom_state_publisher_->msg_.header.stamp = time;
+            rt_odom_state_publisher_->msg_.pose.pose.position.x = odometry_.getX();
+            rt_odom_state_publisher_->msg_.pose.pose.position.y = odometry_.getY();
+            rt_odom_state_publisher_->msg_.pose.pose.orientation = tf2::toMsg(orientation);
+            rt_odom_state_publisher_->unlockAndPublish();
+        }
+
+        // Publish tf /odom frame
+        if (params_.enable_odom_tf && rt_tf_odom_state_publisher_->trylock())
+        {
+            rt_tf_odom_state_publisher_->msg_.transforms.front().header.stamp = time;
+            rt_tf_odom_state_publisher_->msg_.transforms.front().transform.translation.x = odometry_.getX();
+            rt_tf_odom_state_publisher_->msg_.transforms.front().transform.translation.y = odometry_.getY();
+            rt_tf_odom_state_publisher_->msg_.transforms.front().transform.rotation =
+            tf2::toMsg(orientation);
+            rt_tf_odom_state_publisher_->unlockAndPublish();
+        }
 
         return controller_interface::return_type::OK;
     }

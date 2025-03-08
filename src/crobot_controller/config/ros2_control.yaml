@@ -18,8 +18,9 @@ crobot_drive_controller:
     rear_left_wheel_command_joint_name: "back_left_wheel_joint"
     rear_right_wheel_command_joint_name: "back_right_wheel_joint"
 
-    deadwheel_x_state_name: deadwheel_odom/deadwheel_odom_x
-    deadwheel_y_state_name: deadwheel_odom/deadwheel_odom_y
+    deadwheel_left_state_name: deadwheel_odom/encoder_left
+    deadwheel_right_state_name: deadwheel_odom/encoder_right
+    deadwheel_center_state_name: deadwheel_odom/encoder_center
     deadwheel_heading_state_name: deadwheel_odom/deadwheel_odom_heading
 
     kinematics:

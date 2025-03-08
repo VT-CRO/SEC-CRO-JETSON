@@ -27,7 +27,7 @@
 
 #include "crobot_controller/visibility_control.h"
 #include "crobot_controller/odometry.hpp"
-#include "crobot_drive_controller_parameters.hpp"
+#include <crobot_controller/crobot_drive_controller_parameters.hpp>
 
 namespace crobot_controller
 {
@@ -87,9 +87,10 @@ namespace crobot_controller
 
         enum DeadWheelIndex : std::size_t
         {
-            DEADWHEEL_X = 0,
-            DEADWHEEL_Y = 1,
-            DEADWHEEL_HEADING = 2
+            DEADWHEEL_LEFT = 0,
+            DEADWHEEL_RIGHT = 1,
+            DEADWHEEL_CENTER = 2,
+            DEADWHEEL_HEADING = 3
         };
 
         std::vector<std::string> command_joint_names_;
@@ -107,7 +108,7 @@ namespace crobot_controller
         rclcpp::Publisher<TFStateMsg>::SharedPtr tf_odom_state_publisher_;
         std::unique_ptr<TfStatePublisher> rt_tf_odom_state_publisher_;
 
-        // Odometry odometry_;
+        Odometry odometry_;
 
         void reference_callback(const std::shared_ptr<ControllerReferenceMsg> msg);
 
