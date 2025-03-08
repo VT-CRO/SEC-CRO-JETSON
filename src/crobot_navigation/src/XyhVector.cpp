@@ -1,12 +1,6 @@
 #include "crobot_navigation/XyhVector.hpp"
 using namespace std;
 
-/****************************
- * 
- *       Constructors
- * 
-*****************************/
-
 // Default Constructor
 XyhVector::XyhVector() {
     _x = 0;
@@ -38,12 +32,6 @@ XyhVector::XyhVector(const XyhVector& referenceXyhVector) {
     _y = referenceXyhVector.getY();
     _h = referenceXyhVector.getH();
 }
-
-/****************************
- * 
- *   Arithmatic Functions
- * 
-*****************************/
 
 // Add three doubles to our current vector
 XyhVector XyhVector::add(double x, double y, double h) {
@@ -154,30 +142,20 @@ XyhVector XyhVector::div(const XyhVector& referenceXyhVector) {
     _h -= 180.0;  // Shift back to -180 to 180 range
 }
 
-
-/****************************
- * 
- *         Getters
- * 
-*****************************/
 double XyhVector::getX() const {return _x;}
 double XyhVector::getY() const {return _y;}
 double XyhVector::getH() const {return _h;}
 
-/****************************
- * 
- *         Bezier Functions
- * 
-*****************************/
-
 // Generates a point on a given bezier curve given the points and t value
 XyhVector XyhVector::pathBezier(const std::vector<XyhVector>& points, double t, const std::vector<double>& binomialCoef) {
     // to be implemented by res
+    return;
 }
 
 // Used for generating bezier curves of a higher order.
 std::vector<double> XyhVector::binomialCoefficients(int n) {
     // to be implemented by res
+    return 0.0;
 }
 
 // Creates a vector of a Bezier curve housing 1001 reference points
@@ -192,12 +170,19 @@ std::vector<XyhVector> XyhVector::setupPath(std::vector<XyhVector>& points, cons
 }
 
 // Finds the closest t value to the robot using the vector created in setupPath()
-double XyhVector::closestT(std::vector<XyhVector>& referencePath, XyhVector currentPos, double t) {
-    double min_distance = sqrt(pow(getX(t) - currentPos, 2) + pow(getY(t) - currentPos, 2));
+double XyhVector::closestT(std::vector<XyhVector>& referencePoints, XyhVector currentPos, double t, const std::vector<double>& binomialCoef) {
+    XyhVector bezier = pathBezier(referencePoints, t, binomialCoef);
+    double pathX = bezier.getX();
+    double pathY = bezier.getY();
+    double min_distance = sqrt(pow(pathX - currentPos.getX(), 2) + pow(pathY - currentPos.getY(), 2));
     new_t = t;
 
     for (double i = t; i < 0.05 + t && t < 1.0; i += 0.001) {
-        temp = sqrt(pow(getX(i) - currentPos, 2) + pow(getY(i) - currentPos, 2));
+        bezier = pathBezier(referencePoints, i, binomialCoef);
+        pathX = bezier.getX();
+        pathY = bezier.getY();
+
+        temp = sqrt(pow(pathX - currentPos, 2) + pow(pathY - currentPos, 2));
         if (temp < min_distance) {
             min_distance = temp;
             new_t = i;
@@ -205,13 +190,4 @@ double XyhVector::closestT(std::vector<XyhVector>& referencePath, XyhVector curr
     }
 
     return new_t;
-}
-
-XyhVector::double getX(double t) {
-    // TO DO
-    return 0;
-}
-XyhVector::double getY(double t) {
-    // TO DO
-    return 0;
 }

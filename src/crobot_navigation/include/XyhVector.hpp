@@ -50,7 +50,7 @@ class XyhVector {
         std::vector<XyhVector> setupPath(std::vector<XyhVector>& points, const std::vector<double>& binomialCoef);
 
         // Finds the closest t value to the robot using the vector created in setupPath()
-        double closestT(std::vector<XyhVector>& referencePath, XyhVector currentPos, double t);       
+        double closestT(std::vector<XyhVector>& referencePath, XyhVector currentPos, double t, const std::vector<double>& binomialCoef);       
 
         // helper functions
         double getX(double t);
