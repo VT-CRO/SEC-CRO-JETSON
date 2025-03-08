@@ -6,9 +6,9 @@ class DeadWheelOdom
 {
     public:
 
-    double pos_x = 0;
-    double pos_y = 0;
-    double pos_th = 0;
+    double enc_left = 0;
+    double enc_right = 0;
+    double enc_center = 0;
 
     DeadWheelOdom() = default;
 

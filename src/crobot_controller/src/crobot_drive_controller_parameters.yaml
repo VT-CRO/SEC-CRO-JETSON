@@ -47,7 +47,7 @@ crobot_controller:
   }
 
   # State joint names
-  deadwheel_x_state_name: {
+  deadwheel_left_state_name: {
     type: string,
     default_value: "",
     description: "(optional) Specifies a joint name for reading states of front left wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
@@ -57,7 +57,17 @@ crobot_controller:
     }
   }
 
-  deadwheel_y_state_name: {
+  deadwheel_right_state_name: {
+    type: string,
+    default_value: "",
+    description: "(optional) Specifies a joint name for reading states of front left wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
+    read_only: true,
+    validation: {
+      not_empty<>: null,
+    }
+  }
+
+  deadwheel_center_state_name: {
     type: string,
     default_value: "",
     description: "(optional) Specifies a joint name for reading states of front left wheel. This parameter is only relevant when state joints are different then command joint, i.e., when a following controller is used.",
