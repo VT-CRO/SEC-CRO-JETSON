@@ -155,15 +155,15 @@ namespace crobot_hardware
             wheel_front_right.name, hardware_interface::HW_IF_VELOCITY, &wheel_front_right.vel));
 
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            "deadwheel_odom", "deadwheel_odom_x", &deadwheels.pos_x
+            "deadwheel_odom", "encoder_left", &deadwheels.enc_left
         ));
 
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            "deadwheel_odom", "deadwheel_odom_y", &deadwheels.pos_y
+            "deadwheel_odom", "encoder_right", &deadwheels.enc_right
         ));
 
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            "deadwheel_odom", "deadwheel_odom_heading", &deadwheels.pos_th
+            "deadwheel_odom", "encoder_center", &deadwheels.enc_center
         ));
 
         state_interfaces.emplace_back(hardware_interface::StateInterface(
@@ -292,9 +292,9 @@ namespace crobot_hardware
 
         if (!j.is_discarded())
         {
-            deadwheels.pos_x = j["deadwheel_stats"]["x"];
-            deadwheels.pos_y = j["deadwheel_stats"]["y"];
-            deadwheels.pos_th = j["deadwheel_stats"]["heading"];
+            deadwheels.enc_left = j["deadhweel_stats"]["encoder_left"];
+            deadwheels.enc_right = j["deadhweel_stats"]["encoder_right"];
+            deadwheels.enc_center = j["deadhweel_stats"]["encoder_center"];
             start_led = j["start_led"];
         } else {
             RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Could not parse message!");
