@@ -162,7 +162,7 @@ std::vector<double> XyhVector::binomialCoefficients(int n) {
 std::vector<XyhVector> XyhVector::setupPath(std::vector<XyhVector>& points, const std::vector<double>& binomialCoef) {
     std::vector<XyhVector> reference_points;
     int index = 0;
-    for (double t = 0.00; t < 1.0; i += 0.001) {
+    for (double t = 0.00; t <= 1.0; t += 0.001) {
         reference_points.push_back(pathBezier(points, t, binomialCoef)); 
         index++;
     }
@@ -175,9 +175,9 @@ double XyhVector::closestT(std::vector<XyhVector>& referencePoints, XyhVector cu
     double pathX = bezier.getX();
     double pathY = bezier.getY();
     double min_distance = sqrt(pow(pathX - currentPos.getX(), 2) + pow(pathY - currentPos.getY(), 2));
-    new_t = t;
+    double new_t = t;
 
-    for (double i = t; i < 0.05 + t && t < 1.0; i += 0.001) {
+    for (double i = t; i < 0.05 + t && t <= 1.0; i += 0.001) {
         bezier = pathBezier(referencePoints, i, binomialCoef);
         pathX = bezier.getX();
         pathY = bezier.getY();
