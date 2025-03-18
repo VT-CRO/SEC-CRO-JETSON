@@ -229,7 +229,14 @@ double XyhVector::closestT(std::vector<XyhVector>& referencePoints, XyhVector cu
     double min_distance = sqrt(pow(pathX - currentPos.getX(), 2) + pow(pathY - currentPos.getY(), 2));
     double new_t = t;
 
-    for (double i = t; i < 0.05 + t && t <= 1.0; i += 0.001) {
+    double starting_t;
+    if (t - 0.05 > 0) {
+        starting_t = t - 0.05;
+    } else {
+        starting_t = 0;
+    }
+
+    for (double i = starting_t; i < 0.05 + t && t <= 1.0; i += 0.001) {
         bezier = pathBezier(referencePoints, i, binomialCoef);
         pathX = bezier.getX();
         pathY = bezier.getY();
