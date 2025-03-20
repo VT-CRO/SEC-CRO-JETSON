@@ -36,4 +36,7 @@ gpio_controller:
           - bin_intake
           - beacon
           - start_robot
-          # - start_led
+    state_interfaces:
+      crobot_systems:
+        - interfaces:
+          - start_led
