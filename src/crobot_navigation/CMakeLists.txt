@@ -37,6 +37,19 @@ add_executable(crobot_navigation_node
 ament_target_dependencies(crobot_navigation_node ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_link_libraries(crobot_navigation_node ${YAML_CPP_LIBRARIES})
 
+# build action server
+add_library(action_server SHARED
+  src/crobot_navigation_server.cpp
+)
+target_include_directories(action_server PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(action_server
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+rclcpp_components_register_node(action_server PLUGIN "crobot_navigation::CrobotNavigationActionServer" EXECUTABLE crobot_navigation_server)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -61,6 +74,13 @@ install(
 
 install(TARGETS crobot_navigation_node
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS 
+  action_server
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 ament_package()

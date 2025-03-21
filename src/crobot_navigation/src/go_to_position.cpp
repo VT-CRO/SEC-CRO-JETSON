@@ -6,7 +6,7 @@ GoToPose::GoToPose(const std::string& name, const BT::NodeConfig& config, rclcpp
 {
     action_client_ptr_ = rclcpp_action::create_client<NavPose>(
         node_ptr_,
-        "navigate_to_pose"
+        "crobot_navigation"
     );
     done_flag_ = false;
 }
