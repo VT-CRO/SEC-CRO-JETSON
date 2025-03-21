@@ -9,6 +9,11 @@ namespace crobot_navigation
         
         RCLCPP_INFO(this->get_logger(), "Starting navigation server!");
 
+        // TODO: we set the action type as nav2_msgs/NavigateToPose but I have already went ahead and created
+        //       an action that is a little bit more tailored to our needs in the action/NavigationPoints.action
+        //       file. We need to switch the action type to that one, which may require messing with the CMakeLists.txt
+        //       for this package for it to register as a valid action type. Please see the ROS2 actions documentation
+        //       for information on how to set this up.
         this->action_server_ = rclcpp_action::create_server<NavPose>(
             this,
             "crobot_navigation",
@@ -48,12 +53,16 @@ namespace crobot_navigation
         // auto feedback = std::make_shared<NavPose::Feedback>();
         auto result = std::make_shared<NavPose::Result>();
 
-        // TODO: setup path
+        // TODO: Run Res's path setup function
 
+        // TODO: The "main" loop of this action
+        //
+        // Pseudocode:
+        //
         // while (running) {
         //      t = closestT
         //      desired_pos = pathbezier(t)
-        //      TODO: p(id) current_pos with desired_pos
+        //      pid current_pos with desired_pos    // (only p controller is probably necessary--pid is a pretty well-established controller so dd advise looking up someone's implementation or looking at ours in the SEC-CRO-LIB repo)
         //      publish command velocity
         //      stop running if t=1 and we're within threshold for a certain amount of time
         // }

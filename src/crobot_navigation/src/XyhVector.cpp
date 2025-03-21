@@ -1,5 +1,9 @@
 #include "crobot_navigation/XyhVector.hpp"
 
+// TODO: We want to move away from using the XyH data type and just using ros's built-in PoseStamped data type
+//       instead. Therefore, we no longer need the class (or maybe we replace it with a BezierPath class) and 
+//       we'll only need the functions relevant to bezier curves.
+//       
 
 /****************************
  * 
