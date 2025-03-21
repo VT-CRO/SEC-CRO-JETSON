@@ -2,90 +2,85 @@
 
 namespace crobot_controller
 {
-Odometry::Odometry(size_t velocity_rolling_window_size)
-: timestamp_(0.0),
-    x_(0.0),
-    y_(0.0),
-    heading_(0.0),
-    linear_(0.0),
-    angular_(0.0),
-    wheel_separation_(0.0),
-    back_left_wheel_radius_(0.0),
-    back_right_wheel_radius_(0.0),
-    front_left_wheel_radius_(0.0),
-    front_right_wheel_radius_(0.0),
-    back_left_wheel_old_pos_(0.0),
-    back_right_wheel_old_pos_(0.0),
-    front_left_wheel_old_pos_(0.0),
-    front_right_wheel_old_pos_(0.0),
-    velocity_rolling_window_size_(velocity_rolling_window_size),
-    linear_accumulator_(velocity_rolling_window_size),
-    angular_accumulator_(velocity_rolling_window_size)
+Odometry::Odometry()
+:   _x(0.0),
+    _y(0.0),
+    _heading(0.0),
+
+    _PI(2.0*acos(0.0)),
+
+    _R(1.6),
+    _N(4096),
+    _B(0.0),
+    _L(22.698711),
+    _CM_PER_TICK((2.0 * _PI * _R)/_N),
+
+    _currentLeftPosition(0.0),
+    _currentRightPosition(0.0),
+    _currentAuxPosition(0.0),
+
+    _prevLeftPosition(0.0),
+    _prevRightPosition(0.0),
+    _prevAuxPosition(0.0)
+    
 {
     
 }
 
-void Odometry::init(const rclcpp::Time & time)
+// Main function for dead wheel odometry
+// Call this whenever we want to update the position
+// Note, 
+bool Odometry::updatePos(long leftTicks, long rightTicks, long auxTicks)
 {
-    resetAccumulators();
-    timestamp_ = time;
+
+    // updates our old positions using values from the previous call
+    _prevLeftPosition = _currentLeftPosition;
+    _prevRightPosition = _currentRightPosition;
+    _prevAuxPosition = _currentAuxPosition;
+
+    // sets our current position equal to the tick values the encoders now read
+    _currentLeftPosition = leftTicks;
+    _currentRightPosition = rightTicks;
+    _currentAuxPosition = auxTicks;
+
+    // gets the difference in ticks between the current and previous values
+    long dn1 = _currentLeftPosition - _prevLeftPosition;
+    long dn2 = _currentRightPosition - _prevRightPosition;
+    long dn3 = _currentAuxPosition - _prevAuxPosition;
+
+    // calculates the change in heading, x, and y
+    double dtheta = _CM_PER_TICK * (dn2-dn1) / _L;
+    double dx = _CM_PER_TICK * (dn1 + dn2) / 2.0;
+    double dy = _CM_PER_TICK * (dn3 - (dn2 - dn1) * _B / _L);
+
+    // updates the position and heading
+    double theta = _heading * (dtheta / 2.0);
+    _x += dx * cos(theta) - dy * sin(theta);
+    _y += dx * sin(theta) + dy * cos(theta);
+    _heading += dtheta;
+
+    // Normalize the heading. This constrains it to +/- PI, or +/_ 180 degrees if you hate radians
+    _heading = std::fmod(_heading, 2.0 * _PI); // Constrains the heading so that it must be between -2PI and 2PI, or -360 and 360 degrees (because radians suck)
+    if (_heading > _PI) _heading -= 2.0 * _PI; // If we're greater than PI or 180 degrees, subtract 2PI or 360 degrees (added degrees in case you hate radians)
+    else if (_heading < -_PI) _heading += 2.0 * _PI; // If we're less than -PI or -180 degrees, add 2PI or 360 degrees (just to be inclusive, I've added degrees in case you hate radians)
+
+    // returns true if the update was successful
+    return true;
 }
 
-bool Odometry::update(double back_left_pos, double back_right_pos, double front_left_pos, double front_right_pos, const rclcpp::Time & time)
-{
-    // TODO
-    return false;
-}
-
-bool Odometry::updateFromVelocity(double back_left_vel, double back_right_vel, double front_left_vel, double front_right_vel, const rclcpp::Time & time)
-{
-    // TODO
-    return false;
-}
-
-void Odometry::updateOpenLoop(double linear_x, double linear_y, double angular, const rclcpp::Time & time)
-{
-    // TODO
-    return;
-}
-
+// Position resets are relative. Encoder ticks are not affected by a reset.
 void Odometry::resetOdometry()
 {
     // TODO
+    _x = 0.0;
+    _y = 0.0;
+    _heading = 0.0;
     return;
 }
 
-void Odometry::setWheelParams(double wheel_separation, double back_left_wheel_radius, double back_right_wheel_radius, double front_left_wheel_radius, double front_right_wheel_radius)
-{
-    wheel_separation_ = wheel_separation;
-    back_left_wheel_radius_ = back_left_wheel_radius;
-    back_right_wheel_radius_ = back_right_wheel_radius;
-    front_left_wheel_radius_ = front_left_wheel_radius;
-    front_right_wheel_radius_ = front_right_wheel_radius;
-}
+double Odometry::getX() { return _x; }
+double Odometry::getY() { return _y; }
+double Odometry::getHeading() { return _heading; }
 
-void Odometry::setVelocityRollingWindowSize(std::size_t velocity_rolling_window_size)
-{
-    velocity_rolling_window_size_ = velocity_rolling_window_size;
 
-    resetAccumulators();
-}
-
-void Odometry::integrateRungeKutta2(double linear, double angular)
-{
-    // TODO
-    return;
-}
-
-void Odometry::integrateExact(double linear, double angular)
-{
-    // TODO
-    return;    
-}
-
-void Odometry::resetAccumulators()
-{
-    linear_accumulator_ = RollingMeanAccumulator(velocity_rolling_window_size_);
-    angular_accumulator_ = RollingMeanAccumulator(velocity_rolling_window_size_);
-}
 }

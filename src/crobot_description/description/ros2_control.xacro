@@ -58,9 +58,9 @@
             </joint>
 
             <sensor name="deadwheel_odom">
-                <state_interface name="deadwheel_odom_x"/>
-                <state_interface name="deadwheel_odom_y"/>
-                <state_interface name="deadwheel_odom_heading"/>
+                <state_interface name="encoder_left"/>
+                <state_interface name="encoder_right"/>
+                <state_interface name="encoder_center"/>
             </sensor>
 
             <gpio name="crobot_systems">
