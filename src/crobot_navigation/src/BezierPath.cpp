@@ -6,7 +6,7 @@
 //       
 
 // Default Constructor
-XyhVector::BezierPath() {
+BezierPath::BezierPath() {
     pose_stamped_msg.pose.position.x = 1.0;
     pose_stamped_msg.pose.position.y = 2.0;
     pose_stamped_msg.pose.position.z = 0.0;
@@ -16,18 +16,12 @@ XyhVector::BezierPath() {
     pose_stamped_msg.pose.orientation.w = 1.0; // no rotation
 }
 
-
 BezierPath::~BezierPath() {}
 
-
-/****************************
- * 
- *   Bezier Functions
- * 
-*****************************/
+// Bezier Functions
 
 // Generates a point on a given bezier curve given the points and t value
-XyhVector XyhVector::pathBezier(const std::vector<XyhVector>& points, double t, const std::vector<double>& binomialCoef) {
+XyhVector BezierPath::pathBezier(const std::vector<XyhVector>& points, double t, const std::vector<double>& binomialCoef) {
     int n = points.size() - 1;
 
     XyhVector target;
@@ -42,7 +36,7 @@ XyhVector XyhVector::pathBezier(const std::vector<XyhVector>& points, double t, 
 }
 
 // Used for generating bezier curves of a higher order.
-std::vector<double> XyhVector::binomialCoefficients(int n) {
+std::vector<double> BezierPath::binomialCoefficients(int n) {
     std::vector<double> b(n + 1);
         b[0] = 1;
         b[1] = 1;
@@ -60,7 +54,7 @@ std::vector<double> XyhVector::binomialCoefficients(int n) {
 }
 
 // Creates a vector of a Bezier curve housing 1001 reference points
-std::vector<XyhVector> XyhVector::setupPath(std::vector<XyhVector>& points, const std::vector<double>& binomialCoef) {
+std::vector<XyhVector> BezierPath::setupPath(std::vector<XyhVector>& points, const std::vector<double>& binomialCoef) {
     std::vector<XyhVector> reference_points;
     int index = 0;
     for (double t = 0.00; t <= 1.0; t += 0.001) {
@@ -71,7 +65,7 @@ std::vector<XyhVector> XyhVector::setupPath(std::vector<XyhVector>& points, cons
 }
 
 // Finds the closest t value to the robot using the vector created in setupPath()
-double XyhVector::closestT(std::vector<XyhVector>& referencePoints, XyhVector currentPos, double t, const std::vector<double>& binomialCoef) {
+double BezierPath::closestT(std::vector<XyhVector>& referencePoints, XyhVector currentPos, double t, const std::vector<double>& binomialCoef) {
     XyhVector bezier = pathBezier(referencePoints, t, binomialCoef);
     double pathX = bezier.getX();
     double pathY = bezier.getY();
