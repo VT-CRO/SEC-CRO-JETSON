@@ -15,8 +15,8 @@ PoseStamped BezierPath::pathBezier(const std::vector<PoseStamped>& points, doubl
     PoseStamped target;
     
     for (int i = 0; i <= n; i++) {
-        target._x = target.getX() + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].getX();
-        target._y = target.getY() + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].getY();
+        target._x = target.pose.position.x + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.x;
+        target._y = target.pose.position.y + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.y;
     }
     target._h = (1-t) * points[0].getH() + t * points[n].getH();
 
@@ -56,8 +56,8 @@ std::vector<PoseStamped> BezierPath::setupPath(std::vector<PoseStamped>& points,
 double BezierPath::closestT(std::vector<PoseStamped>& referencePoints, PoseStamped currentPos, double t, const std::vector<double>& binomialCoef) {
     PoseStamped bezier = pathBezier(referencePoints, t, binomialCoef);
     double pathX = bezier.pose.position.x;
-    double pathY = bezier.getY();
-    double min_distance = sqrt(pow(pathX - currentPos.getX(), 2) + pow(pathY - currentPos.getY(), 2));
+    double pathY = bezier.pose.position.y;
+    double min_distance = sqrt(pow(pathX - currentPos.pose.position.x, 2) + pow(pathY - currentPos.pose.position.y, 2));
     double new_t = t;
 
     double starting_t;
@@ -69,10 +69,10 @@ double BezierPath::closestT(std::vector<PoseStamped>& referencePoints, PoseStamp
 
     for (double i = starting_t; i < 0.05 + t && t <= 1.0; i += 0.001) {
         bezier = pathBezier(referencePoints, i, binomialCoef);
-        pathX = bezier.getX();
-        pathY = bezier.getY();
+        pathX = bezier.pose.position.x;
+        pathY = bezier.pose.position.y;
 
-        double temp = sqrt(pow(pathX - currentPos.getX(), 2) + pow(pathY - currentPos.getY(), 2));
+        double temp = sqrt(pow(pathX - currentPos.pose.position.x, 2) + pow(pathY - currentPos.pose.position.y, 2));
         if (temp < min_distance) {
             min_distance = temp;
             new_t = i;
