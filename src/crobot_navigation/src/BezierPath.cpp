@@ -18,7 +18,7 @@ PoseStamped BezierPath::pathBezier(const std::vector<PoseStamped>& points, doubl
         target._x = target.pose.position.x + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.x;
         target._y = target.pose.position.y + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.y;
     }
-    target._h = (1-t) * points[0].getH() + t * points[n].getH();
+    target._h = (1-t) * points[0].header + t * points[n].header;
 
     return target;
 }
