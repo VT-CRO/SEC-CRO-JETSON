@@ -1,19 +1,7 @@
 #include "crobot_navigation/BezierPath.hpp"
 
-// TODO: We want to move away from using the XyH data type and just using ros's built-in PoseStamped data type
-//       instead. Therefore, we no longer need the class (or maybe we replace it with a BezierPath class) and 
-//       we'll only need the functions relevant to bezier curves.
-//       
-
 // Default Constructor
 BezierPath::BezierPath() {
-    pose_stamped_msg.pose.position.x = 1.0;
-    pose_stamped_msg.pose.position.y = 2.0;
-    pose_stamped_msg.pose.position.z = 0.0;
-    pose_stamped_msg.pose.orientation.x = 0.0;
-    pose_stamped_msg.pose.orientation.y = 0.0;
-    pose_stamped_msg.pose.orientation.z = 0.0;
-    pose_stamped_msg.pose.orientation.w = 1.0; // no rotation
 }
 
 BezierPath::~BezierPath() {}
@@ -21,10 +9,10 @@ BezierPath::~BezierPath() {}
 // Bezier Functions
 
 // Generates a point on a given bezier curve given the points and t value
-XyhVector BezierPath::pathBezier(const std::vector<XyhVector>& points, double t, const std::vector<double>& binomialCoef) {
+PoseStamped BezierPath::pathBezier(const std::vector<PoseStamped>& points, double t, const std::vector<double>& binomialCoef) {
     int n = points.size() - 1;
 
-    XyhVector target;
+    PoseStamped target;
     
     for (int i = 0; i <= n; i++) {
         target._x = target.getX() + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].getX();
@@ -54,8 +42,8 @@ std::vector<double> BezierPath::binomialCoefficients(int n) {
 }
 
 // Creates a vector of a Bezier curve housing 1001 reference points
-std::vector<XyhVector> BezierPath::setupPath(std::vector<XyhVector>& points, const std::vector<double>& binomialCoef) {
-    std::vector<XyhVector> reference_points;
+std::vector<PoseStamped> BezierPath::setupPath(std::vector<PoseStamped>& points, const std::vector<double>& binomialCoef) {
+    std::vector<PoseStamped> reference_points;
     int index = 0;
     for (double t = 0.00; t <= 1.0; t += 0.001) {
         reference_points.push_back(pathBezier(points, t, binomialCoef)); 
@@ -65,9 +53,9 @@ std::vector<XyhVector> BezierPath::setupPath(std::vector<XyhVector>& points, con
 }
 
 // Finds the closest t value to the robot using the vector created in setupPath()
-double BezierPath::closestT(std::vector<XyhVector>& referencePoints, XyhVector currentPos, double t, const std::vector<double>& binomialCoef) {
-    XyhVector bezier = pathBezier(referencePoints, t, binomialCoef);
-    double pathX = bezier.getX();
+double BezierPath::closestT(std::vector<PoseStamped>& referencePoints, PoseStamped currentPos, double t, const std::vector<double>& binomialCoef) {
+    PoseStamped bezier = pathBezier(referencePoints, t, binomialCoef);
+    double pathX = bezier.pose.position.x;
     double pathY = bezier.getY();
     double min_distance = sqrt(pow(pathX - currentPos.getX(), 2) + pow(pathY - currentPos.getY(), 2));
     double new_t = t;
