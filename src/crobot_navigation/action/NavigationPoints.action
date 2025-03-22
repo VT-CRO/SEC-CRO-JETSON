@@ -11,9 +11,9 @@ uint16 TASK_EXECUTOR_FAILED=601
 uint16 NO_VALID_WAYPOINTS=602
 uint16 STOP_ON_MISSED_WAYPOINT=603
 
-MissedWaypoint[] missed_waypoints
+# nav2_msgs/MissedWaypoint[] missed_waypoints
 uint16 error_code
 string error_msg
 ---
 #feedback definition
-float current_t_value
+float32 current_t_value
