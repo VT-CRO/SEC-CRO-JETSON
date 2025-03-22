@@ -16,6 +16,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   tf2
   tf2_geometry_msgs
   control_msgs
+  rosidl_default_generators
 )
 
 # find dependencies
@@ -49,6 +50,12 @@ ament_target_dependencies(action_server
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 rclcpp_components_register_node(action_server PLUGIN "crobot_navigation::CrobotNavigationActionServer" EXECUTABLE crobot_navigation_server)
+
+# ???????????????????????????
+rosidl_generate_interfaces(crobot_navigation
+    "action/NavigationPoints.action"
+)
+#????????????????????????????
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
