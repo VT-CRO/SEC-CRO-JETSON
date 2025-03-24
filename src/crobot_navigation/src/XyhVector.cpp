@@ -1,7 +1,4 @@
 #include "crobot_navigation/XyhVector.hpp"
-<<<<<<< HEAD
-using namespace std;
-=======
 
 
 /****************************
@@ -9,7 +6,6 @@ using namespace std;
  *       Constructors
  * 
 *****************************/
->>>>>>> 35ceec8efe27a30d0008e9298a376c2126376673
 
 // Default Constructor
 XyhVector::XyhVector() {
@@ -18,13 +14,6 @@ XyhVector::XyhVector() {
     _h = 0;
 }
 
-<<<<<<< HEAD
-// deconstructor
-XyhVector::~XyhVector() {
-}
-
-=======
->>>>>>> 35ceec8efe27a30d0008e9298a376c2126376673
 // Paramaterized constructor (feed in set values, clamps heading)
 XyhVector::XyhVector(double x, double y, double h) {
     _x = x;
@@ -46,8 +35,6 @@ XyhVector::XyhVector(const XyhVector& referenceXyhVector) {
     _h = referenceXyhVector.getH();
 }
 
-<<<<<<< HEAD
-=======
 
 /****************************
  * 
@@ -64,7 +51,6 @@ XyhVector::~XyhVector() {}
  * 
 *****************************/
 
->>>>>>> 35ceec8efe27a30d0008e9298a376c2126376673
 // Add three doubles to our current vector
 XyhVector XyhVector::add(double x, double y, double h) {
     _x = _x + x;
@@ -174,25 +160,16 @@ XyhVector XyhVector::div(const XyhVector& referenceXyhVector) {
     _h -= 180.0;  // Shift back to -180 to 180 range
 }
 
-<<<<<<< HEAD
-=======
 
 /****************************
  * 
  *         Getters
  * 
 *****************************/
->>>>>>> 35ceec8efe27a30d0008e9298a376c2126376673
 double XyhVector::getX() const {return _x;}
 double XyhVector::getY() const {return _y;}
 double XyhVector::getH() const {return _h;}
 
-<<<<<<< HEAD
-// Generates a point on a given bezier curve given the points and t value
-XyhVector XyhVector::pathBezier(const std::vector<XyhVector>& points, double t, const std::vector<double>& binomialCoef) {
-    // to be implemented by res
-    return;
-=======
 
 /****************************
  * 
@@ -213,15 +190,10 @@ XyhVector XyhVector::pathBezier(const std::vector<XyhVector>& points, double t, 
     target._h = (1-t) * points[0].getH() + t * points[n].getH();
 
     return target;
->>>>>>> 35ceec8efe27a30d0008e9298a376c2126376673
 }
 
 // Used for generating bezier curves of a higher order.
 std::vector<double> XyhVector::binomialCoefficients(int n) {
-<<<<<<< HEAD
-    // to be implemented by res
-    return 0.0;
-=======
     std::vector<double> b(n + 1);
         b[0] = 1;
         b[1] = 1;
@@ -236,7 +208,6 @@ std::vector<double> XyhVector::binomialCoefficients(int n) {
             }
             return(b);
         }
->>>>>>> 35ceec8efe27a30d0008e9298a376c2126376673
 }
 
 // Creates a vector of a Bezier curve housing 1001 reference points
@@ -258,9 +229,6 @@ double XyhVector::closestT(std::vector<XyhVector>& referencePoints, XyhVector cu
     double min_distance = sqrt(pow(pathX - currentPos.getX(), 2) + pow(pathY - currentPos.getY(), 2));
     double new_t = t;
 
-<<<<<<< HEAD
-    for (double i = t; i < 0.05 + t && t <= 1.0; i += 0.001) {
-=======
     double starting_t;
     if (t - 0.05 > 0) {
         starting_t = t - 0.05;
@@ -269,16 +237,11 @@ double XyhVector::closestT(std::vector<XyhVector>& referencePoints, XyhVector cu
     }
 
     for (double i = starting_t; i < 0.05 + t && t <= 1.0; i += 0.001) {
->>>>>>> 35ceec8efe27a30d0008e9298a376c2126376673
         bezier = pathBezier(referencePoints, i, binomialCoef);
         pathX = bezier.getX();
         pathY = bezier.getY();
 
-<<<<<<< HEAD
-        temp = sqrt(pow(pathX - currentPos, 2) + pow(pathY - currentPos, 2));
-=======
         double temp = sqrt(pow(pathX - currentPos.getX(), 2) + pow(pathY - currentPos.getY(), 2));
->>>>>>> 35ceec8efe27a30d0008e9298a376c2126376673
         if (temp < min_distance) {
             min_distance = temp;
             new_t = i;

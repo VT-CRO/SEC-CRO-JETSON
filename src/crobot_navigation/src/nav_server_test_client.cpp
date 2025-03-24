@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include "crobot_msgs/action/navigation_points.hpp"
 
@@ -30,6 +31,19 @@ public:
       std::bind(&NavActionClient::send_goal, this));
   }
 
+  void create_goal_points(std::vector<geometry_msgs::msg::PoseStamped> &points)
+  {
+    geometry_msgs::msg::PoseStamped p0;
+    p0.pose.position.x = 0.1;
+    p0.pose.position.y = 0.1;
+    points.push_back(p0);
+
+    geometry_msgs::msg::PoseStamped p1;
+    p0.pose.position.x = 0.2;
+    p0.pose.position.y = 0.1;
+    points.push_back(p1);
+  }
+
   void send_goal()
   {
     using namespace std::placeholders;
@@ -42,7 +56,11 @@ public:
     }
 
     auto goal_msg = NavigationGoalPoints::Goal();
-    // goal_msg.order = 10;
+    create_goal_points(goal_msg.points);
+
+    for (auto p : goal_msg.points) {
+      RCLCPP_INFO(this->get_logger(), "Got position (%f, %f)", p.pose.position.x, p.pose.position.y);
+    }
 
     RCLCPP_INFO(this->get_logger(), "Sending goal");
 

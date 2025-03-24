@@ -32,7 +32,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-rosidl_generate_interfaces(crobot_navigation
+rosidl_generate_interfaces(crobot_msgs
     "action/NavigationPoints.action"
     DEPENDENCIES geometry_msgs nav2_msgs
 )

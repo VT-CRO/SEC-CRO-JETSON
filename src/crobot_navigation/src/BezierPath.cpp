@@ -18,7 +18,6 @@ PoseStamped BezierPath::pathBezier(const std::vector<PoseStamped>& points, doubl
         target.pose.position.x = target.pose.position.x + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.x;
         target.pose.position.y = target.pose.position.y + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.y;
     }
-    // target._h = (1-t) * points[0].pose.orientation + t * points[n].pose.orientation;
     
     tf2::Quaternion q(
         points[0].pose.orientation.x,
@@ -51,19 +50,19 @@ PoseStamped BezierPath::pathBezier(const std::vector<PoseStamped>& points, doubl
 // Used for generating bezier curves of a higher order.
 std::vector<double> BezierPath::binomialCoefficients(int n) {
     std::vector<double> b(n + 1);
-        b[0] = 1;
-        b[1] = 1;
-        if(n == 1){
-            return(b);
-        } else {
-            for(int i = 1; i < n; i ++) {
-                b[i + 1] = 1;
-                for(int k = i; k > 0; k --) {
-                    b[k] = b[k] + b[k - 1];
-                }
+    b[0] = 1;
+    b[1] = 1;
+    if(n == 1){
+        return(b);
+    } else {
+        for(int i = 1; i < n; i ++) {
+            b[i + 1] = 1;
+            for(int k = i; k > 0; k --) {
+                b[k] = b[k] + b[k - 1];
             }
-            return(b);
         }
+        return(b);
+    }
 }
 
 // Creates a vector of a Bezier curve housing 1001 reference points

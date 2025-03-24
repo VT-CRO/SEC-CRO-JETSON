@@ -77,10 +77,21 @@ def generate_launch_description():
         }]
     )
 
+    crobot_nav_server = Node(
+        package='crobot_navigation',
+        executable='crobot_navigation_server',
+        name='crobot_navigation_server',
+        output='screen',
+        remappings=[
+            ('/odom', '/diff_drive_controller/odom')
+        ]
+    )
+
     return LaunchDescription([
         gazebo,
-        slam,
-        nav,
+        # slam,
+        # nav,
         twist_mux,
-        apriltag_node  # Add apriltag node to launch description
+        apriltag_node,  # Add apriltag node to launch description
+        crobot_nav_server
     ])

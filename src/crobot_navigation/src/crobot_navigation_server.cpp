@@ -35,15 +35,23 @@ namespace crobot_navigation
 
     void CrobotNavigationActionServer::odom_cb(const nav_msgs::msg::Odometry msg)
     {
-        currentPos.pose.position = msg.pose.pose.position;
-        currentPos.pose.orientation = msg.pose.pose.orientation;
+        currentPos.pose.position.x = msg.pose.pose.position.x;
+        currentPos.pose.position.y = msg.pose.pose.position.y;
+        currentPos.pose.position.z = msg.pose.pose.position.z;
+        currentPos.pose.orientation.x = msg.pose.pose.orientation.x;
+        currentPos.pose.orientation.y = msg.pose.pose.orientation.y;
+        currentPos.pose.orientation.z = msg.pose.pose.orientation.z;
+        currentPos.pose.orientation.w = msg.pose.pose.orientation.w;
 
     }
 
     rclcpp_action::GoalResponse CrobotNavigationActionServer::handle_goal(const rclcpp_action::GoalUUID & uuid,
         std::shared_ptr<const NavigationGoalPoints::Goal> goal)
     {
-        RCLCPP_INFO(this->get_logger(), "Received goal request!");
+        RCLCPP_INFO(this->get_logger(), "Received goal points:");
+        for (auto p : goal->points) {
+            RCLCPP_INFO(this->get_logger(), "\t(%f, %f)", p.pose.position.x, p.pose.position.y);
+        }
         (void)uuid;
         return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
     }
@@ -65,43 +73,30 @@ namespace crobot_navigation
 
     void CrobotNavigationActionServer::execute(const std::shared_ptr<GoalHandleNav> goal_handle)
     {
-        RCLCPP_INFO(this->get_logger(), "Executing goal");
+        RCLCPP_INFO(this->get_logger(), "Setting up path...");
         rclcpp::Rate loop_rate(1);
         const auto goal = goal_handle->get_goal();
-        // auto feedback = std::make_shared<NavPose::Feedback>();
         auto result = std::make_shared<NavigationGoalPoints::Result>();
-
-        // TODO: Run Res's path setup function
-
-        // TODO: The "main" loop of this action
-        //
-        // Pseudocode:
-        //
-        // while (running) {
-        //      t = closestT
-        //      desired_pos = pathbezier(t)
-        //      pid current_pos with desired_pos    // (only p controller is probably necessary--pid is a pretty well-established controller so dd advise looking up someone's implementation or looking at ours in the SEC-CRO-LIB repo)
-        //      publish command velocity
-        //      stop running if t=1 and we're within threshold for a certain amount of time
-        // }
-
 
         BezierPath BP;
         std::vector <PoseStamped> points = goal->points;
         double currentT = 0.0;
-        std::vector<double> binomialCoef;
+        std::vector<double> binomialCoef = BP.binomialCoefficients(points.size() - 1);
 
         BP.setupPath(points, binomialCoef); //Running Res's setupPath function
-
-        // Main loop for Implementation
+        
+        // // Main loop for Implementation
         while (rclcpp::ok()) {
             double t = BP.closestT(points, currentPos, currentT, binomialCoef);
+
+            RCLCPP_INFO(this->get_logger(), "t: %f, (%f, %f)", currentPos.pose.position.x, currentPos.pose.position.y);
+
             PoseStamped desired_pos = BP.pathBezier(points, t, binomialCoef);
 
             // Implementing PID controller
 
             // PID Controller for X
-            double Kp_X = 0.0; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_X = 1.0; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_X = desired_pos.pose.position.x - currentPos.pose.position.y;
             double Control_X = Kp_X * Error_X;
@@ -115,7 +110,7 @@ namespace crobot_navigation
             
 
             //PID Controller for Y
-            double Kp_Y = 0.0; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_Y = 1.0; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_Y = desired_pos.pose.position.y - currentPos.pose.position.y;
             double Control_Y = Kp_Y * Error_Y;
@@ -128,7 +123,7 @@ namespace crobot_navigation
             velocity_msg.linear.y = Control_Y;  // Set the desired velocities
 
             //PID Controller for H
-            double Kp_H = 0.0; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_H = 1.0; // Proportional Gain Constant (To be Fine Tuned)
 
             tf2::Quaternion q(
                 desired_pos.pose.orientation.x,
@@ -150,6 +145,7 @@ namespace crobot_navigation
             // geometry_msgs::msg::Twist velocity_msg;
             velocity_msg.angular.z = Control_H;  // Set the desired velocities
 
+            publisher_->publish(velocity_msg);
 
             // Stop running if t=1 and we're within threshold for a certain amount of time
             if (t == 1.0) {
@@ -157,13 +153,16 @@ namespace crobot_navigation
                 velocity_msg.linear.x = 0.0;
                 velocity_msg.linear.y = 0.0;
                 velocity_msg.angular.z = 0.0;
-            }
 
+                publisher_->publish(velocity_msg);
 
-            if (rclcpp::ok()) {
-                goal_handle->succeed(result);
-                RCLCPP_INFO(this->get_logger(), "Goal succeeded");
+                break;
             }
+        }
+
+        if (rclcpp::ok()) {
+            goal_handle->succeed(result);
+            RCLCPP_INFO(this->get_logger(), "Goal succeeded");
         }
     }
 }

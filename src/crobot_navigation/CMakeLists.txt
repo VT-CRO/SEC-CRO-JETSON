@@ -98,4 +98,10 @@ install(TARGETS
   RUNTIME DESTINATION bin
 )
 
+install(TARGETS
+  action_client
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
 ament_package()
