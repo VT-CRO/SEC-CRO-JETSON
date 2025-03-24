@@ -267,7 +267,7 @@ namespace crobot_hardware
         const rclcpp::Time &, const rclcpp::Duration & /* period */
     )
     {
-        static char read_buff[100];
+        static char read_buff[128];
 
         if (!comms_.connected())
         {
@@ -283,7 +283,7 @@ namespace crobot_hardware
         comms_.writeBytes(req.c_str(), req.size());
 
         // read encoder values
-        std::size_t n = comms_.readBytes(read_buff, 100);
+        std::size_t n = comms_.readBytes(read_buff, 128);
         std::string s(read_buff);
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Read %ld bytes: %s", n, s.c_str());
         comms_.flush();
@@ -292,9 +292,9 @@ namespace crobot_hardware
 
         if (!j.is_discarded())
         {
-            deadwheels.enc_left = j["deadhweel_stats"]["encoder_left"];
-            deadwheels.enc_right = j["deadhweel_stats"]["encoder_right"];
-            deadwheels.enc_center = j["deadhweel_stats"]["encoder_center"];
+            deadwheels.enc_left = j["deadwheel_stats"]["encoder_left"];
+            deadwheels.enc_right = j["deadwheel_stats"]["encoder_right"];
+            deadwheels.enc_center = j["deadwheel_stats"]["encoder_center"];
             start_led = j["start_led"];
         } else {
             RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Could not parse message!");
@@ -324,7 +324,7 @@ namespace crobot_hardware
         };
 
         j["lower_beacon"] = lower_beacon;
-        j["run"] = run;
+        j["run"] = 1;
         j["bin_intake"] = bin_intake;
 
         std::string s = j.dump();
