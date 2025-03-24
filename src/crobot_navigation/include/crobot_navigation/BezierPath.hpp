@@ -1,10 +1,14 @@
+#ifndef BEZIER_PATH_HPP
+#define BEZIER_PATH_HPP
+
 #include <vector>
 #include <cmath>
 #include <geometry_msgs/msg/pose_stamped.hpp>
-#include <tf2_geometry_mgs/tf2_geometry_msgs.h>
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+
+using PoseStamped = geometry_msgs::msg::PoseStamped;
 
 class BezierPath {
-    using geometry_msgs::PoseStamped = PoseStamped;
 
     public:
         // Default Constructor //
@@ -25,3 +29,5 @@ class BezierPath {
         // Finds the closest t value to the robot using the vector created in setupPath()
         double closestT(std::vector<PoseStamped>& points, PoseStamped currentPos, double currentT, const std::vector<double>& binomialCoef);       
 };
+
+#endif

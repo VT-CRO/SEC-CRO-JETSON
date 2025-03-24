@@ -10,6 +10,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp_action
   rclcpp_components
   nav2_msgs
+  nav_msgs
   geometry_msgs
   behaviortree_cpp
   behaviortree_ros2
@@ -17,7 +18,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   tf2
   tf2_geometry_msgs
   control_msgs
-  rosidl_default_generators
+  crobot_msgs
 )
 
 # find dependencies
@@ -42,6 +43,7 @@ target_link_libraries(crobot_navigation_node ${YAML_CPP_LIBRARIES})
 # build action server
 add_library(action_server SHARED
   src/crobot_navigation_server.cpp
+  src/BezierPath.cpp
 )
 target_include_directories(action_server PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -50,14 +52,18 @@ target_include_directories(action_server PRIVATE
 ament_target_dependencies(action_server
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
+# target_link_libraries(action_server crobot_navigation)
 rclcpp_components_register_node(action_server PLUGIN "crobot_navigation::CrobotNavigationActionServer" EXECUTABLE crobot_navigation_server)
 
-# ???????????????????????????
-rosidl_generate_interfaces(crobot_navigation
-    "action/NavigationPoints.action"
-    DEPENDENCIES geometry_msgs nav2_msgs
+add_library(action_client SHARED
+  src/nav_server_test_client.cpp)
+target_include_directories(action_client PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(action_client
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
-#????????????????????????????
+rclcpp_components_register_node(action_client PLUGIN "crobot_navigation::NavActionClient" EXECUTABLE crobot_navigation_client)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -1,5 +1,4 @@
 #include "crobot_navigation/crobot_navigation_server.hpp"
-#include "crobot_navigation/BP.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "crobot_navigation/behaviors/set_chassis_velocity.hpp"
 
@@ -13,11 +12,11 @@ namespace crobot_navigation
         RCLCPP_INFO(this->get_logger(), "Starting navigation server!");
 
         // TODO: we set the action type as nav2_msgs/NavigateToPose but I have already went ahead and created
-        //       an action that is a little bit more tailored to our needs in the action/NavigationPoints.action
+        //       an action that is a little bit more tailored to our needs in the action/NavigationGoalPoints.action
         //       file. We need to switch the action type to that one, which may require messing with the CMakeLists.txt
         //       for this package for it to register as a valid action type. Please see the ROS2 actions documentation
         //       for information on how to set this up.
-        this->action_server_ = rclcpp_action::create_server<NavPose>(
+        this->action_server_ = rclcpp_action::create_server<NavigationGoalPoints>(
             this,
             "crobot_navigation",
             std::bind(&CrobotNavigationActionServer::handle_goal, this, _1, _2),
@@ -26,15 +25,23 @@ namespace crobot_navigation
         );
         
 
-        //trying to implement the publisher for the velocity
-        //***********************************************************************//
+        // Publisher for command velocity
+        publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
 
-        // rclcpp::Node::SharedPtr node_ptr = shared_from_this(); // Pass current node (or create a new one)
-        // SetChassisVelocity set_velocity_node("set_chassis_velocity", BT::NodeConfig{}, node_ptr);
+        // Subscriber for odometry
+        subscription_ = this->create_subscription<nav_msgs::msg::Odometry>(
+            "/odom", 10, std::bind(&CrobotNavigationActionServer::odom_cb, this, _1));
+    }
+
+    void CrobotNavigationActionServer::odom_cb(const nav_msgs::msg::Odometry msg)
+    {
+        currentPos.pose.position = msg.pose.pose.position;
+        currentPos.pose.orientation = msg.pose.pose.orientation;
+
     }
 
     rclcpp_action::GoalResponse CrobotNavigationActionServer::handle_goal(const rclcpp_action::GoalUUID & uuid,
-        std::shared_ptr<const NavPose::Goal> goal)
+        std::shared_ptr<const NavigationGoalPoints::Goal> goal)
     {
         RCLCPP_INFO(this->get_logger(), "Received goal request!");
         (void)uuid;
@@ -62,7 +69,7 @@ namespace crobot_navigation
         rclcpp::Rate loop_rate(1);
         const auto goal = goal_handle->get_goal();
         // auto feedback = std::make_shared<NavPose::Feedback>();
-        auto result = std::make_shared<NavPose::Result>();
+        auto result = std::make_shared<NavigationGoalPoints::Result>();
 
         // TODO: Run Res's path setup function
 
@@ -80,8 +87,7 @@ namespace crobot_navigation
 
 
         BezierPath BP;
-        std::vector <PoseStamped> points;
-        PoseStamped currentPos;
+        std::vector <PoseStamped> points = goal->points;
         double currentT = 0.0;
         std::vector<double> binomialCoef;
 
@@ -97,7 +103,7 @@ namespace crobot_navigation
             // PID Controller for X
             double Kp_X = 0.0; // Proportional Gain Constant (To be Fine Tuned)
 
-            double Error_X = desired_pos.getX() - currentPos.getX();
+            double Error_X = desired_pos.pose.position.x - currentPos.pose.position.y;
             double Control_X = Kp_X * Error_X;
 
             // Publish Command Velocity for X
@@ -111,7 +117,7 @@ namespace crobot_navigation
             //PID Controller for Y
             double Kp_Y = 0.0; // Proportional Gain Constant (To be Fine Tuned)
 
-            double Error_Y = desired_pos.getY() - currentPos.getY();
+            double Error_Y = desired_pos.pose.position.y - currentPos.pose.position.y;
             double Control_Y = Kp_Y * Error_Y;
 
             // Publish Command Velocity for Y
@@ -124,7 +130,17 @@ namespace crobot_navigation
             //PID Controller for H
             double Kp_H = 0.0; // Proportional Gain Constant (To be Fine Tuned)
 
-            double Error_H = desired_pos.getH() - currentPos.getH();
+            tf2::Quaternion q(
+                desired_pos.pose.orientation.x,
+                desired_pos.pose.orientation.y,
+                desired_pos.pose.orientation.z,
+                desired_pos.pose.orientation.w);
+
+            tf2::Matrix3x3 m(q);
+            double r, p, y;
+            m.getRPY(r, p, y);
+
+            double Error_H = desired_pos.pose.position.y - currentPos.pose.position.y;
             double Control_H = Kp_H * Error_H;
 
             // Publish Command Velocity for H
@@ -144,9 +160,10 @@ namespace crobot_navigation
             }
 
 
-        if (rclcpp::ok()) {
-            goal_handle->succeed(result);
-            RCLCPP_INFO(this->get_logger(), "Goal succeeded");
+            if (rclcpp::ok()) {
+                goal_handle->succeed(result);
+                RCLCPP_INFO(this->get_logger(), "Goal succeeded");
+            }
         }
     }
 }

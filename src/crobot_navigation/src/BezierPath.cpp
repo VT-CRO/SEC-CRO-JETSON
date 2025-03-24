@@ -16,20 +16,34 @@ PoseStamped BezierPath::pathBezier(const std::vector<PoseStamped>& points, doubl
     
     for (int i = 0; i <= n; i++) {
         target.pose.position.x = target.pose.position.x + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.x;
-        target.post.position.y = target.pose.position.y + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.y;
+        target.pose.position.y = target.pose.position.y + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.y;
     }
     // target._h = (1-t) * points[0].pose.orientation + t * points[n].pose.orientation;
     
-    tf2::Matrix3x3 q(points[0].pose.orientation);
-    tf2::Matrix3x3 qn(points[n].pose.orientation);
-    double r, p y;
-    q.getRPY(r, p, y);
+    tf2::Quaternion q(
+        points[0].pose.orientation.x,
+        points[0].pose.orientation.y,
+        points[0].pose.orientation.z,
+        points[0].pose.orientation.w);
 
-    double rn, pn yn;
-    qn.getRPY(rn, pn, yn);
+    tf2::Quaternion qn(
+        points[n].pose.orientation.x,
+        points[n].pose.orientation.y,
+        points[n].pose.orientation.z,
+        points[n].pose.orientation.w);
+
+    tf2::Matrix3x3 m(q);
+    tf2::Matrix3x3 mn(qn);
+    double r, p, y;
+    m.getRPY(r, p, y);
+
+    double rn, pn, yn;
+    mn.getRPY(rn, pn, yn);
     
     double heading = (1 - t) * y + t * yn;
-    target.pose.orientation.setRPY(0, 0, heading);
+    tf2::Quaternion heading_tf2_quat;
+    heading_tf2_quat.setRPY(0, 0, heading);
+    target.pose.orientation = tf2::toMsg(heading_tf2_quat);
 
     return target;
 }
