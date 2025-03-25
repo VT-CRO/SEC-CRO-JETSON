@@ -87,7 +87,7 @@ namespace crobot_navigation
         
         // // Main loop for Implementation
         while (rclcpp::ok()) {
-            double t = BP.closestT(points, currentPos, currentT, binomialCoef);
+            currentT = BP.closestT(points, currentPos, currentT, binomialCoef);
 
             RCLCPP_INFO(this->get_logger(), "t: %f, (%f, %f)", currentPos.pose.position.x, currentPos.pose.position.y);
 
