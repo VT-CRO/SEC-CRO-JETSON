@@ -9,40 +9,18 @@ BezierPath::~BezierPath() {}
 // Bezier Functions
 
 // Generates a point on a given bezier curve given the points and t value
-PoseStamped BezierPath::pathBezier(const std::vector<PoseStamped>& points, double t, const std::vector<double>& binomialCoef) {
+Pose2D BezierPath::pathBezier(const std::vector<Pose2D>& points, double t, const std::vector<double>& binomialCoef) {
     int n = points.size() - 1;
 
-    PoseStamped target;
+    Pose2D target;
     
     for (int i = 0; i <= n; i++) {
-        target.pose.position.x = target.pose.position.x + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.x;
-        target.pose.position.y = target.pose.position.y + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].pose.position.y;
+        target.x = target.x + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].x;
+        target.y = target.y + binomialCoef[i] * pow(1-t, n-i) * pow(t, i) * points[i].y;
     }
     
-    tf2::Quaternion q(
-        points[0].pose.orientation.x,
-        points[0].pose.orientation.y,
-        points[0].pose.orientation.z,
-        points[0].pose.orientation.w);
-
-    tf2::Quaternion qn(
-        points[n].pose.orientation.x,
-        points[n].pose.orientation.y,
-        points[n].pose.orientation.z,
-        points[n].pose.orientation.w);
-
-    tf2::Matrix3x3 m(q);
-    tf2::Matrix3x3 mn(qn);
-    double r, p, y;
-    m.getRPY(r, p, y);
-
-    double rn, pn, yn;
-    mn.getRPY(rn, pn, yn);
-    
-    double heading = (1 - t) * y + t * yn;
-    tf2::Quaternion heading_tf2_quat;
-    heading_tf2_quat.setRPY(0, 0, heading);
-    target.pose.orientation = tf2::toMsg(heading_tf2_quat);
+    double heading = (1 - t) * points[0].theta + t * points[n].theta;
+    target.theta = heading;
 
     return target;
 }
@@ -66,8 +44,8 @@ std::vector<double> BezierPath::binomialCoefficients(int n) {
 }
 
 // Creates a vector of a Bezier curve housing 1001 reference points
-std::vector<PoseStamped> BezierPath::setupPath(std::vector<PoseStamped>& points, const std::vector<double>& binomialCoef) {
-    std::vector<PoseStamped> reference_points;
+std::vector<Pose2D> BezierPath::setupPath(std::vector<Pose2D>& points, const std::vector<double>& binomialCoef) {
+    std::vector<Pose2D> reference_points;
     int index = 0;
     for (double t = 0.00; t <= 1.0; t += 0.001) {
         reference_points.push_back(pathBezier(points, t, binomialCoef)); 
@@ -77,11 +55,11 @@ std::vector<PoseStamped> BezierPath::setupPath(std::vector<PoseStamped>& points,
 }
 
 // Finds the closest t value to the robot using the vector created in setupPath()
-double BezierPath::closestT(std::vector<PoseStamped>& referencePoints, PoseStamped currentPos, double t, const std::vector<double>& binomialCoef) {
-    PoseStamped bezier = pathBezier(referencePoints, t, binomialCoef);
-    double pathX = bezier.pose.position.x;
-    double pathY = bezier.pose.position.y;
-    double min_distance = sqrt(pow(pathX - currentPos.pose.position.x, 2) + pow(pathY - currentPos.pose.position.y, 2));
+double BezierPath::closestT(std::vector<Pose2D>& referencePoints, Pose2D currentPos, double t, const std::vector<double>& binomialCoef) {
+    Pose2D bezier = pathBezier(referencePoints, t, binomialCoef);
+    double pathX = bezier.x;
+    double pathY = bezier.y;
+    double min_distance = sqrt(pow(pathX - currentPos.x, 2) + pow(pathY - currentPos.pose.y, 2));
     double new_t = t;
 
     double starting_t;
@@ -91,15 +69,12 @@ double BezierPath::closestT(std::vector<PoseStamped>& referencePoints, PoseStamp
         starting_t = 0;
     }
 
-    for (double i = starting_t; i <= 0.05 + t && t <= 1.0; i += 0.001) {
-        // std::cout << "i: " << i << std::endl;
+    for (double i = starting_t; i < 0.05 + t && t <= 1.0; i += 0.001) {
         bezier = pathBezier(referencePoints, i, binomialCoef);
-        pathX = bezier.pose.position.x * 100;
-        pathY = bezier.pose.position.y * 100;
+        pathX = bezier.x * 100;
+        pathY = bezier.y * 100;
 
-        double temp = sqrt(pow(pathX - currentPos.pose.position.x, 2) + pow(pathY - currentPos.pose.position.y, 2));
-        std::cout << "temp = " << temp << std::endl;
-        std::cout << "min_distance = " << min_distance << std::endl;
+        double temp = sqrt(pow(pathX - currentPos.x, 2) + pow(pathY - currentPos.y, 2));
         if (temp < min_distance) {
             min_distance = temp;
             new_t = i;
@@ -107,7 +82,7 @@ double BezierPath::closestT(std::vector<PoseStamped>& referencePoints, PoseStamp
         std::cout << "new t = " << new_t << std::endl;
     }
 
-    if(new_t+0.05 > 1.0){
+    if(new_t + 0.05 > 1.0){
         return 1.0;
     } else {
         return new_t + 0.05;

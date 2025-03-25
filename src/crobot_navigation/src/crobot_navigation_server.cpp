@@ -11,11 +11,6 @@ namespace crobot_navigation
         
         RCLCPP_INFO(this->get_logger(), "Starting navigation server!");
 
-        // TODO: we set the action type as nav2_msgs/NavigateToPose but I have already went ahead and created
-        //       an action that is a little bit more tailored to our needs in the action/NavigationGoalPoints.action
-        //       file. We need to switch the action type to that one, which may require messing with the CMakeLists.txt
-        //       for this package for it to register as a valid action type. Please see the ROS2 actions documentation
-        //       for information on how to set this up.
         this->action_server_ = rclcpp_action::create_server<NavigationGoalPoints>(
             this,
             "crobot_navigation",
@@ -35,14 +30,9 @@ namespace crobot_navigation
 
     void CrobotNavigationActionServer::odom_cb(const nav_msgs::msg::Odometry msg)
     {
-        currentPos.pose.position.x = msg.pose.pose.position.x;
-        currentPos.pose.position.y = msg.pose.pose.position.y;
-        currentPos.pose.position.z = msg.pose.pose.position.z;
-        currentPos.pose.orientation.x = msg.pose.pose.orientation.x;
-        currentPos.pose.orientation.y = msg.pose.pose.orientation.y;
-        currentPos.pose.orientation.z = msg.pose.pose.orientation.z;
-        currentPos.pose.orientation.w = msg.pose.pose.orientation.w;
-
+        currentPos.x = msg.x;
+        currentPos.y = msg.y;
+        currentPos.theta = msg.theta;
     }
 
     rclcpp_action::GoalResponse CrobotNavigationActionServer::handle_goal(const rclcpp_action::GoalUUID & uuid,
@@ -50,7 +40,7 @@ namespace crobot_navigation
     {
         RCLCPP_INFO(this->get_logger(), "Received goal points:");
         for (auto p : goal->points) {
-            RCLCPP_INFO(this->get_logger(), "\t(%f, %f)", p.pose.position.x, p.pose.position.y);
+            RCLCPP_INFO(this->get_logger(), "\t(%f, %f)", p.x, p.y);
         }
         (void)uuid;
         return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
@@ -79,7 +69,7 @@ namespace crobot_navigation
         auto result = std::make_shared<NavigationGoalPoints::Result>();
 
         BezierPath BP;
-        std::vector <PoseStamped> points = goal->points;
+        std::vector <Pose2D> points = goal->points;
         double currentT = 0.0;
         std::vector<double> binomialCoef = BP.binomialCoefficients(points.size() - 1);
 
@@ -89,16 +79,16 @@ namespace crobot_navigation
         while (rclcpp::ok()) {
             currentT = BP.closestT(points, currentPos, currentT, binomialCoef);
 
-            PoseStamped desired_pos = BP.pathBezier(points, currentT, binomialCoef);
+            RCLCPP_INFO(this->get_logger(), "t: %f, (%f, %f)", currentPos.x, currentPos.y);
 
-            RCLCPP_INFO(this->get_logger(), "t: %f, (%f, %f) -> (%f, %f)", currentT, currentPos.pose.position.x, currentPos.pose.position.y, desired_pos.pose.position.x, desired_pos.pose.position.y);
+            Pose2D desired_pos = BP.pathBezier(points, currentT, binomialCoef);
 
             // Implementing PID controller
 
             // PID Controller for X
             double Kp_X = 1.0; // Proportional Gain Constant (To be Fine Tuned)
 
-            double Error_X = desired_pos.pose.position.x - currentPos.pose.position.y;
+            double Error_X = desired_pos.x - currentPos.y;
             double Control_X = Kp_X * Error_X;
 
             // Publish Command Velocity for X
@@ -112,7 +102,7 @@ namespace crobot_navigation
             //PID Controller for Y
             double Kp_Y = 1.0; // Proportional Gain Constant (To be Fine Tuned)
 
-            double Error_Y = desired_pos.pose.position.y - currentPos.pose.position.y;
+            double Error_Y = desired_pos.y - currentPos.y;
             double Control_Y = Kp_Y * Error_Y;
 
             // Publish Command Velocity for Y
@@ -135,7 +125,7 @@ namespace crobot_navigation
             double r, p, y;
             m.getRPY(r, p, y);
 
-            double Error_H = desired_pos.pose.position.y - currentPos.pose.position.y;
+            double Error_H = desired_pos.y - currentPos.y;
             double Control_H = Kp_H * Error_H;
 
             // Publish Command Velocity for H
@@ -148,7 +138,7 @@ namespace crobot_navigation
             publisher_->publish(velocity_msg);
 
             // Stop running if t=1 and we're within threshold for a certain amount of time
-            if (abs(currentT - 1) <= 0.01) {
+            if (t == 1.0) {
                 //stop running
                 velocity_msg.linear.x = 0.0;
                 velocity_msg.linear.y = 0.0;

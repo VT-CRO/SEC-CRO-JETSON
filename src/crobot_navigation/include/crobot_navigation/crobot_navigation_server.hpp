@@ -13,6 +13,7 @@
 #include "crobot_msgs/action/navigation_points.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "crobot_navigation/BezierPath.hpp"
+#include <geometry_msgs/msg/pose2d.hpp>
 
 namespace crobot_navigation
 {
@@ -28,7 +29,7 @@ namespace crobot_navigation
             rclcpp_action::Server<NavigationGoalPoints>::SharedPtr action_server_;
             rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
             rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscription_;
-            PoseStamped currentPos;
+            Pose2D currentPos;
 
             rclcpp_action::GoalResponse handle_goal(
                 const rclcpp_action::GoalUUID & uuid,

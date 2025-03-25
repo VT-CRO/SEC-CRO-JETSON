@@ -31,21 +31,21 @@ public:
       std::bind(&NavActionClient::send_goal, this));
   }
 
-  void create_goal_points(std::vector<geometry_msgs::msg::PoseStamped> &points)
+  void create_goal_points(std::vector<geometry_msgs::msg::Pose2D> &points)
   {
-    geometry_msgs::msg::PoseStamped p0;
-    p0.pose.position.x = 0;
-    p0.pose.position.y = 0;
+    geometry_msgs::msg::Pose2D p0;
+    p0.x = 0;
+    p0.y = 0;
     points.push_back(p0);
 
-    geometry_msgs::msg::PoseStamped p1;
-    p1.pose.position.x = 0.2;
-    p1.pose.position.y = 0.1;
+    geometry_msgs::msg::Pose2D p1;
+    p1.x = 0.2;
+    p1.y = 0.1;
     points.push_back(p1);
 
-    geometry_msgs::msg::PoseStamped p2;
-    p2.pose.position.x = 0.6;
-    p2.pose.position.y = 0.3;
+    geometry_msgs::msg::Pose2D p2;
+    p2.x = 0.6;
+    p2.y = 0.3;
     points.push_back(p2);
   }
 
@@ -64,7 +64,7 @@ public:
     create_goal_points(goal_msg.points);
 
     for (auto p : goal_msg.points) {
-      RCLCPP_INFO(this->get_logger(), "Got position (%f, %f)", p.pose.position.x, p.pose.position.y);
+      RCLCPP_INFO(this->get_logger(), "Got position (%f, %f)", p.x, p.y);
     }
 
     RCLCPP_INFO(this->get_logger(), "Sending goal");

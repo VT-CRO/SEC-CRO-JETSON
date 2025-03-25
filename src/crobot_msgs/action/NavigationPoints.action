@@ -1,5 +1,5 @@
 #goal definition
-geometry_msgs/PoseStamped[] points
+geometry_msgs/Pose2D[] points
 ---
 #result definition
 

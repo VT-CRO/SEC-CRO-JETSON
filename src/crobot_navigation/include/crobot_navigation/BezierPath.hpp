@@ -3,10 +3,10 @@
 
 #include <vector>
 #include <cmath>
-#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/pose2d.hpp>
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
-using PoseStamped = geometry_msgs::msg::PoseStamped;
+using Pose2D = geometry_msgs::msg::Pose2D;
 
 class BezierPath {
 
@@ -18,16 +18,16 @@ class BezierPath {
         // Bezier Functions //
        
         // Generates a point on a given bezier curve given the points and t value
-        PoseStamped pathBezier(const std::vector<PoseStamped>& points, double t, const std::vector<double>& binomialCoef);
+        Pose2D pathBezier(const std::vector<Pose2D>& points, double t, const std::vector<double>& binomialCoef);
 
         // Used for generating bezier curves of a higher order.
         std::vector<double> binomialCoefficients(int n);
 
         // Creates a vector of a Bezier curve housing 1001 reference points
-        std::vector<PoseStamped> setupPath(std::vector<PoseStamped>& points, const std::vector<double>& binomialCoef);
+        std::vector<Pose2D> setupPath(std::vector<Pose2D>& points, const std::vector<double>& binomialCoef);
 
         // Finds the closest t value to the robot using the vector created in setupPath()
-        double closestT(std::vector<PoseStamped>& points, PoseStamped currentPos, double currentT, const std::vector<double>& binomialCoef);       
+        double closestT(std::vector<Pose2D>& points, Pose2D currentPos, double currentT, const std::vector<double>& binomialCoef);       
 };
 
 #endif
