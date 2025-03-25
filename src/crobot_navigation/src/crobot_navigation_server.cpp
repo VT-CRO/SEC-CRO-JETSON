@@ -138,7 +138,7 @@ namespace crobot_navigation
             publisher_->publish(velocity_msg);
 
             // Stop running if t=1 and we're within threshold for a certain amount of time
-            if (t == 1.0) {
+            if (Error_X < 1 && Error_Y < 1 && Error_Z < 1) {
                 //stop running
                 velocity_msg.linear.x = 0.0;
                 velocity_msg.linear.y = 0.0;

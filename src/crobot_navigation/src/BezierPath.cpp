@@ -71,8 +71,8 @@ double BezierPath::closestT(std::vector<Pose2D>& referencePoints, Pose2D current
 
     for (double i = starting_t; i < 0.05 + t && t <= 1.0; i += 0.001) {
         bezier = pathBezier(referencePoints, i, binomialCoef);
-        pathX = bezier.x * 100;
-        pathY = bezier.y * 100;
+        pathX = bezier.x;
+        pathY = bezier.y;
 
         double temp = sqrt(pow(pathX - currentPos.x, 2) + pow(pathY - currentPos.y, 2));
         if (temp < min_distance) {
