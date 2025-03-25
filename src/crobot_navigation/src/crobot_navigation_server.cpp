@@ -89,9 +89,9 @@ namespace crobot_navigation
         while (rclcpp::ok()) {
             currentT = BP.closestT(points, currentPos, currentT, binomialCoef);
 
-            RCLCPP_INFO(this->get_logger(), "t: %f, (%f, %f)", currentPos.pose.position.x, currentPos.pose.position.y);
+            PoseStamped desired_pos = BP.pathBezier(points, currentT, binomialCoef);
 
-            PoseStamped desired_pos = BP.pathBezier(points, t, binomialCoef);
+            RCLCPP_INFO(this->get_logger(), "t: %f, (%f, %f) -> (%f, %f)", currentT, currentPos.pose.position.x, currentPos.pose.position.y, desired_pos.pose.position.x, desired_pos.pose.position.y);
 
             // Implementing PID controller
 
@@ -148,7 +148,7 @@ namespace crobot_navigation
             publisher_->publish(velocity_msg);
 
             // Stop running if t=1 and we're within threshold for a certain amount of time
-            if (t == 1.0) {
+            if (abs(currentT - 1) <= 0.01) {
                 //stop running
                 velocity_msg.linear.x = 0.0;
                 velocity_msg.linear.y = 0.0;

@@ -34,14 +34,19 @@ public:
   void create_goal_points(std::vector<geometry_msgs::msg::PoseStamped> &points)
   {
     geometry_msgs::msg::PoseStamped p0;
-    p0.pose.position.x = 0.1;
-    p0.pose.position.y = 0.1;
+    p0.pose.position.x = 0;
+    p0.pose.position.y = 0;
     points.push_back(p0);
 
     geometry_msgs::msg::PoseStamped p1;
-    p0.pose.position.x = 0.2;
-    p0.pose.position.y = 0.1;
+    p1.pose.position.x = 0.2;
+    p1.pose.position.y = 0.1;
     points.push_back(p1);
+
+    geometry_msgs::msg::PoseStamped p2;
+    p2.pose.position.x = 0.6;
+    p2.pose.position.y = 0.3;
+    points.push_back(p2);
   }
 
   void send_goal()
