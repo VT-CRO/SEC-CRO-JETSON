@@ -39,13 +39,13 @@ public:
     points.push_back(p0);
 
     geometry_msgs::msg::Pose2D p1;
-    p1.x = 0.2;
-    p1.y = 0.1;
+    p1.x = 20;
+    p1.y = 0;
     points.push_back(p1);
 
     geometry_msgs::msg::Pose2D p2;
-    p2.x = 0.6;
-    p2.y = 0.3;
+    p2.x = 20;
+    p2.y = 20;
     points.push_back(p2);
   }
 

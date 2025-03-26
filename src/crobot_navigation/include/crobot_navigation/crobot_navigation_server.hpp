@@ -13,7 +13,7 @@
 #include "crobot_msgs/action/navigation_points.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "crobot_navigation/BezierPath.hpp"
-#include <geometry_msgs/msg/pose2d.hpp>
+#include <geometry_msgs/msg/pose2_d.hpp>
 
 namespace crobot_navigation
 {

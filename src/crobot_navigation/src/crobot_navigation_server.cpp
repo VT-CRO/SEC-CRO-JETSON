@@ -30,9 +30,20 @@ namespace crobot_navigation
 
     void CrobotNavigationActionServer::odom_cb(const nav_msgs::msg::Odometry msg)
     {
-        currentPos.x = msg.x;
-        currentPos.y = msg.y;
-        currentPos.theta = msg.theta;
+        currentPos.x = msg.pose.pose.position.x * 100;
+        currentPos.y = msg.pose.pose.position.y * 100;
+
+        tf2::Quaternion q(
+            msg.pose.pose.orientation.x,
+            msg.pose.pose.orientation.y,
+            msg.pose.pose.orientation.z,
+            msg.pose.pose.orientation.w);
+
+        tf2::Matrix3x3 m(q);
+        double r, p, y;
+        m.getRPY(r, p, y);
+
+        currentPos.theta = y;
     }
 
     rclcpp_action::GoalResponse CrobotNavigationActionServer::handle_goal(const rclcpp_action::GoalUUID & uuid,
@@ -86,7 +97,7 @@ namespace crobot_navigation
             // Implementing PID controller
 
             // PID Controller for X
-            double Kp_X = 1.0; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_X = 0.01; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_X = desired_pos.x - currentPos.y;
             double Control_X = Kp_X * Error_X;
@@ -100,7 +111,7 @@ namespace crobot_navigation
             
 
             //PID Controller for Y
-            double Kp_Y = 1.0; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_Y = 0.01; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_Y = desired_pos.y - currentPos.y;
             double Control_Y = Kp_Y * Error_Y;
@@ -113,19 +124,9 @@ namespace crobot_navigation
             velocity_msg.linear.y = Control_Y;  // Set the desired velocities
 
             //PID Controller for H
-            double Kp_H = 1.0; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_H = 1; // Proportional Gain Constant (To be Fine Tuned)
 
-            tf2::Quaternion q(
-                desired_pos.pose.orientation.x,
-                desired_pos.pose.orientation.y,
-                desired_pos.pose.orientation.z,
-                desired_pos.pose.orientation.w);
-
-            tf2::Matrix3x3 m(q);
-            double r, p, y;
-            m.getRPY(r, p, y);
-
-            double Error_H = desired_pos.y - currentPos.y;
+            double Error_H = desired_pos.theta - currentPos.theta;
             double Control_H = Kp_H * Error_H;
 
             // Publish Command Velocity for H
@@ -138,7 +139,10 @@ namespace crobot_navigation
             publisher_->publish(velocity_msg);
 
             // Stop running if t=1 and we're within threshold for a certain amount of time
-            if (Error_X < 1 && Error_Y < 1 && Error_Z < 1) {
+            // if (Error_X < 1 && Error_Y < 1 && Error_H < 1) {
+            auto endPos = points.back();
+            if (abs(endPos.x - currentPos.x) < 0.01 && abs(endPos.y - currentPos.y) < 0.01 && abs(endPos.theta - currentPos.theta) < 0.0175)
+            {
                 //stop running
                 velocity_msg.linear.x = 0.0;
                 velocity_msg.linear.y = 0.0;

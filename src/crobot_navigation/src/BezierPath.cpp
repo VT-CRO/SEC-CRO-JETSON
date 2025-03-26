@@ -59,7 +59,7 @@ double BezierPath::closestT(std::vector<Pose2D>& referencePoints, Pose2D current
     Pose2D bezier = pathBezier(referencePoints, t, binomialCoef);
     double pathX = bezier.x;
     double pathY = bezier.y;
-    double min_distance = sqrt(pow(pathX - currentPos.x, 2) + pow(pathY - currentPos.pose.y, 2));
+    double min_distance = sqrt(pow(pathX - currentPos.x, 2) + pow(pathY - currentPos.y, 2));
     double new_t = t;
 
     double starting_t;
@@ -79,7 +79,7 @@ double BezierPath::closestT(std::vector<Pose2D>& referencePoints, Pose2D current
             min_distance = temp;
             new_t = i;
         }
-        std::cout << "new t = " << new_t << std::endl;
+        // std::cout << "new t = " << new_t << std::endl;
     }
 
     if(new_t + 0.05 > 1.0){
