@@ -21,7 +21,7 @@ namespace crobot_navigation
         
 
         // Publisher for command velocity
-        publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
+        publisher_ = this->create_publisher<geometry_msgs::msg::TwistStamped>("/cmd_vel", 10);
 
         // Subscriber for odometry
         subscription_ = this->create_subscription<nav_msgs::msg::Odometry>(
@@ -30,8 +30,8 @@ namespace crobot_navigation
 
     void CrobotNavigationActionServer::odom_cb(const nav_msgs::msg::Odometry msg)
     {
-        currentPos.x = msg.pose.pose.position.x * 100;
-        currentPos.y = msg.pose.pose.position.y * 100;
+        currentPos.x = msg.pose.pose.position.x;
+        currentPos.y = msg.pose.pose.position.y;
 
         tf2::Quaternion q(
             msg.pose.pose.orientation.x,
@@ -44,6 +44,8 @@ namespace crobot_navigation
         m.getRPY(r, p, y);
 
         currentPos.theta = y;
+
+        // RCLCPP_INFO(this->get_logger(), "Received current position: %f, %f, %f", currentPos.x, currentPos.y, currentPos.theta);
     }
 
     rclcpp_action::GoalResponse CrobotNavigationActionServer::handle_goal(const rclcpp_action::GoalUUID & uuid,
@@ -90,28 +92,27 @@ namespace crobot_navigation
         while (rclcpp::ok()) {
             currentT = BP.closestT(points, currentPos, currentT, binomialCoef);
 
-            RCLCPP_INFO(this->get_logger(), "t: %f, (%f, %f)", currentPos.x, currentPos.y);
-
             Pose2D desired_pos = BP.pathBezier(points, currentT, binomialCoef);
+
+            RCLCPP_INFO(this->get_logger(), "(%f, %f) -> (%f, %f)", currentPos.x, currentPos.y, desired_pos.x, desired_pos.y);
 
             // Implementing PID controller
 
             // PID Controller for X
-            double Kp_X = 0.01; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_X = 0.0; // Proportional Gain Constant (To be Fine Tuned)
 
-            double Error_X = desired_pos.x - currentPos.y;
+            double Error_X = desired_pos.x - currentPos.x;
             double Control_X = Kp_X * Error_X;
 
             // Publish Command Velocity for X
             // auto velocity_msg = geometry_msgs::msg::Twist();
             // velocity_msg.linear.x = Control_X;
             // this->velocity_publisher_->publish(velocity_msg);
-            geometry_msgs::msg::Twist velocity_msg;
-            velocity_msg.linear.x = Control_X;  // Set the desired velocities
-            
+            geometry_msgs::msg::TwistStamped velocity_msg;
+            velocity_msg.twist.linear.x = Control_X;  // Set the desired velocities
 
             //PID Controller for Y
-            double Kp_Y = 0.01; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_Y = 0.1; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_Y = desired_pos.y - currentPos.y;
             double Control_Y = Kp_Y * Error_Y;
@@ -121,10 +122,10 @@ namespace crobot_navigation
             // velocity_msg.linear.y = Control_Y;
             // this->velocity_publisher_->publish(velocity_msg);
             // geometry_msgs::msg::Twist velocity_msg;
-            velocity_msg.linear.y = Control_Y;  // Set the desired velocities
+            velocity_msg.twist.linear.y = Control_Y;  // Set the desired velocities
 
             //PID Controller for H
-            double Kp_H = 1; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_H = 0; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_H = desired_pos.theta - currentPos.theta;
             double Control_H = Kp_H * Error_H;
@@ -134,8 +135,9 @@ namespace crobot_navigation
             // velocity_msg.angular.z = Control_H;
             // this->velocity_publisher_->publish(velocity_msg);
             // geometry_msgs::msg::Twist velocity_msg;
-            velocity_msg.angular.z = Control_H;  // Set the desired velocities
+            velocity_msg.twist.angular.z = Control_H;  // Set the desired velocities
 
+            velocity_msg.header.stamp = this->get_clock()->now();
             publisher_->publish(velocity_msg);
 
             // Stop running if t=1 and we're within threshold for a certain amount of time
@@ -144,9 +146,9 @@ namespace crobot_navigation
             if (abs(endPos.x - currentPos.x) < 0.01 && abs(endPos.y - currentPos.y) < 0.01 && abs(endPos.theta - currentPos.theta) < 0.0175)
             {
                 //stop running
-                velocity_msg.linear.x = 0.0;
-                velocity_msg.linear.y = 0.0;
-                velocity_msg.angular.z = 0.0;
+                velocity_msg.twist.linear.x = 0.0;
+                velocity_msg.twist.linear.y = 0.0;
+                velocity_msg.twist.angular.z = 0.0;
 
                 publisher_->publish(velocity_msg);
 

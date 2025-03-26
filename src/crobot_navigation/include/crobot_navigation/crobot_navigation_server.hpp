@@ -27,7 +27,7 @@ namespace crobot_navigation
 
         private:
             rclcpp_action::Server<NavigationGoalPoints>::SharedPtr action_server_;
-            rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
+            rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr publisher_;
             rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscription_;
             Pose2D currentPos;
 

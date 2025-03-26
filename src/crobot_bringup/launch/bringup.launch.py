@@ -70,12 +70,24 @@ def generate_launch_description():
         )
     )
 
+    crobot_nav_server = Node(
+        package='crobot_navigation',
+        executable='crobot_navigation_server',
+        name='crobot_navigation_server',
+        output='screen',
+        remappings=[
+            ('/odom', '/crobot_drive_controller/odometry'),
+            ('/cmd_vel', '/crobot_drive_controller/cmd_vel_stamped')
+        ]
+    )
+
     nodes = [
         rsp,
         control_node,
         joint_state_broadcaster_spawner,
         delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
-        delay_gpio_controller_spawner_after_joint_state_broadcaster_spawner
+        delay_gpio_controller_spawner_after_joint_state_broadcaster_spawner,
+        crobot_nav_server
     ]
 
     return LaunchDescription(nodes)

@@ -286,7 +286,6 @@ namespace crobot_hardware
         std::size_t n = comms_.readBytes(read_buff, 128);
         std::string s(read_buff);
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Read %ld bytes: %s", n, s.c_str());
-        comms_.flush();
 
         j = json::parse(s, nullptr, false);
 
