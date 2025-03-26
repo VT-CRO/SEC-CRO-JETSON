@@ -2,5 +2,6 @@
     "files.associations": {
         "*.ejs": "html",
         "ostream": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/mnt/c/Users/msoli/Documents/vt-cro/SEC-CRO-JETSON/src/behaviortree_ros2"
 }
