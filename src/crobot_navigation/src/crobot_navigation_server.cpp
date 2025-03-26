@@ -91,6 +91,7 @@ namespace crobot_navigation
         // // Main loop for Implementation
         while (rclcpp::ok()) {
             currentT = BP.closestT(points, currentPos, currentT, binomialCoef);
+            std::cout << currentT << "\n" << std::endl;
 
             Pose2D desired_pos = BP.pathBezier(points, currentT, binomialCoef);
 
@@ -99,7 +100,7 @@ namespace crobot_navigation
             // Implementing PID controller
 
             // PID Controller for X
-            double Kp_X = 0.0; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_X = 0.1; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_X = desired_pos.x - currentPos.x;
             double Control_X = Kp_X * Error_X;
@@ -112,7 +113,7 @@ namespace crobot_navigation
             velocity_msg.twist.linear.x = Control_X;  // Set the desired velocities
 
             //PID Controller for Y
-            double Kp_Y = 0.1; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_Y = -0.1; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_Y = desired_pos.y - currentPos.y;
             double Control_Y = Kp_Y * Error_Y;
@@ -143,7 +144,7 @@ namespace crobot_navigation
             // Stop running if t=1 and we're within threshold for a certain amount of time
             // if (Error_X < 1 && Error_Y < 1 && Error_H < 1) {
             auto endPos = points.back();
-            if (abs(endPos.x - currentPos.x) < 0.01 && abs(endPos.y - currentPos.y) < 0.01 && abs(endPos.theta - currentPos.theta) < 0.0175)
+            if (abs(endPos.x - currentPos.x) < 0.01 && abs(endPos.y - currentPos.y) < 0.01 && abs(endPos.theta - currentPos.theta) < 1)
             {
                 //stop running
                 velocity_msg.twist.linear.x = 0.0;

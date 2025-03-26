@@ -39,14 +39,15 @@ public:
     points.push_back(p0);
 
     geometry_msgs::msg::Pose2D p1;
-    p1.x = 0;
-    p1.y = 20;
+    p1.x = 80;
+    p1.y = 80;
+    // p1.theta = 90;
     points.push_back(p1);
 
-    // geometry_msgs::msg::Pose2D p2;
-    // p2.x = 20;
-    // p2.y = 20;
-    // points.push_back(p2);
+    geometry_msgs::msg::Pose2D p2;
+    p2.x = 10;
+    p2.y = -20;
+    points.push_back(p2);
   }
 
   void send_goal()

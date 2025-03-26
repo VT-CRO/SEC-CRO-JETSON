@@ -1,16 +1,71 @@
 <root BTCPP_format="4" >
     <BehaviorTree ID="MainTree">
-        <Sequence name="root_sequence">
-            <!-- <Start name="start"/> -->
-            <!-- <SetBeacon   name="setBeacon" setBeacon="true"/> -->
-            <!-- <SetChassisVelocity name="set_vel" target="0;0;0"/> -->
-            <GoToPose   name="navigate_to_pose_action_client1" goalPose="2;2;0"/>
-            
-            <!-- <Start      name="start"/>
-            
-            <GoToPose   name="navigate_to_pose_action_client2" goalPose="2;-2;0"/>
-            <GoToPose   name="navigate_to_pose_action_client3" goalPose="-2;-2;0"/>
-            <GoToPose   name="navigate_to_pose_action_client4" goalPose="-2;2;0"/> -->
-        </Sequence>
+        <RetryUntilSuccessful name="retry" num_attempts="-1">
+            <SequenceWithMemory name="root_sequence">
+                <!-- <Start name="start"/>
+                <SetBeacon   name="setBeacon" setBeacon="true"/> -->
+
+                <!-- Move forward from the start position -->
+                <SetChassisVelocity name="set_vel" target="0.13;0;0" duration_s="2.9"/> 
+                <!-- <SetBinIntake   name="setBinIntake1" setBinIntake="true"/>
+                <SetBeacon   name="setBeacon" setBeacon="true"/> -->
+
+                <!-- Move left for the beacon -->
+                <SetChassisVelocity name="set_vel" target="0;0.12;0" duration_s="4"/>
+                <!-- <SetBinIntake   name="setBinIntake2" setBinIntake="false"/>
+                <SetBeacon   name="setBeacon" setBeacon="false"/> -->
+
+                <!-- Stop at the beacon position for 4 secosnds -->
+                <SetChassisVelocity name="set_vel" target="0;0;0" duration_s="4"/>
+
+                <!-- go back to the X axis of the Bin -->
+                <SetChassisVelocity name="set_vel" target="0;-0.16;0" duration_s="3"/>
+
+                <!-- Rotate 180 degrees for the bin intake -->
+                <SetChassisVelocity name="set_vel" target="0;0;0.67" duration_s="11"/>
+
+                <!-- Move towards the bin (BACKWARDS) -->
+                <SetChassisVelocity name="set_vel" target="-0.13;0;0" duration_s="2"/>
+
+
+
+                <!-- wait for 2 seconds -->
+                <SetChassisVelocity name="set_vel" target="0;0;0" duration_s="2"/>
+
+                <!-- move out of the bin and get to the centre -->
+                <SetChassisVelocity name="set_vel" target="0.13;0;0" duration_s="2.9"/>
+
+                <!-- rotate towards the cave -->
+                <SetChassisVelocity name="set_vel" target="0;0;0.72" duration_s="5.95"/>
+
+                <!-- Move into the CAVE -->
+                <SetChassisVelocity name="set_vel" target="0.15;0;0" duration_s="9"/>
+
+                <!-- Sweep in the cave -->
+                <SetChassisVelocity name="set_vel" target="0;0;0.72" duration_s="5.95"/>
+                <SetChassisVelocity name="set_vel" target="0;0.1;0" duration_s="1"/>
+                <SetChassisVelocity name="set_vel" target="0.1;0;0" duration_s="3"/>
+                <SetChassisVelocity name="set_vel" target="0;0;-0.72" duration_s="5.95"/>
+                <SetChassisVelocity name="set_vel" target="0.1;0;0" duration_s="2"/>
+                <SetChassisVelocity name="set_vel" target="0;0;-0.72" duration_s="5.95"/>
+                <SetChassisVelocity name="set_vel" target="0.1;0;0" duration_s="2"/>
+                <SetChassisVelocity name="set_vel" target="0;0;-0.72" duration_s="5.95"/>
+                <SetChassisVelocity name="set_vel" target="0.14;0;0" duration_s="7"/>
+
+                <!-- stop for 10 seconds -->
+                <SetChassisVelocity name="set_vel" target="0;0;0" duration_s="10"/>
+
+                <!--<SetChassisVelocity name="set_vel" target="0.13;0;0" duration_s="2"/>
+                <SetChassisVelocity name="set_vel" target="-0.1;0;0" duration_s="3"/>
+                <SetChassisVelocity name="set_vel" target="0.1;0;0" duration_s="3"/> -->
+                <!-- <GoToPose   name="navigate_to_pose_action_client1" goalPose="2;2;0"/> -->
+                
+                <!-- <Start      name="start"/>
+                
+                <GoToPose   name="navigate_to_pose_action_client2" goalPose="2;-2;0"/>
+                <GoToPose   name="navigate_to_pose_action_client3" goalPose="-2;-2;0"/>
+                <GoToPose   name="navigate_to_pose_action_client4" goalPose="-2;2;0"/> -->
+            </SequenceWithMemory>
+        </RetryUntilSuccessful name="retry">
     </BehaviorTree>
 </root>
