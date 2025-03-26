@@ -14,6 +14,7 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "crobot_navigation/BezierPath.hpp"
 #include <geometry_msgs/msg/pose2_d.hpp>
+#include "crobot_navigation/odom_go_to_position"
 
 namespace crobot_navigation
 {
