@@ -13,7 +13,7 @@ public:
 
   static BT::PortsList providedPorts()
   {
-    return { BT::InputPort<std::string>("setBinIntake")};
+    return {BT::InputPort<std::string>("setBinIntake")};
   }
 
   // You must override the virtual function tick()
