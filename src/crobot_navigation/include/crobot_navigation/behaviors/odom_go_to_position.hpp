@@ -16,10 +16,38 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include "behaviortree_cpp/behavior_tree.h"
 #include <geometry_msgs/msg/pose2_d.hpp>
+#include <vector>
+#include <cmath>
 
-
-using NavigationGoalPoints = crobot_msgs::action::NavigationPoints;
+using NavPoints = crobot_msgs::action::NavigationPoints;
 using GoalHandleNav = rclcpp_action::ServerGoalHandle<NavigationGoalPoints>;
+
+namespace BT{
+    template <> inline NavGoalPoints::Goal convertFromString(StringView str)
+    {
+        auto points = splitString(str, ';');
+        if (points.size() <= 0)
+        {
+            throw RuntimeError("invalid input");
+        } else {
+            auto navGoal = NavGoalPoints::Goal();
+            for (int i = 0; i < points.size(); i++) {
+                auto parts = splitString(points[i], ',');
+                if (parts.size() != 3) {
+                    throw RuntimeError("invalid input");
+                }
+                double radians = parts[2] * M_PI / 180.0;
+                Pose2D pose;
+                pose.x = parts[0];
+                pose.y = parts[1];
+                post.theta = radians;
+                navGoal.points.push_back(pose);
+            }
+
+            return navGoal;
+        }
+    }
+}
 
 class GoToPoseWithOdometry : public BT::StatefulActionNode
 {
@@ -36,22 +64,16 @@ class GoToPoseWithOdometry : public BT::StatefulActionNode
 
     private:
         rclcpp::Node::SharedPtr node_ptr_;
-        rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
-        rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_pub_;
-
-        Pose2D current_pose_;
-        Pose2D goal_pose_;
-
-        // PID controller values 
-        // should we have them here or keep them in crobot_navigation_server?
-        double Kp_X = 0.1;
-        double Kp_Y = 0.1;
-        double Kp_H = 0;
+        rclcpp_action::Client<NavPoints>::SharedPtr action_client_ptr_;
 
         bool  done_flag_;
 
-        void odom_gtp_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+        NavPoints _action_msg;
+
+        void nav_to_pose_callback(const GoalHandleNav::WrappedResult &result);
 };
+
+
 
 
 #endif

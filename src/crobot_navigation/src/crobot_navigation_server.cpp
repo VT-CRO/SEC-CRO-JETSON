@@ -86,9 +86,9 @@ namespace crobot_navigation
         double currentT = 0.0;
         std::vector<double> binomialCoef = BP.binomialCoefficients(points.size() - 1);
 
-        BP.setupPath(points, binomialCoef); //Running Res's setupPath function
+        BP.setupPath(points, binomialCoef);
         
-        // // Main loop for Implementation
+        // Main loop for Implementation
         while (rclcpp::ok()) {
             currentT = BP.closestT(points, currentPos, currentT, binomialCoef);
             std::cout << currentT << "\n" << std::endl;
