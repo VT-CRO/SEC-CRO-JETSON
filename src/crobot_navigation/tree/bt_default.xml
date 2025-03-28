@@ -28,8 +28,9 @@
 
     <BehaviorTree ID="Sweep">
         <Sequence name="sweep_sequence">
-            <GoToPose name="goToPose1" goalPoints="56,215,0;56,168,0"/>
-            <GoToPose name="goToPose2" goalPoints="56,168,0;80,168,0"/>
+            <GoToPose name="goToPose1" goalPoints="56,215,0;56,170,90"/>
+            <GoToPose name="goToPose1" goalPoints="56,170,90;56,221,0"/>
+
             <!-- Do bin pickup -->
         </Sequence>
     </BehaviorTree>
