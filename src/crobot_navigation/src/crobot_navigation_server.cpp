@@ -30,8 +30,8 @@ namespace crobot_navigation
 
     void CrobotNavigationActionServer::odom_cb(const nav_msgs::msg::Odometry msg)
     {
-        currentPos.x = msg.pose.pose.position.x * 100;
-        currentPos.y = msg.pose.pose.position.y * 100;
+        currentPos.x = (msg.pose.pose.position.x * 100) + 15;
+        currentPos.y = (msg.pose.pose.position.y * 100) + 155;
 
         tf2::Quaternion q(
             msg.pose.pose.orientation.x,
@@ -102,7 +102,7 @@ namespace crobot_navigation
             // Implementing PID controller
 
             // PID Controller for X
-            double Kp_X = 0.01; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_X = 0.1; // Proportional Gain Constant (To be Fine Tuned)
             // double Kp_X = 0;
 
             double Error_X = desired_pos.x - currentPos.x;
@@ -114,7 +114,7 @@ namespace crobot_navigation
             // this->velocity_publisher_->publish(velocity_msg);
 
             //PID Controller for Y
-            double Kp_Y = 0.05; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_Y = 0.1; // Proportional Gain Constant (To be Fine Tuned)
             // double Kp_Y = 0;
 
             double Error_Y = desired_pos.y - currentPos.y;
@@ -127,7 +127,7 @@ namespace crobot_navigation
             // geometry_msgs::msg::Twist velocity_msg;
 
             //PID Controller for H
-            double Kp_H = 1; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_H = 2; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_H = desired_pos.theta - currentPos.theta;
             double Control_H = Kp_H * Error_H;
@@ -147,7 +147,7 @@ namespace crobot_navigation
             // Stop running if t=1 and we're within threshold for a certain amount of time
             // if (Error_X < 1 && Error_Y < 1 && Error_H < 1) {
             auto endPos = points.back();
-            if (abs(endPos.x - currentPos.x) <= 0.1 && abs(endPos.y - currentPos.y) <= 0.1 && abs(endPos.theta - currentPos.theta) <= 0.1)
+            if (abs(endPos.x - currentPos.x) <= 0.1 && abs(endPos.y - currentPos.y) <= 0.1 && abs(endPos.theta - currentPos.theta) <= 0.01)
             {
                 //stop running
 

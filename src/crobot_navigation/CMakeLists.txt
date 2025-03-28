@@ -19,6 +19,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   tf2_geometry_msgs
   control_msgs
   crobot_msgs
+  apriltag_msgs
 )
 
 # find dependencies
@@ -32,10 +33,13 @@ endforeach()
 include_directories(include)
 add_executable(crobot_navigation_node 
   src/behavior_node.cpp 
-  src/go_to_position.cpp
   src/start.cpp
   src/set_beacon.cpp
+  src/set_bin_intake.cpp
+  src/set_sorting.cpp
+  src/apriltag_id_subscriber.cpp
   src/set_chassis_velocity.cpp
+  src/odom_go_to_position.cpp
 )
 ament_target_dependencies(crobot_navigation_node ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_link_libraries(crobot_navigation_node ${YAML_CPP_LIBRARIES})

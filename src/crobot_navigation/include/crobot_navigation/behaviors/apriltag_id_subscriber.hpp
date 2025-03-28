@@ -4,18 +4,17 @@
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/bt_factory.h>
 #include <apriltag_msgs/msg/april_tag_detection_array.hpp>
-#include <nav2_msgs/action/navigate_to_pose.hpp>
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include "crobot_navigation/BezierPath.hpp"
+#include "crobot_msgs/action/navigation_points.hpp"
+#include <geometry_msgs/msg/pose2_d.hpp>
 
 #include <optional>
 #include <thread>
 #include <vector>
 // using namespace std;
-using NavPose = nav2_msgs::action::NavigateToPose;
-using NavGoal = nav2_msgs::action::NavigateToPose_Goal;
-
-NavGoal MakeNavGoal(float x, float y, float th);
+using NavPoints = crobot_msgs::action::NavigationPoints;
+using NavPointsGoal = crobot_msgs::action::NavigationPoints::Goal;
+using Pose2D = geometry_msgs::msg::Pose2D;
 
 class AprilTagSubscriberID : public BT::StatefulActionNode {
 public:
@@ -29,12 +28,13 @@ public:
     static BT::PortsList providedPorts();
 
 private:
+    void preparePoints();
     void callback(const apriltag_msgs::msg::AprilTagDetectionArray::SharedPtr msg);
 
     std::shared_ptr<rclcpp::Node> node_;
     rclcpp::Subscription<apriltag_msgs::msg::AprilTagDetectionArray>::SharedPtr subscription_;
     std::optional<int> last_detected_id;
-    NavGoal positions [5] = {MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0)};
+    std::vector<NavPointsGoal> positions [5];
     bool detection = false;
 };
 

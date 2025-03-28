@@ -198,8 +198,14 @@ namespace crobot_hardware
         ));
 
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            "crobot_systems", "sorting", &sorting
+        ));
+
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
             "crobot_systems", "start_robot", &run
         ));
+
 
         return command_interfaces;
     }
@@ -245,10 +251,14 @@ namespace crobot_hardware
             RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"), "Could not connect to device!");
             return hardware_interface::CallbackReturn::ERROR;
         }
-        if (cfg_.pid_p > 0)
-        {
-            // comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
-        }
+
+        json j;
+        j["header"]["message_type"] = RESET;
+
+        std::string req = j.dump();
+
+        comms_.writeBytes(req.c_str(), req.size());
+
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Successfully activated!");
 
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -322,9 +332,12 @@ namespace crobot_hardware
             wheel_back_left.cmd
         };
 
-        j["lower_beacon"] = lower_beacon;
-        j["run"] = 1;
+        j["beacon"] = lower_beacon;
+        j["run"] = run;
         j["bin_intake"] = bin_intake;
+        j["sorting"] = sorting;
+        j["vibrate"] = 0;
+
 
         std::string s = j.dump();
 

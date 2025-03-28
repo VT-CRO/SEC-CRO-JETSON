@@ -63,6 +63,7 @@
             <command_interface name="bin_intake"/>
             <command_interface name="beacon"/>
             <command_interface name="start_robot"/>
+            <command_interface name="sorting"/>
             <state_interface name="start_led">
                 <param name="initial_value">0.0</param>
             </state_interface>

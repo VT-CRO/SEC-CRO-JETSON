@@ -1,6 +1,6 @@
-#include "crobot_navigation/behaviors/set_bin_intake.hpp"
+#include "crobot_navigation/behaviors/set_sorting.hpp"
 
-SetBinIntake::SetBinIntake(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr) :
+SetSorting::SetSorting(const std::string &name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node_ptr) :
       BT::SyncActionNode(name, config),  // Fix the constructor initialization list
       node_ptr_(node_ptr)
 {
@@ -9,19 +9,19 @@ SetBinIntake::SetBinIntake(const std::string &name, const BT::NodeConfig& config
 
 // static BT::PortsList SetBeacon::providedPorts() 
 
-  BT::NodeStatus SetBinIntake::tick() 
+  BT::NodeStatus SetSorting::tick() 
   {
-    auto setBinIntake = getInput<std::string>("setBinIntake");
+    auto setSorting = getInput<std::string>("setSorting");
 
-    if ( !setBinIntake ) {
-      throw BT::RuntimeError("error reading port [setBinIntake]: ", setBinIntake.error());
+    if ( !setSorting ) {
+      throw BT::RuntimeError("error reading port [setBeacon]: ", setSorting.error());
     }
 
-    if (setBinIntake.value() == "in") {
+    if (setSorting.value() == "center") {
       val = 0;
-     } else if (setBinIntake.value() == "out") {
+    } else if (setSorting.value() == "geo"){
       val = 1;
-    } else if (setBinIntake.value() == "off") {
+    } else if (setSorting.value() == "neb"){
       val = 2;
     } else {
       throw BT::RuntimeError("invalid input!");
@@ -31,7 +31,7 @@ SetBinIntake::SetBinIntake(const std::string &name, const BT::NodeConfig& config
     msg.interface_groups = {"crobot_systems"};
 
     auto interface = InterfaceValue();
-    interface.interface_names = {"bin_intake"};
+    interface.interface_names = {"sorting"};
 
     interface.values = {val};
     msg.interface_values = {interface};
