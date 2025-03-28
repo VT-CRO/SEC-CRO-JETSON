@@ -8,7 +8,6 @@ GoToPoseWithOdometry::GoToPoseWithOdometry(const std::string& name, const BT::No
     "crobot_navigation"
   );
   done_flag_ = false;
-  currentPos = {0.0, 0.0, 0.0};
 }
 
 BT::PortsList GoToPoseWithOdometry::providedPorts()

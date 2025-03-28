@@ -7,6 +7,7 @@
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <geometry_msgs/msg/pose2_d.hpp>
 
 #include <optional>
 #include <thread>
@@ -34,7 +35,8 @@ private:
     std::shared_ptr<rclcpp::Node> node_;
     rclcpp::Subscription<apriltag_msgs::msg::AprilTagDetectionArray>::SharedPtr subscription_;
     std::optional<int> last_detected_id;
-    NavGoal positions [5] = {MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0), MakeNavGoal(0, 0, 0)};
+
+    vector<Pose2D> positions{(215, 10, 0), (215, 33, 0), (215, 56, 0), (215, 79, 0), (215, 102, 0)};
     bool detection = false;
 };
 
