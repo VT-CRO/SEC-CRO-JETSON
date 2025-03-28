@@ -102,7 +102,7 @@ namespace crobot_navigation
             // Implementing PID controller
 
             // PID Controller for X
-            double Kp_X = 0.1; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_X = 0.05; // Proportional Gain Constant (To be Fine Tuned)
             // double Kp_X = 0;
 
             double Error_X = desired_pos.x - currentPos.x;
@@ -114,7 +114,7 @@ namespace crobot_navigation
             // this->velocity_publisher_->publish(velocity_msg);
 
             //PID Controller for Y
-            double Kp_Y = 0.1; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_Y = 0.05; // Proportional Gain Constant (To be Fine Tuned)
             // double Kp_Y = 0;
 
             double Error_Y = desired_pos.y - currentPos.y;

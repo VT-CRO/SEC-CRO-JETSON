@@ -4,8 +4,9 @@
             <SequenceWithMemory name="root_sequence">
 
                 <SubTree ID="Init"/>
-                <SubTree ID="Beacon"/>
-                <SubTree ID="Sweep"/>
+                <SubTree ID="Random"/>
+                <!-- <SubTree ID="Beacon"/> -->
+                <!-- <SubTree ID="Sweep"/> -->
                 <SubTree ID="End"/>
             </SequenceWithMemory>
         </RetryUntilSuccessful name="retry">
@@ -20,13 +21,13 @@
 
     <BehaviorTree ID="Random">
         <Sequence name="freaky_sequence">
-            <GoToPose name="goToPose0" goalPoints="15,155,0;17,232,0;59,170.0"/>
-            <GoToPose name="goToPose0" goalPoints="59,170.0;80,135,0;101,200,0"/>
-            <GoToPose name="goToPose0" goalPoints="101,200,0;63,216,0;23,187,0;57,67,0"/>
+            <GoToPose name="goToPose0" goalPoints="15,155,0;17,232,0;59,170,90"/>
+            <GoToPose name="goToPose1" goalPoints="59,170,90;60,135,0;80,200,180"/>
+            <GoToPose name="goToPose2" goalPoints="80,200,180;63,216,0;4,184,0;93,141,0;48,30,0"/>
         </Sequence>
     </BehaviorTree>
 
-    <!-- <BehaviorTree ID="Beacon">
+    <BehaviorTree ID="Beacon">
         <Sequence name="beacon_sequence">
             <GoToPose name="goToPose0" goalPoints="15,155,0;80,168,0"/>
             <GoToPose name="goToPose1" goalPoints="80,168,0;57,170,0"/>
@@ -49,7 +50,7 @@
 
             <!-- Do bin pickup -->
         </Sequence>
-    </BehaviorTree> -->
+    </BehaviorTree>
 
     <!-- <BehaviorTree ID="PostSweep">
         <Sequence name="post_sweep_sequence">
@@ -60,7 +61,7 @@
     <BehaviorTree ID="End">
         <Sequence name="end_sequence">
             <KeepRunningUntilFailure name="infinite_loop">
-                <GoToPose name="goToPose3" goalPoints="56,176,90;56,176,90"/>
+                <GoToPose name="goToPose3" goalPoints="48,30,0;48,30,0"/>
             </KeepRunningUntilFailure>
         </Sequence>
     </BehaviorTree>
