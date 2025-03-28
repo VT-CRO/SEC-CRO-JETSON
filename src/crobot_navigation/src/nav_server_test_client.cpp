@@ -36,18 +36,26 @@ public:
     geometry_msgs::msg::Pose2D p0;
     p0.x = 0;
     p0.y = 0;
+    p0.theta = 0;
     points.push_back(p0);
 
     geometry_msgs::msg::Pose2D p1;
-    p1.x = 80;
-    p1.y = 80;
-    // p1.theta = 90;
+    p1.x = 40;
+    p1.y = -40;
+    p1.theta = 0;
     points.push_back(p1);
 
     geometry_msgs::msg::Pose2D p2;
-    p2.x = 10;
-    p2.y = -20;
+    p2.x = 0;
+    p2.y = 0;
+    p2.theta = 0;
     points.push_back(p2);
+
+    geometry_msgs::msg::Pose2D p3;
+    p3.x = 10;
+    p3.y = 10;
+    p3.theta = 3.14;
+    points.push_back(p3);
   }
 
   void send_goal()
@@ -65,7 +73,7 @@ public:
     create_goal_points(goal_msg.points);
 
     for (auto p : goal_msg.points) {
-      RCLCPP_INFO(this->get_logger(), "Got position (%f, %f)", p.x, p.y);
+      RCLCPP_INFO(this->get_logger(), "Got position (%f, %f, %f)", p.x, p.y, p.theta);
     }
 
     RCLCPP_INFO(this->get_logger(), "Sending goal");

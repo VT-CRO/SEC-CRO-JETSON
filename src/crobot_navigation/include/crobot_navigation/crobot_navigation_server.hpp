@@ -7,6 +7,7 @@
 
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <geometry_msgs/msg/twist_stamped.hpp>
+#include <geometry_msgs/msg/twist.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
@@ -14,7 +15,7 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "crobot_navigation/BezierPath.hpp"
 #include <geometry_msgs/msg/pose2_d.hpp>
-#include "crobot_navigation/odom_go_to_position"
+// #include "crobot_navigation/odom_go_to_position"
 
 namespace crobot_navigation
 {
@@ -28,7 +29,7 @@ namespace crobot_navigation
 
         private:
             rclcpp_action::Server<NavigationGoalPoints>::SharedPtr action_server_;
-            rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr publisher_;
+            rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
             rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscription_;
             Pose2D currentPos;
 

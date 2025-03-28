@@ -17,6 +17,10 @@
 #include "behaviortree_cpp/behavior_tree.h"
 #include <geometry_msgs/msg/pose2_d.hpp>
 
+
+using NavigationGoalPoints = crobot_msgs::action::NavigationPoints;
+using GoalHandleNav = rclcpp_action::ServerGoalHandle<NavigationGoalPoints>;
+
 class GoToPoseWithOdometry : public BT::StatefulActionNode
 {
     public:
