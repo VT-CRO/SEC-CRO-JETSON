@@ -20,9 +20,16 @@
 
     <BehaviorTree ID="Beacon">
         <Sequence name="beacon_sequence">
-            <GoToPose name="goToPose1" goalPoints="15,155,0;52,149,0;56,176,90"/>
-            <GoToPose name="goToPose2" goalPoints="56,176,90;56,176,0"/>
-            <GoToPose name="goToPose3" goalPoints="56,176,0;56,215,0"/>
+            <GoToPose name="goToPose0" goalPoints="15,155,0;80,168,0"/>
+            <GoToPose name="goToPose1" goalPoints="80,168,0;57,170,0"/>
+            <GoToPose name="rotation0" goalPoints="56,170,0;56,170,90"/>
+            <GoToPose name="goToPose2" goalPoints="56,170,90;56,190,90"/>
+            <GoToPose name="rotation1" goalPoints="56,190,90;56,190,0"/>
+            <GoToPose name="goToPose3" goalPoints="56,190,0;56,215,0"/>
+            <!--wait for beacon placement-->
+            <GoToPose name="goToPose4" goalPoints="56,215,0;56,170,180"/>
+            <GoToPose name="goToPose5" goalPoints="56,170,180;80,168,180"/>
+
         </Sequence>
     </BehaviorTree>
 
