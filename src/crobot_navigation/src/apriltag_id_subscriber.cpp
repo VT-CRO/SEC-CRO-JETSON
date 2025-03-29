@@ -11,6 +11,11 @@ AprilTagSubscriberID::~AprilTagSubscriberID() {
 
 void AprilTagSubscriberID::preparePoints() {
     // TODO: Set april tag points here
+    positions.push_back({10, 215, 0});
+    positions.push_back({33, 215, 0});
+    positions.push_back({56, 215, 0});
+    positions.push_back({79, 215, 0});
+    positions.push_back({102, 215, 0});
 }
 
 BT::NodeStatus AprilTagSubscriberID::onStart() {

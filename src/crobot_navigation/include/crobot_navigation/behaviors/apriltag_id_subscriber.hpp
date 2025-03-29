@@ -34,7 +34,7 @@ private:
     std::shared_ptr<rclcpp::Node> node_;
     rclcpp::Subscription<apriltag_msgs::msg::AprilTagDetectionArray>::SharedPtr subscription_;
     std::optional<int> last_detected_id;
-    std::vector<NavPointsGoal> positions [5];
+    std::vector<NavPointsGoal> positions;
     bool detection = false;
 };
 
