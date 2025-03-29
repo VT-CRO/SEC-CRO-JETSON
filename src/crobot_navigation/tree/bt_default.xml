@@ -47,11 +47,11 @@
 
             <GoToPose name="goToPose2" goalPoints="56,170,0;55,215,0"/> <!--P2-->
 
-            <GoToPose name="goToPose3" goalPoints="55,215,0;100,215,0"/> <!--P3-->
+            <GoToPose name="goToPose3" goalPoints="55,215,0;90,215,0"/> <!--P3-->
 
-            <GoToPose name="goToPose4" goalPoints="100,215,0;100,112,0"/> <!--P4-->
+            <GoToPose name="goToPose4" goalPoints="90,215,0;90,112,0"/> <!--P4-->
 
-            <GoToPose name="goToPose5" goalPoints="100,112,0;80,215,0"/> <!--P5-->
+            <GoToPose name="goToPose5" goalPoints="90,112,0;80,215,0"/> <!--P5-->
 
             <GoToPose name="goToPose6" goalPoints="80,215,0;80,112,0"/> <!--P6-->
 
