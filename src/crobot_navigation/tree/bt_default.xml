@@ -4,9 +4,9 @@
             <SequenceWithMemory name="root_sequence">
 
                 <SubTree ID="Init"/>
-                <SubTree ID="Random"/>
-                <!-- <SubTree ID="Beacon"/> -->
-                <!-- <SubTree ID="Sweep"/> -->
+                <!-- <SubTree ID="Random"/> -->
+                <SubTree ID="Beacon"/> 
+                <SubTree ID="Sweep"/>
                 <SubTree ID="End"/>
             </SequenceWithMemory>
         </RetryUntilSuccessful name="retry">
@@ -19,13 +19,13 @@
         </Sequence>
     </BehaviorTree>
 
-    <!-- <BehaviorTree ID="Random">
+    <BehaviorTree ID="Random">
         <Sequence name="freaky_sequence">
             <GoToPose name="goToPose0" goalPoints="15,155,0;17,232,0;59,170,90"/>
             <GoToPose name="goToPose1" goalPoints="59,170,90;60,135,0;80,200,180"/>
             <GoToPose name="goToPose2" goalPoints="80,200,180;63,216,0;4,184,0;93,141,0;48,30,0"/>
         </Sequence>
-    </BehaviorTree> -->
+    </BehaviorTree>
 
     <BehaviorTree ID="Beacon">
         <Sequence name="beacon_sequence">
@@ -45,29 +45,29 @@
         <Sequence name="sweep_sequence">
             <GoToPose name="goToPose1" goalPoints="80,168,180;56,170,0"/> <!--P1-->
 
-            <GoToPose name="goToPose1" goalPoints="56,170,0;55,221,0"/> <!--P2-->
+            <GoToPose name="goToPose2" goalPoints="56,170,0;55,215,0"/> <!--P2-->
 
-            <GoToPose name="goToPose1" goalPoints="55,221,0;100,221,0"/> <!--P3-->
+            <GoToPose name="goToPose3" goalPoints="55,215,0;100,215,0"/> <!--P3-->
 
-            <GoToPose name="goToPose1" goalPoints="100,221,0;100,112,0"/> <!--P4-->
+            <GoToPose name="goToPose4" goalPoints="100,215,0;100,112,0"/> <!--P4-->
 
-            <GoToPose name="goToPose1" goalPoints="100,112,0;80,221,0"/> <!--P5-->
+            <GoToPose name="goToPose5" goalPoints="100,112,0;80,215,0"/> <!--P5-->
 
-            <GoToPose name="goToPose1" goalPoints="80,221,0;80,112,0"/> <!--P6-->
+            <GoToPose name="goToPose6" goalPoints="80,215,0;80,112,0"/> <!--P6-->
 
-            <GoToPose name="goToPose1" goalPoints="80,112,0;60,112,0"/> <!--P7-->
+            <GoToPose name="goToPose7" goalPoints="80,112,0;60,112,0"/> <!--P7-->
 
-            <GoToPose name="goToPose1" goalPoints="60,112,0;40,221,0"/> <!--P8-->
+            <GoToPose name="goToPose8" goalPoints="60,112,0;40,215,0"/> <!--P8-->
 
-            <GoToPose name="goToPose1" goalPoints="40,221,0;40,112,0"/> <!--P9-->
+            <GoToPose name="goToPose9" goalPoints="40,215,0;40,112,0"/> <!--P9-->
 
-            <GoToPose name="goToPose1" goalPoints="40,112,0;20,221,0"/> <!--P10-->
+            <GoToPose name="goToPose10" goalPoints="40,112,0;20,215,0"/> <!--P10-->
 
-            <GoToPose name="goToPose1" goalPoints="20,221,0;20,112,0"/> <!--P11-->
+            <GoToPose name="goToPose11" goalPoints="20,215,0;20,112,0"/> <!--P11-->
 
-            <GoToPose name="goToPose1" goalPoints="20,112,0;55,95,0"/> <!--P12-->
+            <GoToPose name="goToPose12" goalPoints="20,112,0;55,95,0"/> <!--P12-->
 
-            <GoToPose name="goToPose1" goalPoints="55,95,0;55,60,0"/> <!--P9-->
+            <GoToPose name="goToPose13" goalPoints="55,95,0;55,60,0"/> <!--P9-->
 
 
 
