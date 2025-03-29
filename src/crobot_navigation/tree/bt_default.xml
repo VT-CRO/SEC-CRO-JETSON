@@ -7,7 +7,9 @@
                 <!-- <SubTree ID="Random"/> -->
                 <SubTree ID="Beacon"/> 
                 <SubTree ID="Sweep"/>
+                <SubTree ID="Post-Sweep"/>
                 <SubTree ID="End"/>
+
             </SequenceWithMemory>
         </RetryUntilSuccessful name="retry">
     </BehaviorTree>
@@ -37,7 +39,6 @@
             <GoToPose name="goToPose3" goalPoints="56,190,0;56,215,0"/>
             <!--wait for beacon placement-->
             <GoToPose name="goToPose4" goalPoints="56,215,0;56,170,180"/>
-            <GoToPose name="goToPose5" goalPoints="56,170,180;80,168,180"/>
         </Sequence>
     </BehaviorTree>
 
@@ -79,9 +80,17 @@
 
             <GoToPose name="goToPose12-C" goalPoints="55,95,0;55,60,0"/> <!--P12 to Cave (INSIDE-->
 
-
-
             <!-- Do bin pickup -->
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="Post-Sweep">
+        <Sequence name="post-sweep_sequence">
+            <GoToPose name="goToPose0" goalPoints="56,170,0;56,170,180"/>
+            <GoToPose name="goToPose1" goalPoints="56,170,180;80,168,180"/>
+            <GoToPose name="goToPose2" goalPoints="80,168,180;56,170,0"/>
+            <!-- April Tag Thingy -->
+            <GoToPose name="goToPose3" goalPoints="56,170,0;56,170,0"/>
         </Sequence>
     </BehaviorTree>
 
