@@ -19,13 +19,13 @@
         </Sequence>
     </BehaviorTree>
 
-    <BehaviorTree ID="Random">
+    <!-- <BehaviorTree ID="Random">
         <Sequence name="freaky_sequence">
             <GoToPose name="goToPose0" goalPoints="15,155,0;17,232,0;59,170,90"/>
             <GoToPose name="goToPose1" goalPoints="59,170,90;60,135,0;80,200,180"/>
             <GoToPose name="goToPose2" goalPoints="80,200,180;63,216,0;4,184,0;93,141,0;48,30,0"/>
         </Sequence>
-    </BehaviorTree>
+    </BehaviorTree> -->
 
     <BehaviorTree ID="Beacon">
         <Sequence name="beacon_sequence">
@@ -43,10 +43,33 @@
 
     <BehaviorTree ID="Sweep">
         <Sequence name="sweep_sequence">
-            <GoToPose name="goToPose1" goalPoints="80,168,0;56,170,0"/>
-            <GoToPose name="goToPose1" goalPoints="80,168,180;56,170,90"/>
+            <GoToPose name="goToPose1" goalPoints="80,168,180;56,170,0"/> <!--P1-->
 
-            <GoToPose name="goToPose1" goalPoints="56,170,90;56,221,0"/>
+            <GoToPose name="goToPose1" goalPoints="56,170,0;55,221,0"/> <!--P2-->
+
+            <GoToPose name="goToPose1" goalPoints="55,221,0;100,221,0"/> <!--P3-->
+
+            <GoToPose name="goToPose1" goalPoints="100,221,0;100,112,0"/> <!--P4-->
+
+            <GoToPose name="goToPose1" goalPoints="100,112,0;80,221,0"/> <!--P5-->
+
+            <GoToPose name="goToPose1" goalPoints="80,221,0;80,112,0"/> <!--P6-->
+
+            <GoToPose name="goToPose1" goalPoints="80,112,0;60,112,0"/> <!--P7-->
+
+            <GoToPose name="goToPose1" goalPoints="60,112,0;40,221,0"/> <!--P8-->
+
+            <GoToPose name="goToPose1" goalPoints="40,221,0;40,112,0"/> <!--P9-->
+
+            <GoToPose name="goToPose1" goalPoints="40,112,0;20,221,0"/> <!--P10-->
+
+            <GoToPose name="goToPose1" goalPoints="20,221,0;20,112,0"/> <!--P11-->
+
+            <GoToPose name="goToPose1" goalPoints="20,112,0;55,95,0"/> <!--P12-->
+
+            <GoToPose name="goToPose1" goalPoints="55,95,0;55,60,0"/> <!--P9-->
+
+
 
             <!-- Do bin pickup -->
         </Sequence>
