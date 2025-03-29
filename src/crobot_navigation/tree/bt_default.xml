@@ -38,6 +38,7 @@
             <GoToPose name="rotation1" goalPoints="56,190,90;56,190,0"/>
             <GoToPose name="goToPose3" goalPoints="56,190,0;56,215,0"/>
             <!--wait for beacon placement-->
+            <SetBeacon name="setbeacon" setBeacon="true"/>
             <GoToPose name="goToPose4" goalPoints="56,215,0;56,170,180"/>
         </Sequence>
     </BehaviorTree>
@@ -50,8 +51,11 @@
 
             <GoToPose name="goToPose2-3" goalPoints="55,215,0;90,215,0"/> <!--P2 to P3-->
 
-            <GoToPose name="goToPose3-4" goalPoints="90,215,0;90,112,0"/> <!--P3 to P4-->
-            <GoToPose name="goToPose4-3" goalPoints="90,112,0;90,215,0"/> <!--P4 to P3-->
+            <GoToPose name="goToPose3-4" goalPoints="90,215,0;90,112,0"/> P3 to P4
+            <GoToPose name="goToPose4-3" goalPoints="90,112,0;90,215,0"/> P4 to P3
+
+            <!-- pick up bin -->
+            <SetBinIntake name="setbin" setBin="true"/>
 
             <GoToPose name="goToPose3-5" goalPoints="90,215,0;80,215,0"/> <!--P3 to P5-->
 
@@ -59,28 +63,27 @@
             <GoToPose name="goToPose6-5" goalPoints="80,112,0;80,215,0"/> <!--P6 to P5-->
 
 
-            <GoToPose name="goToPose5-2" goalPoints="80,215,0;55,215,0"/> <!--P5 to P2-->
-            <GoToPose name="goToPose2-7" goalPoints="55,215,0;60,112,0"/> <!--P2 to P7-->
+            <!-- <GoToPose name="goToPose5-2" goalPoints="80,215,0;55,215,0"/> P5 to P2 -->
+            <!-- <GoToPose name="goToPose2-7" goalPoints="55,215,0;60,112,0"/> P2 to P7 -->
 
-            <GoToPose name="goToPose7-C" goalPoints="60,112,0;55,60,0"/> <!--P7 to Cave (EXTRA POINTS)-->
-            <GoToPose name="goToPoseC-2" goalPoints="55,60,0;55,215,0"/> <!--Cave to P2-->
+            <!-- <GoToPose name="goToPose7-C" goalPoints="60,112,0;55,60,0"/> P7 to Cave (EXTRA POINTS) -->
+            <!-- <GoToPose name="goToPoseC-2" goalPoints="55,60,0;55,215,0"/> Cave to P2 -->
 
-            <GoToPose name="goToPose2-8" goalPoints="60,112,0;40,215,0"/> <!--P2 to P8-->
+            <!-- <GoToPose name="goToPose2-8" goalPoints="60,112,0;40,215,0"/> P2 to P8 -->
 
-            <GoToPose name="goToPose8-9" goalPoints="40,215,0;40,112,0"/> <!--P8 to P9-->
-            <GoToPose name="goToPose9-8" goalPoints="40,112,0;40,215,0"/> <!--P9 to P8-->
+            <!-- <GoToPose name="goToPose8-9" goalPoints="40,215,0;40,112,0"/> P8 to P9 -->
+            <!-- <GoToPose name="goToPose9-8" goalPoints="40,112,0;40,215,0"/> P9 to P8 -->
 
 
-            <GoToPose name="goToPose8-10" goalPoints="40,215,0;20,215,0"/> <!--P8 to P10-->
+            <!-- <GoToPose name="goToPose8-10" goalPoints="40,215,0;20,215,0"/> P8 to P10 -->
 
-            <GoToPose name="goToPose10-11" goalPoints="20,215,0;20,112,0"/> <!--P10 to P11-->
-            <GoToPose name="goToPose11-10" goalPoints="20,112,0;20,215,0"/> <!--P11 to P10-->
+            <!-- <GoToPose name="goToPose10-11" goalPoints="20,215,0;20,112,0"/> P10 to P11 -->
+            <!-- <GoToPose name="goToPose11-10" goalPoints="20,112,0;20,215,0"/> P11 to P10 -->
 
-            <GoToPose name="goToPose10-12" goalPoints="20,215,0;55,95,0"/> <!--P10 to P12-->
+            <!-- <GoToPose name="goToPose10-12" goalPoints="20,215,0;55,95,0"/> P10 to P12 -->
 
-            <GoToPose name="goToPose12-C" goalPoints="55,95,0;55,60,0"/> <!--P12 to Cave (INSIDE-->
-
-            <!-- Do bin pickup -->
+            <!-- <GoToPose name="goToPose12-C" goalPoints="55,95,0;55,60,0"/> P12 to Cave (INSIDE -->
+            <GoToPose name="goToPose12-C" goalPoints="80,215,0;56,170,0"/>
         </Sequence>
     </BehaviorTree>
 

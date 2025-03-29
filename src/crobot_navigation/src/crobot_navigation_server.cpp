@@ -127,7 +127,7 @@ namespace crobot_navigation
             // geometry_msgs::msg::Twist velocity_msg;
 
             //PID Controller for H
-            double Kp_H = 2; // Proportional Gain Constant (To be Fine Tuned)
+            double Kp_H = 1.75; // Proportional Gain Constant (To be Fine Tuned)
 
             double Error_H = desired_pos.theta - currentPos.theta;
             double Control_H = Kp_H * Error_H;
