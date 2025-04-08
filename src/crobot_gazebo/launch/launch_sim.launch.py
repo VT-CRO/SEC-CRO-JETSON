@@ -7,7 +7,7 @@ from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable, Dec
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import EnvironmentVariable, LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 
-from launch.actions import RegisterEventHandler
+from launch.actions import RegisterEventHandler, AppendEnvironmentVariable
 from launch.event_handlers import OnProcessExit
 
 from launch_ros.actions import Node
@@ -32,8 +32,8 @@ def generate_launch_description():
     
     print(models_folder)
 
-    # world = LaunchConfiguration('world')
-    # world = os.path.join(worlds_folder, 'mining_mayhem.world')
+    world = LaunchConfiguration('world')
+    world = os.path.join(worlds_folder, 'mining_mayhem.world')
 
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
@@ -43,18 +43,30 @@ def generate_launch_description():
 
     gazebo_params_file = os.path.join(get_package_share_directory(package_name), 'config', 'gazebo_params.yaml')
 
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py'
-        )]), launch_arguments={
-            'extra_gazebo_args': '--verbose --ros-args --params-file ' + gazebo_params_file,
-            # 'world_name': [PathJoinSubstitution([worlds_folder, LaunchConfiguration('world_file')])],
-        }.items()
+    default_world = os.path.join(
+        get_package_share_directory(package_name),
+        'worlds',
+        'mining_mayhem.world'
     )
 
-    spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
+    world_arg = DeclareLaunchArgument(
+        'world',
+        default_value=default_world,
+        description="World to load"
+    )
+
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(
+            get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py'
+        )]), launch_arguments={'gz_args': ['-r -v4 ', world], 'on_exit_shutdown': 'true' }.items()
+            # 'world_name': [PathJoinSubstitution([worlds_folder, LaunchConfiguration('world_file')])],
+       
+    )
+
+    spawn_entity = Node(package='ros_gz_sim', executable='create',
                         arguments=['-topic', 'robot_description',
-                                   '-entity', 'crobot'
+                                   '-name', 'crobot',
+                                   '-z', '0.1'
                                   ],
                         output='screen'
     )
@@ -78,6 +90,8 @@ def generate_launch_description():
         arguments=["joint_broad"]
     )
 
+    
+
     return LaunchDescription([
         # DeclareLaunchArgument(
         #     'world',
@@ -87,7 +101,8 @@ def generate_launch_description():
         # SetLaunchConfiguration(name='world_file', 
         #                        value=[LaunchConfiguration('world'), 
         #                               TextSubstitution(text='.sdf')]),
-        SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=[EnvironmentVariable('GAZEBO_MODEL_PATH'), ':', models_folder, ':', robot_meshes_folder]),
+        #SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=[EnvironmentVariable('GAZEBO_MODEL_PATH'), ':', models_folder, ':', robot_meshes_folder]),
+        world_arg,
         rsp,
         gazebo,
         spawn_entity,

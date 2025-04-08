@@ -9,5 +9,15 @@
         "initializer_list": "cpp",
         "utility": "cpp"
     },
-    "cmake.sourceDirectory": "/mnt/c/Users/msoli/Documents/vt-cro/SEC-CRO-JETSON/src/behaviortree_ros2"
+    "cmake.sourceDirectory": "/mnt/c/Users/msoli/Documents/vt-cro/SEC-CRO-JETSON/src/behaviortree_ros2",
+    "python.autoComplete.extraPaths": [
+        "/root/ws/SEC-CRO-JETSON/install/crobot_msgs/lib/python3.12/site-packages",
+        "/root/ws/SEC-CRO-JETSON/install/btcpp_ros2_interfaces/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/root/ws/SEC-CRO-JETSON/install/crobot_msgs/lib/python3.12/site-packages",
+        "/root/ws/SEC-CRO-JETSON/install/btcpp_ros2_interfaces/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages"
+    ]
 }

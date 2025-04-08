@@ -32,6 +32,7 @@
             <visualize>true</visualize>
             <update_rate>10</update_rate>
             <camera>
+                <camera_info_topic>camera/camera_info</camera_info_topic>
                 <horizontal_fov>1.21126</horizontal_fov>
                 <image>
                     <format>B8G8R8</format>
@@ -48,12 +49,13 @@
                     <stddev>0.007</stddev>
                 </noise>
             </camera>
-
-            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+            <gz_frame_id>camera_link_optical</gz_frame_id>
+            <topic> camera/image_raw_depth</topic>
+            <!-- <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
                 <frame_name>camera_link_optical</frame_name>
                 <min_depth>0.1</min_depth>
                 <max_depth>100</max_depth>
-            </plugin>
+            </plugin> -->
         </sensor>
     </gazebo>
 

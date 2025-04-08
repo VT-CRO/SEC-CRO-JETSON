@@ -2,7 +2,7 @@
 <robot xmlns:xacro="https://www.ros.org/wiki/xacro">
 
     <gazebo>
-        <plugin name="robot_controller" filename="libgazebo_ros_planar_move.so">
+        <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system.so">
             <ros>
                 <namespace>/diff_drive_controller</namespace>
                 <remapping>cmd_vel:=cmd_vel_unstamped</remapping>
