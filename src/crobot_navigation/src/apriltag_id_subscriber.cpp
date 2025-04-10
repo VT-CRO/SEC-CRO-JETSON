@@ -9,19 +9,19 @@ AprilTagSubscriberID::AprilTagSubscriberID(const std::string &name, const BT::No
 AprilTagSubscriberID::~AprilTagSubscriberID() {
 }
 
-NavGoal MakeNavGoal(float x, float y, float th)
-{
-    auto navGoal = NavPose::Goal();
-    navGoal.pose.header.frame_id = "map";
-    navGoal.pose.pose.position.x = x;
-    navGoal.pose.pose.position.y = y;
+// NavGoal MakeNavGoal(float x, float y, float th)
+// {
+//     auto navGoal = NavPose::Goal();
+//     navGoal.pose.header.frame_id = "map";
+//     navGoal.pose.pose.position.x = x;
+//     navGoal.pose.pose.position.y = y;
 
-    tf2::Quaternion q;
-    q.setRPY(0, 0, th);
-    navGoal.pose.pose.orientation = tf2::toMsg(q);
+//     tf2::Quaternion q;
+//     q.setRPY(0, 0, th);
+//     navGoal.pose.pose.orientation = tf2::toMsg(q);
 
-    return navGoal;
-}
+//     return navGoal;
+// }
 
 void AprilTagSubscriberID::preparePoints() {
 }
