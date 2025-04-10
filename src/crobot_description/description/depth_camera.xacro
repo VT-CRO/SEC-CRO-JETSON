@@ -25,7 +25,11 @@
     <link name="camera_link_optical"/>
 
     <gazebo reference="camera_link">
-        <material>Gazebo/Red</material>
+        <material>
+            <ambient>1.0 0.0 0.0 1.0</ambient> <!-- Red color -->
+            <diffuse>1.0 0.0 0.0 1.0</diffuse>
+            <specular>0.5 0.5 0.5 1.0</specular>
+        </material>
 
         <sensor name="camera" type="depth">
             <pose> 0 0 0 0 0 0 </pose>
@@ -49,7 +53,7 @@
                     <stddev>0.007</stddev>
                 </noise>
             </camera>
-            <gz_frame_id>camera_link_optical</gz_frame_id>
+            <frame>camera_link_optical</frame>
             <topic> camera/image_raw_depth</topic>
             <!-- <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
                 <frame_name>camera_link_optical</frame_name>

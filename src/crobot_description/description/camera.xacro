@@ -25,14 +25,18 @@
     <link name="camera_link_optical"/>
 
     <gazebo reference="camera_link">
-        <material>Gazebo/Red</material>
+        <material>
+            <ambient>1.0 0.0 0.0 1.0</ambient> <!-- Red color -->
+            <diffuse>1.0 0.0 0.0 1.0</diffuse>
+            <specular>0.5 0.5 0.5 1.0</specular>
+        </material>
 
         <sensor name="camera" type="camera">
             <pose> 0 0 0 0 0 0 </pose>
             <visualize>true</visualize>
             <update_rate>10</update_rate>
             <topic> camera/image_raw</topic>
-            <gz_frame_id>camera_link_optical</gz_frame_id>
+            <gz_frame_id>camera_rgb_frame</gz_frame_id>
             <camera>
                 <camera_info_topic>camera/camera_info</camera_info_topic>
                 <horizontal_fov>1.089</horizontal_fov>
