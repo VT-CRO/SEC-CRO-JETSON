@@ -24,11 +24,6 @@ NavGoal MakeNavGoal(float x, float y, float th)
 }
 
 void AprilTagSubscriberID::preparePoints() {
-    positions.push_back{MakeNavGoal(10, 215, 0)};
-    positions.push_back{MakeNavGoal(33, 215, 0)};
-    positions.push_back{MakeNavGoal(56, 215, 0)};
-    positions.push_back{MakeNavGoal(79, 215, 0)};
-    positions.push_back{MakeNavGoal(102, 215, 0)};
 }
 
 BT::NodeStatus AprilTagSubscriberID::onStart() {
