@@ -9,26 +9,26 @@ AprilTagSubscriberID::AprilTagSubscriberID(const std::string &name, const BT::No
 AprilTagSubscriberID::~AprilTagSubscriberID() {
 }
 
-NavGoal MakeNavGoal(float x, float y, float th)
-{
-    auto navGoal = NavPose::Goal();
-    navGoal.pose.header.frame_id = "map";
-    navGoal.pose.pose.position.x = x;
-    navGoal.pose.pose.position.y = y;
+// NavGoal MakeNavGoal(float x, float y, float th)
+// {
+//     auto navGoal = NavPose::Goal();
+//     navGoal.pose.header.frame_id = "map";
+//     navGoal.pose.pose.position.x = x;
+//     navGoal.pose.pose.position.y = y;
 
-    tf2::Quaternion q;
-    q.setRPY(0, 0, th);
-    navGoal.pose.pose.orientation = tf2::toMsg(q);
+//     tf2::Quaternion q;
+//     q.setRPY(0, 0, th);
+//     navGoal.pose.pose.orientation = tf2::toMsg(q);
 
-    return navGoal;
-}
+//     return navGoal;
+// }
 
 void AprilTagSubscriberID::preparePoints() {
-    positions.push_back{MakeNavGoal(10, 215, 0)};
-    positions.push_back{MakeNavGoal(33, 215, 0)};
-    positions.push_back{MakeNavGoal(56, 215, 0)};
-    positions.push_back{MakeNavGoal(79, 215, 0)};
-    positions.push_back{MakeNavGoal(102, 215, 0)};
+    // positions.push_back{MakeNavGoal(10, 215, 0)};
+    // positions.push_back{MakeNavGoal(33, 215, 0)};
+    // positions.push_back{MakeNavGoal(56, 215, 0)};
+    // positions.push_back{MakeNavGoal(79, 215, 0)};
+    // positions.push_back{MakeNavGoal(102, 215, 0)};
 }
 
 BT::NodeStatus AprilTagSubscriberID::onStart() {
