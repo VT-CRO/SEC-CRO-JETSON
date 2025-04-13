@@ -29,8 +29,6 @@ def generate_launch_description():
     robot_meshes_folder=os.path.join(
         get_package_share_directory('crobot_description'), 'description', 'drivetrain'
     )
-    
-    print(models_folder)
 
     world = LaunchConfiguration('world')
     world = os.path.join(worlds_folder, 'mining_mayhem.world')
@@ -40,8 +38,6 @@ def generate_launch_description():
             get_package_share_directory('crobot_description'), 'launch', 'rsp.launch.py'
         )]), launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'false'}.items()
     )
-
-    gazebo_params_file = os.path.join(get_package_share_directory(package_name), 'config', 'gazebo_params.yaml')
 
     default_world = os.path.join(
         get_package_share_directory(package_name),
