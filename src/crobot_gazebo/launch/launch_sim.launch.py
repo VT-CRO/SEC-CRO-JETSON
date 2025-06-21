@@ -94,13 +94,14 @@ def generate_launch_description():
       arguments=[
          '--ros-args',
          '-p',
-         f'config_file:={bridge_params}'
+         f'config_file:={bridge_params}',
       ]
    )
     ros_gz_image_bridge = Node(
       package="ros_gz_image",
       executable="image_bridge",
-      arguments=["/camera/image_raw"]
+      arguments=["/camera/image_raw"],
+      output='screen',
    )
     return LaunchDescription([
         # DeclareLaunchArgument(

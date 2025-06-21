@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="https://www.ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org/schema">
+<robot xmlns:xacro="https://www.ros.org/wiki/xacro" xmlns:gz="https://github.com/gazebosim/gz_xacro_plugins">
 
     <xacro:include filename="inertial_macros.xacro"/>
 

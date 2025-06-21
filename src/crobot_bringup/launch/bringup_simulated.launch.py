@@ -10,6 +10,8 @@ from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 
 from launch_ros.actions import Node
+from launch.substitutions import LaunchConfiguration
+from launch.actions import ExecuteProcess
 
 def generate_launch_description():
 
@@ -94,6 +96,25 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Convert URDF to SDF
+    xacro_cmd = ExecuteProcess(
+        cmd=['xacro', 'src/crobot_description/description/robot.urdf.xacro', '>', '/tmp/robot.urdf'],
+        shell=True
+    )
+    
+    sdf_cmd = ExecuteProcess(
+        cmd=['gz', 'sdf', '-p', '/tmp/robot.urdf', '>', '/tmp/robot.sdf'],
+        shell=True
+    )
+    
+    # Spawn using SDF file
+    spawn_entity = Node(
+        package='ros_gz_sim', 
+        executable='create',
+        arguments=['-file', '/tmp/robot.sdf', '-name', 'crobot'],
+        output='screen'
+    )
+
     return LaunchDescription([
         gazebo,
         # slam,
@@ -101,5 +122,8 @@ def generate_launch_description():
         twist_mux,
         apriltag_node,  # Add apriltag node to launch description
         crobot_nav_server,
-        TimerAction(period=5.0, actions=[crobot_bt])
+        TimerAction(period=5.0, actions=[crobot_bt]),
+        xacro_cmd,
+        sdf_cmd,
+        spawn_entity
     ])
