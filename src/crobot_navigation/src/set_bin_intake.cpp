@@ -17,10 +17,14 @@ SetBinIntake::SetBinIntake(const std::string &name, const BT::NodeConfig& config
       throw BT::RuntimeError("error reading port [setBinIntake]: ", setBinIntake.error());
     }
 
-    if (setBinIntake.value() == "true") {
-      val = 1;
-    } else {
+    if (setBinIntake.value() == "in") {
       val = 0;
+     } else if (setBinIntake.value() == "out") {
+      val = 1;
+    } else if (setBinIntake.value() == "off") {
+      val = 2;
+    } else {
+      throw BT::RuntimeError("invalid input!");
     }
 
     auto msg = DynamicInterface();

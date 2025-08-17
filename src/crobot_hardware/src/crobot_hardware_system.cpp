@@ -198,8 +198,14 @@ namespace crobot_hardware
         ));
 
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            "crobot_systems", "sorting", &sorting
+        ));
+
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
             "crobot_systems", "start_robot", &run
         ));
+
 
         return command_interfaces;
     }
@@ -245,10 +251,14 @@ namespace crobot_hardware
             RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"), "Could not connect to device!");
             return hardware_interface::CallbackReturn::ERROR;
         }
-        if (cfg_.pid_p > 0)
-        {
-            // comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
-        }
+
+        json j;
+        j["header"]["message_type"] = RESET;
+
+        std::string req = j.dump();
+
+        comms_.writeBytes(req.c_str(), req.size());
+
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Successfully activated!");
 
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -267,7 +277,7 @@ namespace crobot_hardware
         const rclcpp::Time &, const rclcpp::Duration & /* period */
     )
     {
-        static char read_buff[100];
+        static char read_buff[128];
 
         if (!comms_.connected())
         {
@@ -283,18 +293,17 @@ namespace crobot_hardware
         comms_.writeBytes(req.c_str(), req.size());
 
         // read encoder values
-        std::size_t n = comms_.readBytes(read_buff, 100);
+        std::size_t n = comms_.readBytes(read_buff, 128);
         std::string s(read_buff);
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Read %ld bytes: %s", n, s.c_str());
-        comms_.flush();
 
         j = json::parse(s, nullptr, false);
 
         if (!j.is_discarded())
         {
-            deadwheels.enc_left = j["deadhweel_stats"]["encoder_left"];
-            deadwheels.enc_right = j["deadhweel_stats"]["encoder_right"];
-            deadwheels.enc_center = j["deadhweel_stats"]["encoder_center"];
+            deadwheels.enc_left = j["deadwheel_stats"]["encoder_left"];
+            deadwheels.enc_right = j["deadwheel_stats"]["encoder_right"];
+            deadwheels.enc_center = j["deadwheel_stats"]["encoder_center"];
             start_led = j["start_led"];
         } else {
             RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Could not parse message!");
@@ -323,9 +332,12 @@ namespace crobot_hardware
             wheel_back_left.cmd
         };
 
-        j["lower_beacon"] = lower_beacon;
+        j["beacon"] = lower_beacon;
         j["run"] = run;
         j["bin_intake"] = bin_intake;
+        j["sorting"] = sorting;
+        j["vibrate"] = 0;
+
 
         std::string s = j.dump();
 

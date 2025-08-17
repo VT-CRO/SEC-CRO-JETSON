@@ -10,12 +10,15 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp_action
   rclcpp_components
   nav2_msgs
+  nav_msgs
+  geometry_msgs
   behaviortree_cpp
   behaviortree_ros2
   yaml-cpp
   tf2
   tf2_geometry_msgs
   control_msgs
+  crobot_msgs
   apriltag_msgs
 )
 
@@ -30,15 +33,41 @@ endforeach()
 include_directories(include)
 add_executable(crobot_navigation_node 
   src/behavior_node.cpp 
-  src/go_to_position.cpp
   src/start.cpp
   src/set_beacon.cpp
   src/set_bin_intake.cpp
-  src/set_chassis_velocity.cpp
+  src/set_sorting.cpp
   src/apriltag_id_subscriber.cpp
+  src/set_chassis_velocity.cpp
+  src/odom_go_to_position.cpp
 )
 ament_target_dependencies(crobot_navigation_node ${THIS_PACKAGE_INCLUDE_DEPENDS})
 target_link_libraries(crobot_navigation_node ${YAML_CPP_LIBRARIES})
+
+# build action server
+add_library(action_server SHARED
+  src/crobot_navigation_server.cpp
+  src/BezierPath.cpp
+)
+target_include_directories(action_server PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(action_server
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+# target_link_libraries(action_server crobot_navigation)
+rclcpp_components_register_node(action_server PLUGIN "crobot_navigation::CrobotNavigationActionServer" EXECUTABLE crobot_navigation_server)
+
+add_library(action_client SHARED
+  src/nav_server_test_client.cpp)
+target_include_directories(action_client PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(action_client
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+rclcpp_components_register_node(action_client PLUGIN "crobot_navigation::NavActionClient" EXECUTABLE crobot_navigation_client)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -65,5 +94,18 @@ install(
 install(TARGETS crobot_navigation_node
   DESTINATION lib/${PROJECT_NAME}
 )
+
+install(TARGETS 
+  action_server
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(TARGETS
+  action_client
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
 
 ament_package()

@@ -1,28 +1,29 @@
 #include "crobot_navigation/behaviors/apriltag_id_subscriber.hpp"
-using NavPose = nav2_msgs::action::NavigateToPose;
-using NavGoal = nav2_msgs::action::NavigateToPose_Goal;
+#include "crobot_navigation/behaviors/odom_go_to_position.hpp"
 
-// using namespace std;
-
-NavGoal MakeNavGoal(float x, float y, float th)
-{
-    auto navGoal = NavPose::Goal();
-    navGoal.pose.header.frame_id = "map";
-    navGoal.pose.pose.position.x = x;
-    navGoal.pose.pose.position.y = y;
-
-    tf2::Quaternion q;
-    q.setRPY(0, 0, th);
-    navGoal.pose.pose.orientation = tf2::toMsg(q);
-
-    return navGoal;
-}
 
 AprilTagSubscriberID::AprilTagSubscriberID(const std::string &name, const BT::NodeConfiguration &config, rclcpp::Node::SharedPtr node_ptr)
     : BT::StatefulActionNode(name, config), node_(node_ptr) {
 }
 
 AprilTagSubscriberID::~AprilTagSubscriberID() {
+}
+
+// NavGoal MakeNavGoal(float x, float y, float th)
+// {
+//     auto navGoal = NavPose::Goal();
+//     navGoal.pose.header.frame_id = "map";
+//     navGoal.pose.pose.position.x = x;
+//     navGoal.pose.pose.position.y = y;
+
+//     tf2::Quaternion q;
+//     q.setRPY(0, 0, th);
+//     navGoal.pose.pose.orientation = tf2::toMsg(q);
+
+//     return navGoal;
+// }
+
+void AprilTagSubscriberID::preparePoints() {
 }
 
 BT::NodeStatus AprilTagSubscriberID::onStart() {
@@ -54,7 +55,7 @@ void AprilTagSubscriberID::onHalted() {
 }
 
 BT::PortsList AprilTagSubscriberID::providedPorts() {
-    return {BT::OutputPort<int>("id"), BT::OutputPort<NavGoal>("positions")};
+    return {BT::OutputPort<int>("id"), BT::OutputPort<NavPointsGoal>("positions")};
 }
 
 void AprilTagSubscriberID::callback(const apriltag_msgs::msg::AprilTagDetectionArray::SharedPtr msg) {
@@ -63,5 +64,4 @@ void AprilTagSubscriberID::callback(const apriltag_msgs::msg::AprilTagDetectionA
         last_detected_id = msg->detections[0].id;
     }
 }
-
 

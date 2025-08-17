@@ -41,7 +41,8 @@ namespace crobot_hardware
 
 typedef enum {
   REQUEST = 0,
-  WRITE = 1
+  WRITE = 1,
+  RESET = 2
 } comm_message_t;
 
 typedef enum {
@@ -129,6 +130,7 @@ private:
   double lower_beacon = 0;
   double run = 0;
   double start_led = 0;
+  double sorting = 0;
 
 };
 

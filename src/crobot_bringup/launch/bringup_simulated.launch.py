@@ -3,7 +3,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from launch.actions import RegisterEventHandler
@@ -77,10 +77,29 @@ def generate_launch_description():
         }]
     )
 
+    crobot_nav_server = Node(
+        package='crobot_navigation',
+        executable='crobot_navigation_server',
+        name='crobot_navigation_server',
+        output='screen',
+        remappings=[
+            ('/odom', '/diff_drive_controller/odom')
+        ]
+    )
+
+    crobot_bt = Node(
+        package='crobot_navigation',
+        executable='crobot_navigation_node',
+        name='crobot_navigation_node',
+        output='screen'
+    )
+
     return LaunchDescription([
         gazebo,
-        slam,
-        nav,
+        # slam,
+        # nav,
         twist_mux,
-        apriltag_node  # Add apriltag node to launch description
+        apriltag_node,  # Add apriltag node to launch description
+        crobot_nav_server,
+        TimerAction(period=5.0, actions=[crobot_bt])
     ])
