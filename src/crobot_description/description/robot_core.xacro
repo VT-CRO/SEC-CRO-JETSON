@@ -116,7 +116,12 @@
     </link>
 
     <gazebo reference="chassis">
-        <material>Gazebo/White</material>
+        <material>
+            <ambient>0.0 0.0 0.0 0.0</ambient> <!--White ? color -->
+            <diffuse>1.0 0.0 0.0 1.0</diffuse>
+            <specular>0.5 0.5 0.5 1.0</specular>
+ 
+        </material>
     </gazebo>
 
     <joint name="front_left_wheel_joint" type="continuous">
@@ -147,7 +152,12 @@
     </link>
 
     <gazebo reference="front_left_wheel">
-        <material>Gazebo/Blue</material>
+        <material>
+            <ambient>0.0 0.0 0.75 1.0</ambient> <!-- Blue color -->
+            <diffuse>1.0 0.0 0.0 1.0</diffuse>
+            <specular>0.5 0.5 0.5 1.0</specular>
+        </material>
+
         <mu1 value="0.0"/>
         <mu2 value="0.0"/>
     </gazebo>
@@ -180,7 +190,11 @@
     </link>
 
     <gazebo reference="back_left_wheel">
-        <material>Gazebo/Blue</material>
+        <material>
+            <ambient>0.0 0.0 0.75 1.0</ambient> <!-- Blue color -->
+            <diffuse>1.0 0.0 0.0 1.0</diffuse>
+            <specular>0.5 0.5 0.5 1.0</specular>
+        </material>
         <mu1 value="0.0"/>
         <mu2 value="0.0"/>
     </gazebo>
@@ -212,7 +226,11 @@
     </link>
 
     <gazebo reference="front_right_wheel">
-        <material>Gazebo/Blue</material>
+        <material>
+             <ambient>0.0 0.0 0.75 1.0</ambient> <!-- Blue color -->
+            <diffuse>1.0 0.0 0.0 1.0</diffuse>
+            <specular>0.5 0.5 0.5 1.0</specular>
+        </material>
         <mu1 value="0.0"/>
         <mu2 value="0.0"/>
     </gazebo>
@@ -247,7 +265,11 @@
     </link>
 
     <gazebo reference="back_right_wheel">
-        <material>Gazebo/Blue</material>
+        <material>
+            <ambient>0.0 0.0 0.75 1.0</ambient> <!-- Blue color -->
+            <diffuse>1.0 0.0 0.0 1.0</diffuse>
+            <specular>0.5 0.5 0.5 1.0</specular>
+        </material>
         <mu1 value="0.0"/>
         <mu2 value="0.0"/>
     </gazebo>

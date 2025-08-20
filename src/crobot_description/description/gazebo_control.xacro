@@ -2,7 +2,45 @@
 <robot xmlns:xacro="https://www.ros.org/wiki/xacro">
 
     <gazebo>
-        <plugin name="robot_controller" filename="libgazebo_ros_planar_move.so">
+        <plugin name="gz::sim::systems::MecanumDrive" filename="libgz-sim8-mecanum-drive-system.so">
+            <!-- ROS 2 integration -->
+            <ros>
+                <namespace>/diff_drive_controller</namespace>
+                <remapping>cmd_vel:=cmd_vel_unstamped</remapping>
+            </ros>
+
+            <!-- Frames -->
+            <odometry_frame>odom</odometry_frame>
+            <robot_base_frame>base_link</robot_base_frame>
+            <publish_tf>true</publish_tf>
+
+            <!-- Odometry -->
+            <odometry_rate>50</odometry_rate>
+
+            <!-- Wheel configuration -->
+            <front_left_wheel>front_left_wheel_joint</front_left_wheel>
+            <front_right_wheel>front_right_wheel_joint</front_right_wheel>
+            <rear_left_wheel>rear_left_wheel_joint</rear_left_wheel>
+            <rear_right_wheel>rear_right_wheel_joint</rear_right_wheel>
+
+            <!-- Wheel parameters -->
+            <wheel_separation>0.5</wheel_separation> <!-- Distance between left and right wheels -->
+            <wheel_base>0.4</wheel_base> <!-- Distance between front and rear wheels -->
+            <wheel_radius>0.1</wheel_radius> <!-- Radius of the wheels -->
+
+            <!-- Velocity limits -->
+            <max_linear_velocity>2.0</max_linear_velocity>
+            <max_angular_velocity>1.0</max_angular_velocity>
+        </plugin>
+    </gazebo>
+
+</robot>
+
+<!-- <?xml version="1.0"?>
+<robot xmlns:xacro="https://www.ros.org/wiki/xacro">
+
+    <gazebo>
+       <plugin name="gz::sim::systems::MecanumDrive" filename="libgz_mecanum-drive-system.so" >
             <ros>
                 <namespace>/diff_drive_controller</namespace>
                 <remapping>cmd_vel:=cmd_vel_unstamped</remapping>
@@ -15,4 +53,4 @@
         </plugin>
     </gazebo>
 
-</robot>
+</robot> -->
