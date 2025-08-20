@@ -27,7 +27,7 @@ SetBeacon::SetBeacon(const std::string &name, const BT::NodeConfig& config, rclc
     msg.interface_groups = {"crobot_systems"};
 
     auto interface = InterfaceValue();
-    interface.interface_names = {"bin_intake"};
+    interface.interface_names = {"beacon"};
 
     interface.values = {val};
     msg.interface_values = {interface};

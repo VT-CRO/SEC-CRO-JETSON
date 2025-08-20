@@ -49,5 +49,4 @@ def generate_launch_description():
         realsense_launch_file,
         apriltags
         # rtabmap_viz
-
     ])
