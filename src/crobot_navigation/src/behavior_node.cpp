@@ -5,7 +5,6 @@
 #include "crobot_navigation/behaviors/start.hpp"
 #include "crobot_navigation/behaviors/set_beacon.hpp"
 #include "crobot_navigation/behaviors/set_bin_intake.hpp"
-#include "crobot_navigation/behaviors/set_bin_intake.hpp"
 #include "crobot_navigation/behaviors/set_chassis_velocity.hpp"
 #include "crobot_navigation/behaviors/set_sorting.hpp"
 // #include "crobot_navigation/behaviors/apriltag_id_subscriber.hpp"
@@ -84,18 +83,12 @@ void BehaviorNode::create_behavior_tree()
             return std::make_unique<SetSorting>(name, config, shared_from_this());
         };
 
-    BT::NodeBuilder set_sorting = 
-        [=](const std::string &name, const BT::NodeConfiguration &config)
-        {
-            return std::make_unique<SetSorting>(name, config, shared_from_this());
-        };
-
     factory.registerBuilder<StartBehavior>("Start", start_builder);
     factory.registerBuilder<GoToPoseWithOdometry>("GoToPose", go_to_pose_builder);
     factory.registerBuilder<SetBeacon>("SetBeacon", set_beacon_builder);
     factory.registerBuilder<SetBinIntake>("SetBinIntake", set_bin_intake_builder);
     factory.registerBuilder<SetChassisVelocity>("SetChassisVelocity", set_chassis_velocity_builder);
-    factory.registerBuilder<SetSorting>("SetSorting", set_chassis_velocity_builder);
+    factory.registerBuilder<SetSorting>("SetSorting", set_sorting);
 
     factory.registerBehaviorTreeFromFile(bt_xml_dir + "/bt_default.xml");
     tree_ = factory.createTree("MainTree");
