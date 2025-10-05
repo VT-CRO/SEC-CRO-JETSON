@@ -31,30 +31,30 @@ Clone this repository into your desired working directory.
 ### Install Dependencies
 Navigate to the workspace folder and run the following commands
 ```
-$ sudo apt update
-$ source install/setup.bash
-$ rosdep update
-$ rosdep install --from-paths src --ignore-src -r -y
+sudo apt update
+source install/setup.bash
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y
 ```
 
 ### Building 
 The first time you build this repo, build the behaviour tree packages first
 
 ```
-$ colcon build --packages-select btcpp_ros2_interfaces behaviortree_ros2
+colcon build --packages-select btcpp_ros2_interfaces behaviortree_ros2
 
-$ source install/setup.bash
+source install/setup.bash
 
-$ colcon build
+colcon build
 ```
 
 Whenever you change something in the package you must rebuild and source.
 Make sure you are in the ws folder before running these commands 
 
 ```
-$ colcon build
+colcon build
 
-$ source install/setup.bash 
+source install/setup.bash 
 ```
 
 ### How to Run
@@ -76,9 +76,9 @@ See the individual package README's for additional information on configuration.
 if the april tags folder is empty try these commands
 
 ```
-$ git submodule init
+git submodule init
 
-$ git submodule update
+git submodule update
 ```
 ## Resources
 

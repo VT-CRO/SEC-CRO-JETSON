@@ -95,7 +95,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>../models/field/meshes/field_tapeless.dae</uri>
+              <uri>../models/gazebo_field_parts/field.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -115,7 +115,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>../models/field/meshes/field.dae</uri>
+              <uri>../models/gazebo_field_parts/field.dae</uri>
             </mesh>
           </geometry>
         </visual>

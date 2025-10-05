@@ -9,5 +9,13 @@
     <include>
       <uri>model://ground_plane</uri>
     </include>
+
+    <!-- field -->
+    <include>
+      <uri>file:///home/vtcro/ws/SEC-ENVS/balena/SEC-CRO-JETSON/world/field.sdf</uri>
+      <name>field</name>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+    
   </world>
 </sdf>
