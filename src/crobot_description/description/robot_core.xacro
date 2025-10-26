@@ -1,255 +1,237 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="https://www.ros.org/wiki/xacro">
+<robot xmlns:xacro="https://www.ros.org/wiki/xacro" name="mars_rover_core">
 
-    <xacro:include filename="inertial_macros.xacro"/>
+  <xacro:include filename="inertial_macros.xacro"/>
+  <xacro:include filename="materials.xacro"/>
 
-    <material name="white">
-        <color rgba="1 1 1 1" />
+  <!-- Parameters -->
+  <xacro:property name="body_length"  value="0.28"/>
+  <xacro:property name="body_width"   value="0.24"/>
+  <xacro:property name="body_height"  value="0.10"/>
+  <xacro:property name="drivetrain_height" value="0.02"/>
+  <xacro:property name="wheel_radius" value="0.038"/>
+  <xacro:property name="wheel_width"  value="0.0408"/>
+  <xacro:property name="wheel_mass"   value="0.15"/>
+  <xacro:property name="omni_wheel_mass" value="0.12"/>
+  <xacro:property name="chassis_mass" value="2.0"/>
+  <xacro:property name="ankle_mass"   value="0.05"/>
+
+  <xacro:property name="x_front" value="${body_length/2.0 - 0.018}"/>
+  <xacro:property name="x_mid"   value="0.0"/>
+  <xacro:property name="x_rear"  value="${-body_length/2.0 + 0.018}"/>
+  <xacro:property name="y_left"  value="${body_width/2.0 - 0.01}"/>
+  <xacro:property name="y_right" value="${-body_width/2.0 + 0.01}"/>
+
+  <!-- base_link is the robot origin (center of chassis) -->
+  <link name="base_link"/>
+
+  <!-- CHASSIS (link frame at its center) -->
+  <link name="chassis">
+    <visual>
+      <!-- visual origin relative to chassis link frame (center) -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+    </collision>
+
+    <xacro:inertial_box mass="${chassis_mass}" x="${body_length}" y="${body_width}" z="${body_height}">
+      <!-- inertia origin at chassis link frame (center) -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+  <!-- attach chassis to base_link: chassis frame is coincident with base_link -->
+  <joint name="chassis_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="chassis"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- MACRO: ankle mount and wheel.
+       Design: the ankle_joint places the ankle_mount link frame at the wheel center (relative to base_link).
+       The wheel link frame is at wheel center (joint origin 0 0 0). Visual/collision/inertial inside wheel are centered there. -->
+  <xacro:macro name="ankle_and_wheel" params="name xpos ypos is_omni">
+
+    <!-- ankle_mount link: its link frame = wheel center (so visual/inertial are relative to that center) -->
+    <link name="${name}_ankle_mount">
+      <visual>
+        <origin xyz="0 0 ${-drivetrain_height / 2.0}" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.03 0.03 ${drivetrain_height}"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+
+      <!-- inertial for the mount centered at the link frame -->
+      <xacro:inertial_box mass="${ankle_mass}" x="0.03" y="0.03" z="${drivetrain_height}">
+        <origin xyz="0 0 ${-drivetrain_height / 2.0}" rpy="0 0 0"/>
+      </xacro:inertial_box>
+    </link>
+
+    <!-- ankle joint: parent = base_link, child = ankle_mount.
+         origin places the ankle_mount frame at the wheel center in base_link coordinates. -->
+    <joint name="${name}_ankle_joint" type="revolute">
+      <parent link="base_link"/>
+      <child  link="${name}_ankle_mount"/>
+      <origin xyz="${xpos} ${ypos} ${-body_height/2.0}" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <!-- ±90° -->
+      <limit lower="${-pi/2.0}" upper="${pi/2.0}" effort="5.0" velocity="2.0"/>
+    </joint>
+
+    <!-- wheel link: frame at wheel center.
+         cylinder length is along Z by URDF default, so rotate to align axle with Y (rpy = 1.5708 0 0).
+         Visual/collision/inertial centered at link frame (wheel center). -->
+    <link name="${name}_wheel">
+      <visual>
+        <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="${is_omni == 'true' and 'black' or 'blue'}"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+
+      <xacro:inertial_cylinder mass="${is_omni == 'true' and omni_wheel_mass or wheel_mass}"
+                              length="${wheel_width}" radius="${wheel_radius}">
+        <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      </xacro:inertial_cylinder>
+    </link>
+
+    <!-- wheel spin joint: parent = ankle_mount, child = wheel, origin set to 0 0 0 because wheel frame = ankle_mount frame (wheel center).
+         axis is Y so wheel spins around its axle. -->
+    <joint name="${name}_wheel_joint" type="continuous">
+      <parent link="${name}_ankle_mount"/>
+      <child  link="${name}_wheel"/>
+      <origin xyz="0 0 ${-drivetrain_height - wheel_radius}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- FRONT LEFT / RIGHT (differential, with ankle) -->
+  <xacro:ankle_and_wheel name="front_left"  xpos="${x_front}" ypos="${y_left}"  is_omni="false"/>
+  <xacro:ankle_and_wheel name="front_right" xpos="${x_front}" ypos="${y_right}" is_omni="false"/>
+
+  <!-- MID wheels: do not steer. Use a fixed mount whose link frame is placed at the wheel center,
+       and a wheel joint from that mount to the wheel where origin=0 0 0. -->
+  <!-- MID LEFT -->
+  <link name="mid_left_mount">
+    <visual>
+      <origin xyz="0 0 ${-drivetrain_height / 2.0}" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 ${drivetrain_height}"/>
+      </geometry>
+      <material name="silver"/>
+    </visual>
+    <xacro:inertial_box mass="${ankle_mass}" x="0.025" y="0.025" z="${drivetrain_height}">
+      <origin xyz="0 0 ${-drivetrain_height / 2.0}" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+  <joint name="mid_left_mount_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="mid_left_mount"/>
+    <origin xyz="${x_mid} ${y_left} ${-body_height/2.0}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="mid_left_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <xacro:inertial_cylinder mass="${omni_wheel_mass}" length="${wheel_width}" radius="${wheel_radius}">
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+    </xacro:inertial_cylinder>
+  </link>
+
+  <joint name="mid_left_wheel_joint" type="continuous">
+    <parent link="mid_left_mount"/>
+    <child  link="mid_left_wheel"/>
+    <origin xyz="0 0 ${-drivetrain_height - wheel_radius}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- MID RIGHT -->
+  <link name="mid_right_mount">
+    <visual>
+      <origin xyz="0 0 ${-drivetrain_height / 2.0}" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 ${drivetrain_height}"/>
+      </geometry>
+      <material name="silver"/>
+    </visual>
+    <xacro:inertial_box mass="${ankle_mass}" x="0.025" y="0.025" z="${drivetrain_height}">
+      <origin xyz="0 0 ${-drivetrain_height / 2.0}" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+  <joint name="mid_right_mount_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="mid_right_mount"/>
+    <origin xyz="${x_mid} ${y_right} ${-body_height / 2.0}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="mid_right_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <xacro:inertial_cylinder mass="${omni_wheel_mass}" length="${wheel_width}" radius="${wheel_radius}">
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+    </xacro:inertial_cylinder>
+  </link>
+
+  <joint name="mid_right_wheel_joint" type="continuous">
+    <parent link="mid_right_mount"/>
+    <child  link="mid_right_wheel"/>
+    <origin xyz="0 0 ${-drivetrain_height - wheel_radius}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- REAR LEFT / RIGHT -->
+  <xacro:ankle_and_wheel name="rear_left"  xpos="${x_rear}" ypos="${y_left}"  is_omni="false"/>
+  <xacro:ankle_and_wheel name="rear_right" xpos="${x_rear}" ypos="${y_right}" is_omni="false"/>
+
+  <!-- Gazebo visual hint (optional) -->
+  <gazebo reference="chassis">
+    <material>
+      <ambient>0 0 0 0</ambient>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.5 0.5 0.5 1</specular>
     </material>
-
-    <material name="orange">
-        <color rgba="1 0.3 0.1 1" />
-    </material>
-
-    <material name="blue">
-        <color rgba="0.2 0.2 1 1" />
-    </material>
-
-    <material name="black">
-        <color rgba="0 0 0 1" />
-    </material>
-
-    <link name="base_link"/>
-
-    <!-- CHASSIS -->
-    <joint name="chassis_joint" type="fixed">
-        <parent link="base_link"/>
-        <child link="chassis"/>
-        <origin xyz="-0.144 0 0"/>
-    </joint>
-
-    <link name="chassis">
-        <visual>
-            <origin xyz="0.144 0 0.038"/>
-            <geometry>
-                <box size="0.096 0.168 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <visual>
-            <origin xyz="0.144 0.09 0.038"/>
-            <geometry>
-                <box size="0.288 0.012 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <visual>
-            <origin xyz="0.144 -0.09 0.038"/>
-            <geometry>
-                <box size="0.288 0.012 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <visual>
-            <origin xyz="0.00125 0.11995 0.038"/>
-            <geometry>
-                <box size="0.0025 0.0479 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <visual>
-            <origin xyz="0.00125 -0.11995 0.038"/>
-            <geometry>
-                <box size="0.0025 0.0479 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <visual>
-            <origin xyz="0.28675 0.11995 0.038"/>
-            <geometry>
-                <box size="0.0025 0.0479 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <visual>
-            <origin xyz="0.28675 -0.11995 0.038"/>
-            <geometry>
-                <box size="0.0025 0.0479 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <visual>
-            <origin xyz="0.144 0.14515 0.038"/>
-            <geometry>
-                <box size="0.288 0.0025 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <visual>
-            <origin xyz="0.144 -0.14515 0.038"/>
-            <geometry>
-                <box size="0.288 0.0025 0.048"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-
-        <collision>
-            <origin xyz="0.144 0 0.038"/>
-            <geometry>
-                <box size="0.288 0.2928 0.048"/>
-            </geometry>
-        </collision>
-
-
-        <xacro:inertial_box mass="0.5" x="0.288" y="0.2928" z="0.048">
-            <origin xyz="0.144 0 0.038" rpy="0 0 0"/>
-        </xacro:inertial_box>
-
-    </link>
-
-    <gazebo reference="chassis">
-        <material>Gazebo/White</material>
-    </gazebo>
-
-    <joint name="front_left_wheel_joint" type="continuous">
-        <parent link="base_link"/>
-        <child link="front_left_wheel"/>
-        <origin xyz="0.096 0.121 0.038" rpy="-${pi/2} 0 0"/>
-        <axis xyz="0 0 1"/>
-    </joint>
-
-    <link name="front_left_wheel">
-        <visual>
-            <geometry>
-                <cylinder radius="0.038" length="0.0408"/>
-            </geometry>
-            <material name="blue"/>
-        </visual>
-
-        <collision>
-            <geometry>
-                <cylinder radius="0.038" length="0.0408"/>
-            </geometry>
-        </collision>
-
-        <xacro:inertial_cylinder mass="0.1" length="0.038" radius="0.0408">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-        </xacro:inertial_cylinder>
-
-    </link>
-
-    <gazebo reference="front_left_wheel">
-        <material>Gazebo/Blue</material>
-        <mu1 value="0.0"/>
-        <mu2 value="0.0"/>
-    </gazebo>
-
-    <joint name="back_left_wheel_joint" type="continuous">
-        <parent link="base_link"/>
-        <child link="back_left_wheel"/>
-        <origin xyz="-0.096 0.121 0.038" rpy="-${pi/2} 0 0"/>
-        <axis xyz="0 0 1"/>
-    </joint>
-
-    <link name="back_left_wheel">
-        <visual>
-            <geometry>
-                <cylinder radius="0.038" length="0.0408"/>
-            </geometry>
-            <material name="blue"/>
-        </visual>
-
-        <collision>
-            <geometry>
-                <cylinder radius="0.038" length="0.0408"/>
-            </geometry>
-        </collision>
-
-        <xacro:inertial_cylinder mass="0.1" length="0.038" radius="0.0408">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-        </xacro:inertial_cylinder>
-
-    </link>
-
-    <gazebo reference="back_left_wheel">
-        <material>Gazebo/Blue</material>
-        <mu1 value="0.0"/>
-        <mu2 value="0.0"/>
-    </gazebo>
-
-    <joint name="front_right_wheel_joint" type="continuous">
-        <parent link="base_link"/>
-        <child link="front_right_wheel"/>
-        <origin xyz="0.096 -0.121 0.038" rpy="${pi/2} 0 0"/>
-        <axis xyz="0 0 -1"/>
-    </joint>
-
-    <link name="front_right_wheel">
-        <visual>
-            <geometry>
-                <cylinder radius="0.038" length="0.0408"/>
-            </geometry>
-            <material name="blue"/>
-        </visual>
-
-        <collision>
-            <geometry>
-                <cylinder radius="0.038" length="0.0408"/>
-            </geometry>
-        </collision>
-
-        <xacro:inertial_cylinder mass="0.1" length="0.038" radius="0.0408">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-        </xacro:inertial_cylinder>
-    </link>
-
-    <gazebo reference="front_right_wheel">
-        <material>Gazebo/Blue</material>
-        <mu1 value="0.0"/>
-        <mu2 value="0.0"/>
-    </gazebo>
-
-
-    
-    <joint name="back_right_wheel_joint" type="continuous">
-        <parent link="base_link"/>
-        <child link="back_right_wheel"/>
-        <origin xyz="-0.096 -0.121 0.038" rpy="${pi/2} 0 0"/>
-        <axis xyz="0 0 -1"/>
-    </joint>
-
-    <link name="back_right_wheel">
-        <visual>
-            <geometry>
-                <cylinder radius="0.038" length="0.0408"/>
-            </geometry>
-            <material name="blue"/>
-        </visual>
-
-        <collision>
-            <geometry>
-                <cylinder radius="0.038" length="0.0408"/>
-            </geometry>
-        </collision>
-
-        <xacro:inertial_cylinder mass="0.1" length="0.038" radius="0.0408">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-        </xacro:inertial_cylinder>
-
-    </link>
-
-    <gazebo reference="back_right_wheel">
-        <material>Gazebo/Blue</material>
-        <mu1 value="0.0"/>
-        <mu2 value="0.0"/>
-    </gazebo>
+  </gazebo>
 
 </robot>

@@ -1,4 +1,0 @@
-controller_manager:
-  ros__parameters:
-    update_rate: 30
-    use_sim_time: true

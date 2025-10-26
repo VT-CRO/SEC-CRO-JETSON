@@ -1,8 +1,0 @@
-<root BTCPP_format="4" >
-    <BehaviorTree ID="MainTree">
-        <Sequence name="root_sequence">
-            <Start      name="start"/>
-            <SetBeacon   name="setBeacon" goalPose="false"/>
-        </Sequence>
-    </BehaviorTree>
-</root>

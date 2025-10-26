@@ -1,1 +1,0 @@
-ros2 run apriltag_ros apriltag_node --ros-args     -r image_rect:=/camera/camera/color/image_raw     -r camera_info:=/camera/camera/color/camera_info     --params-file ./src/crobot_navigation/tags_36h11.yaml

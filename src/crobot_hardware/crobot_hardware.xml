@@ -1,9 +1,0 @@
-<library path="crobot_hardware">
-    <class name="crobot_hardware/CrobotHardware"
-    type="crobot_hardware::CrobotHardware"
-    base_class_type="hardware_interface::SystemInterface">
-        <description>
-            Hardware interface for crobot
-        </description>
-    </class>
-</library>
