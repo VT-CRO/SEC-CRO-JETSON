@@ -1,3 +1,7 @@
 [submodule "src/apriltag_ros"]
 	path = src/apriltag_ros
 	url = https://github.com/christianrauch/apriltag_ros.git
+
+[submodule "src/urdf_launch"]
+	path = src/urdf_launch
+	url = https://github.com/ros/urdf_launch.git
