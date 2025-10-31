@@ -9,6 +9,21 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <!-- For Gazebo Garden/Harmonic -->
+  <depend>ros_gz_sim</depend>
+  <depend>gz_ros2_control</depend>
+
+  <!-- For URDF/xacro processing -->
+  <depend>xacro</depend>
+  <depend>urdf</depend>
+
+  <!-- For robot_state_publisher -->
+  <depend>robot_state_publisher</depend>
+
+  <!-- For ros2_control integration -->
+  <depend>ros2_control</depend>
+  <depend>ros2_controllers</depend>
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

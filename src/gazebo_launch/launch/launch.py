@@ -14,24 +14,24 @@ def generate_launch_description():
     # Define the path to your world file (if you have a custom one)
     # Example: world_file_path = os.path.join(my_pkg_share_dir, 'worlds', 'my_world.sdf')
     
-    # Or use an empty world from gazebo_ros
+    # Or use an empty world from ros_gz_sim package
     empty_world_path = PathJoinSubstitution([
-        get_package_share_directory('gazebo_ros'),
+        get_package_share_directory('ros_gz_sim'),
         'worlds',
         'empty.world'
     ])
 
-    # Launch Gazebo (server and GUI)
+    # Launch New Gazebo (server and GUI)
     gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
-                get_package_share_directory('gazebo_ros'),
+                get_package_share_directory('ros_gz_sim'),
                 'launch',
-                'gazebo.launch.py'
+                'gz_sim.launch.py'
             ])
         ]),
         launch_arguments={
-            'gz_args': [' -r -s -v4 ', empty_world_path] # -r: record, -s: server, -v4: verbose level, empty_world_path: your world file
+            'gz_args': ['empty.sdf']
         }.items()
     )
 
@@ -48,8 +48,8 @@ def generate_launch_description():
     )
 
     spawn_entity_node = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
+        package='ros_gz_sim',
+        executable='create',
         arguments=[
             '-topic', '/robot_description',
             '-entity', 'crobot'
