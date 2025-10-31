@@ -30,7 +30,7 @@
 
     <link name="chassis">
         <visual>
-            <origin xyz="0.144 0 0.038"/>
+            <origin xyz="-0.456 -0.9 0.038"/>
             <geometry>
                 <box size="0.096 0.168 0.048"/>
             </geometry>
@@ -38,7 +38,7 @@
         </visual>
 
         <visual>
-            <origin xyz="0.144 0.09 0.038"/>
+            <origin xyz="-0.456 -0.81 0.038"/>
             <geometry>
                 <box size="0.288 0.012 0.048"/>
             </geometry>
@@ -46,7 +46,7 @@
         </visual>
 
         <visual>
-            <origin xyz="0.144 -0.09 0.038"/>
+            <origin xyz="-0.456 -0.99 0.038"/>
             <geometry>
                 <box size="0.288 0.012 0.048"/>
             </geometry>
@@ -54,7 +54,7 @@
         </visual>
 
         <visual>
-            <origin xyz="0.00125 0.11995 0.038"/>
+            <origin xyz="-0.59875 -0.78005 0.038"/>
             <geometry>
                 <box size="0.0025 0.0479 0.048"/>
             </geometry>
@@ -62,7 +62,7 @@
         </visual>
 
         <visual>
-            <origin xyz="0.00125 -0.11995 0.038"/>
+            <origin xyz="-0.59875 -1.01995 0.038"/>
             <geometry>
                 <box size="0.0025 0.0479 0.048"/>
             </geometry>
@@ -70,7 +70,7 @@
         </visual>
 
         <visual>
-            <origin xyz="0.28675 0.11995 0.038"/>
+            <origin xyz="-0.31325 -0.78005 0.038"/>
             <geometry>
                 <box size="0.0025 0.0479 0.048"/>
             </geometry>
@@ -78,7 +78,7 @@
         </visual>
 
         <visual>
-            <origin xyz="0.28675 -0.11995 0.038"/>
+            <origin xyz="-0.31325 -1.01995 0.038"/>
             <geometry>
                 <box size="0.0025 0.0479 0.048"/>
             </geometry>
@@ -86,7 +86,7 @@
         </visual>
 
         <visual>
-            <origin xyz="0.144 0.14515 0.038"/>
+            <origin xyz="-0.456 -0.75485 0.038"/>
             <geometry>
                 <box size="0.288 0.0025 0.048"/>
             </geometry>
@@ -94,7 +94,7 @@
         </visual>
 
         <visual>
-            <origin xyz="0.144 -0.14515 0.038"/>
+            <origin xyz="-0.456 -1.05485 0.038"/>
             <geometry>
                 <box size="0.288 0.0025 0.048"/>
             </geometry>
