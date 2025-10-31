@@ -36,15 +36,22 @@ def generate_launch_description():
     )
 
     # Spawning a URDF model 
-    robot_description_path = crobot_description + "/description/robot.urdf.xacro"
-    with open(robot_description_path, 'r') as file:
-        robot_description_content = file.read()
+    # robot_description_path = crobot_description + "/description/robot.urdf.xacro"
+    # with open(robot_description_path, 'r') as file:
+    #     robot_description_content = file.read()
+
+    description_launch_py = IncludeLaunchDescription(
+        PathJoinSubstitution([get_package_share_directory('urdf_launch'), 'launch', 'description.launch.py']),
+        launch_arguments={
+            'urdf_package': 'crobot_description',
+            'urdf_package_path': 'description/robot.urdf.xacro'}.items()
+    )
 
     spawn_entity_node = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
         arguments=[
-            '-topic', 'robot_description',
+            '-topic', '/robot_description',
             '-entity', 'crobot'
         ],
         output='screen'
@@ -58,5 +65,6 @@ def generate_launch_description():
         #     name='robot_state_publisher',
         #     parameters=[{'robot_description': robot_description_content}]
         # ),
+        description_launch_py,
         spawn_entity_node,
     ])
