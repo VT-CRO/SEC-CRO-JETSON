@@ -225,13 +225,56 @@
   <xacro:ankle_and_wheel name="rear_left"  xpos="${x_rear}" ypos="${y_left}"  is_omni="false"/>
   <xacro:ankle_and_wheel name="rear_right" xpos="${x_rear}" ypos="${y_right}" is_omni="false"/>
 
-  <!-- Gazebo visual hint (optional) -->
-  <gazebo reference="chassis">
-    <material>
-      <ambient>0 0 0 0</ambient>
-      <diffuse>1 1 1 1</diffuse>
-      <specular>0.5 0.5 0.5 1</specular>
-    </material>
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSystem</plugin>
+    </hardware>
+    <joint name="front_left_ankle_joint">
+      <command_interface name="position"/>
+      <state_interface   name="position"/>
+    </joint>
+    <joint name="front_left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface   name="velocity"/>
+    </joint>
+    <joint name="front_right_ankle_joint">
+      <command_interface name="position"/>
+      <state_interface   name="position"/>
+    </joint>
+    <joint name="front_right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface   name="velocity"/>
+    </joint>
+    <joint name="mid_left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface   name="velocity"/>
+    </joint>
+    <joint name="mid_right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface   name="velocity"/>
+    </joint>
+    <joint name="rear_left_ankle_joint">
+      <command_interface name="position"/>
+      <state_interface   name="position"/>
+    </joint>
+    <joint name="rear_left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface   name="velocity"/>
+    </joint>
+    <joint name="rear_right_ankle_joint">
+      <command_interface name="position"/>
+      <state_interface   name="position"/>
+    </joint>
+    <joint name="rear_right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface   name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="gz-sim-ros2-control-system" name="gz_ros2_control">
+      <parameters>$(find gazebo_launch)/config/minimal.yaml</parameters>
+    </plugin>
   </gazebo>
 
 </robot>
