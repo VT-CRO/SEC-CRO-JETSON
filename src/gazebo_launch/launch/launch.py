@@ -31,7 +31,9 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'gz_args': ['empty.sdf']
+            # -r is really important for starting gazebo in a running state
+            # -v 4 sets the verbosity level to 4 for more detailed output
+            'gz_args': ['-r -v 4 empty.sdf']
         }.items()
     )
 
@@ -52,19 +54,48 @@ def generate_launch_description():
         executable='create',
         arguments=[
             '-topic', '/robot_description',
-            '-entity', 'crobot'
+            '-entity', 'crobot',
+            '-z', '0.15'
         ],
+        output='screen'
+    )
+
+    # spawn controllers using controller_manager spawner
+    spawn_joint_state_broadcaster = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster'],
+        output='screen'
+    )
+
+    # spawn_diff_drive = Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=['diff_drive_controller'],
+    #     output='screen'
+    # )
+
+    spawn_ankle_joint_controller = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['ankle_position_controller'],
+        output='screen'
+    )
+
+    spawn_wheel_velocity_controller = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['wheel_velocity_controller'],
         output='screen'
     )
 
     return LaunchDescription([
         gazebo_launch,
-        # Node(
-        #     package='robot_state_publisher',
-        #     executable='robot_state_publisher',
-        #     name='robot_state_publisher',
-        #     parameters=[{'robot_description': robot_description_content}]
-        # ),
         description_launch_py,
         spawn_entity_node,
+        spawn_joint_state_broadcaster,
+        # i doubt we'll use diff drive because each wheel needs to be independently controlled
+        # spawn_diff_drive,
+        spawn_ankle_joint_controller,
+        spawn_wheel_velocity_controller,
     ])
