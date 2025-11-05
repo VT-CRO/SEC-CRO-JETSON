@@ -4,22 +4,23 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
+from launch.actions import ExecuteProcess
 import os
 
 def generate_launch_description():
     # Get the share directory of your package
     my_pkg_share_dir = get_package_share_directory('gazebo_launch')
     crobot_description = get_package_share_directory('crobot_description')
+
+    world_path = PathJoinSubstitution([my_pkg_share_dir,'field','field.sdf'])
     
-    # Define the path to your world file (if you have a custom one)
-    # Example: world_file_path = os.path.join(my_pkg_share_dir, 'worlds', 'my_world.sdf')
     
     # Or use an empty world from ros_gz_sim package
-    empty_world_path = PathJoinSubstitution([
-        get_package_share_directory('ros_gz_sim'),
-        'worlds',
-        'empty.world'
-    ])
+    # empty_world_path = PathJoinSubstitution([
+    #     get_package_share_directory('ros_gz_sim'),
+    #     'worlds',
+    #     'empty.world'
+    # ])
 
     # Launch New Gazebo (server and GUI)
     gazebo_launch = IncludeLaunchDescription(
@@ -49,14 +50,31 @@ def generate_launch_description():
             'urdf_package_path': 'description/robot.urdf.xacro'}.items()
     )
 
+
     spawn_entity_node = Node(
         package='ros_gz_sim',
         executable='create',
         arguments=[
             '-topic', '/robot_description',
             '-entity', 'crobot',
-            '-z', '0.15'
+            '-x', '0.53',
+            '-y', '-3.10',
+            '-z', '0.43'
         ],
+        output='screen'
+    )
+
+    #The field
+    spawn_field_node = Node(
+        package = 'ros_gz_sim',
+        executable='create',
+        arguments=[
+                '-entity', 'Field', # Name of the spawned model
+                '-file', world_path,
+                '-x', '0.0',
+                '-y', '0.0',
+                '-z', '0.0'
+            ],
         output='screen'
     )
 
@@ -89,13 +107,15 @@ def generate_launch_description():
         output='screen'
     )
 
+
     return LaunchDescription([
         gazebo_launch,
         description_launch_py,
         spawn_entity_node,
+        spawn_field_node,
         spawn_joint_state_broadcaster,
         # i doubt we'll use diff drive because each wheel needs to be independently controlled
         # spawn_diff_drive,
         spawn_ankle_joint_controller,
-        spawn_wheel_velocity_controller,
+        spawn_wheel_velocity_controller
     ])
