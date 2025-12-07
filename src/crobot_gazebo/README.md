@@ -1,8 +1,7 @@
-
 Launching the gazebo:
 1. Enter the container
 2. source the local setup
-3. run ros2 launch gazebo_launch launch.py
+3. run ros2 launch crobot_gazebo gazebo.launch.py 
 
 you can then make a new terminal and control the wheels by running this command:
 ros2 topic pub /ankle_position_controller/commands std_msgs/msg/Float64MultiArray \

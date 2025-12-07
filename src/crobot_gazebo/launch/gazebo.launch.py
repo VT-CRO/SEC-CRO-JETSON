@@ -9,7 +9,7 @@ import os
 
 def generate_launch_description():
     # Get the share directory of your package
-    my_pkg_share_dir = get_package_share_directory('gazebo_launch')
+    my_pkg_share_dir = get_package_share_directory('crobot_gazebo')
     crobot_description = get_package_share_directory('crobot_description')
 
     world_path = PathJoinSubstitution([my_pkg_share_dir,'field','field.sdf'])
@@ -44,7 +44,7 @@ def generate_launch_description():
     #     robot_description_content = file.read()
 
     description_launch_py = IncludeLaunchDescription(
-        PathJoinSubstitution([get_package_share_directory('urdf_launch'), 'launch', 'description.launch.py']),
+        PathJoinSubstitution([get_package_share_directory('crobot_description'), 'launch', 'rsp.launch.py']),
         launch_arguments={
             'urdf_package': 'crobot_description',
             'urdf_package_path': 'description/robot.urdf.xacro'}.items()
@@ -107,6 +107,17 @@ def generate_launch_description():
         output='screen'
     )
 
+    bridge_params = os.path.join(my_pkg_share_dir,'config','ros_gz_bridge.yaml')
+    ros_gz_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        arguments=[
+            '--ros-args',
+            '-p',
+            f'config_file:={bridge_params}',
+        ]
+    )
+
 
     return LaunchDescription([
         gazebo_launch,
@@ -117,5 +128,6 @@ def generate_launch_description():
         # i doubt we'll use diff drive because each wheel needs to be independently controlled
         # spawn_diff_drive,
         spawn_ankle_joint_controller,
-        spawn_wheel_velocity_controller
+        spawn_wheel_velocity_controller,
+        ros_gz_bridge
     ])

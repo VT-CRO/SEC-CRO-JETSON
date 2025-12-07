@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(crobot_description)
+project(crobot_gazebo)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -24,7 +24,7 @@ if(BUILD_TESTING)
 endif()
 
 install (
-  DIRECTORY rviz description launch config 
+  DIRECTORY field config launch 
   DESTINATION share/${PROJECT_NAME}/
 )
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="https://www.ros.org/wiki/xacro">
 
-  <xacro:include filename="inertial_macros.xacro"/>
+  <xacro:include filename="inertials_macros.xacro"/>
   <xacro:include filename="materials.xacro"/>
 
   <!-- Parameters -->
