@@ -8,24 +8,29 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 
+from launch import LaunchDescription
+from launch_ros.parameter_descriptions import ParameterValue
+from launch_ros.actions import Node
+from launch.substitutions import Command
+import os
+from ament_index_python.packages import get_package_share_path
+
 
 def generate_launch_description():
-    ld = LaunchDescription()
-    ld.add_action(DeclareLaunchArgument('urdf_package',
-                                        description='The package where the robot description is located'))
-    ld.add_action(DeclareLaunchArgument('urdf_package_path',
-                                        description='The path to the robot description relative to the package root'))
 
-    package_dir = FindPackageShare(LaunchConfiguration('urdf_package'))
-    urdf_path = PathJoinSubstitution([package_dir, LaunchConfiguration('urdf_package_path')])
+    package_dir = FindPackageShare(LaunchConfiguration('crobot_description'))
 
-    robot_description_content = ParameterValue(Command(['xacro ', urdf_path]), value_type=str)
+    urdf_path = os.path.join(get_package_share_path('crobot_description'),
+                             'description', 'robot.urdf.xacro')
 
-    robot_state_publisher_node = Node(package='robot_state_publisher',
-                                      executable='robot_state_publisher',
-                                      parameters=[{
-                                          'robot_description': robot_description_content,
-                                      }])
+    robot_description = ParameterValue(Command(['xacro ', urdf_path]), value_type=str)
 
-    ld.add_action(robot_state_publisher_node)
-    return ld
+    robot_state_publisher_node = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        parameters=[{'robot_description': robot_description}]
+    )
+
+    return LaunchDescription([
+        robot_state_publisher_node
+    ])
