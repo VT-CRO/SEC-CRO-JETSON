@@ -1,27 +1,14 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
 from launch.substitutions import Command
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-
-
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
-from launch_ros.substitutions import FindPackageShare
-
-from launch import LaunchDescription
-from launch_ros.parameter_descriptions import ParameterValue
-from launch_ros.actions import Node
-from launch.substitutions import Command
 import os
 from ament_index_python.packages import get_package_share_path
 
 
 def generate_launch_description():
-
-    package_dir = FindPackageShare(LaunchConfiguration('crobot_description'))
-
-    urdf_path = os.path.join(get_package_share_path('crobot_description'),
-                             'description', 'robot.urdf.xacro')
+    
+    urdf_path = os.path.join(get_package_share_path('crobot_description'), 'description', 'robot.urdf.xacro')
 
     robot_description = ParameterValue(Command(['xacro ', urdf_path]), value_type=str)
 
