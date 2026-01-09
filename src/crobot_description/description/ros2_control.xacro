@@ -1,8 +1,14 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">  
-  <ros2_control name="GazeboSimSystem" type="system">
+  <ros2_control name="Crobot" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <xacro:if value="$(arg sim_mode)">
+        <!-- TODO: Determine if this gazebo plugin is right -->
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </xacro:if>
+      <xacro:unless value="$(arg sim_mode)">
+        <plugin>crobot_hardware/CrobotHardware</plugin>
+      </xacro:unless>
     </hardware>
     <joint name="front_left_ankle_joint">
       <command_interface name="position"/>
