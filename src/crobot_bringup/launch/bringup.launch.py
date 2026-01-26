@@ -38,5 +38,5 @@ def generate_launch_description():
 
     return LaunchDescription([
         rsp,
-        control_node
+        control_node,
     ])

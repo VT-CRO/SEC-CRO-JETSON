@@ -2,20 +2,31 @@
 #define CROBOT_HARDWARE__DIFFBOT_SYSTEM_HPP_
 
 #include "hardware_interface/system_interface.hpp"
+#include "crobot_hardware/serial_comm.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 namespace crobot_hardware
 {
-// TODO: Define message types
+    struct Wheel
+    {
+        std::string name;
+        // double pos = 0.0;
+        double vel = 0.0;
+        double cmd = 0.0;
+    };
 
-    // TODO: Better understand last year's implementation
+    struct Ankle
+    {
+        std::string name;
+        double pos = 0.0;
+        double cmd = 0.0;
+    };
+
     class CrobotHardware : public hardware_interface::SystemInterface
     {
-        struct Config
-        {
-            // TODO: Add config
-        };
-
         public:
+            RCLCPP_SHARED_PTR_DEFINITIONS(CrobotHardware)
+
             hardware_interface::CallbackReturn on_init(
                 const hardware_interface::HardwareInfo & info) override;
 
@@ -42,7 +53,29 @@ namespace crobot_hardware
                 const rclcpp::Time & time, const rclcpp::Duration & period) override;
         
         private:
-            // TODO: Add private members
+            struct Config
+            {
+                std::string wheel_fl_name;
+                std::string wheel_fr_name;
+                std::string wheel_bl_name;
+                std::string wheel_br_name;
+
+                std::string ankle_fl_name;
+                std::string ankle_fr_name;
+                std::string ankle_bl_name;
+                std::string ankle_br_name;
+
+                float loop_rate = 0.0;
+                std::string device = "";
+                int baud_rate = 115200;
+                int timeout_ms = 1000;
+            } cfg_;
+
+            // fl, fr, bl, br)
+            std::vector<Wheel> wheels_;
+            std::vector<Ankle> ankles_;
+
+            SerialComm serial_comm_;
     };
 }
 

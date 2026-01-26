@@ -18,7 +18,7 @@
 
   <xacro:property name="x_front" value="${body_length/2.0 - 0.018}"/>
   <xacro:property name="x_mid"   value="0.0"/>
-  <xacro:property name="x_rear"  value="${-body_length/2.0 + 0.018}"/>
+  <xacro:property name="x_back"  value="${-body_length/2.0 + 0.018}"/>
   <xacro:property name="y_left"  value="${body_width/2.0 - 0.01}"/>
   <xacro:property name="y_right" value="${-body_width/2.0 + 0.01}"/>
 
@@ -221,8 +221,8 @@
     <axis xyz="0 1 0"/>
   </joint>
 
-  <!-- REAR LEFT / RIGHT -->
-  <xacro:ankle_and_wheel name="rear_left"  xpos="${x_rear}" ypos="${y_left}"  is_omni="false"/>
-  <xacro:ankle_and_wheel name="rear_right" xpos="${x_rear}" ypos="${y_right}" is_omni="false"/>
+  <!-- BACK LEFT / RIGHT -->
+  <xacro:ankle_and_wheel name="back_left"  xpos="${x_back}" ypos="${y_left}"  is_omni="false"/>
+  <xacro:ankle_and_wheel name="back_right" xpos="${x_back}" ypos="${y_right}" is_omni="false"/>
 
 </robot>
