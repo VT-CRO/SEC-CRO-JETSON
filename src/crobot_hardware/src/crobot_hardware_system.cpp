@@ -1,9 +1,12 @@
 #include "crobot_hardware/crobot_hardware_system.hpp"
 
 #include <string>
+#include <nlohmann/json.hpp>
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
+
+using json = nlohmann::json;
 
 namespace crobot_hardware
 {
@@ -221,14 +224,81 @@ namespace crobot_hardware
     hardware_interface::return_type CrobotHardware::read(
         const rclcpp::Time & time, const rclcpp::Duration & period)
     {
-        // TODO: Implement read from Teensy
+        if (!serial_comm_.isConnected()) {
+            RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
+                         "Cannot read from hardware: not connected");
+            return hardware_interface::return_type::ERROR;
+        }
+
+        json j;
+        j["cmd"] = "read";
+        std::string j_str = j.dump() + "\n";
+        serial_comm_.writeBytes(j_str.c_str(), j_str.size());
+
+        char buffer[256];
+        int bytesRead = serial_comm_.readBytes(buffer, sizeof(buffer) - 1);
+
+        if (bytesRead > 0)
+        {
+            buffer[bytesRead] = '\0';
+            try {
+                json response = json::parse(buffer);
+
+                wheels_[0].vel = response["wheels"]["front_left"];
+                wheels_[1].vel = response["wheels"]["front_right"];
+                wheels_[2].vel = response["wheels"]["back_left"];
+                wheels_[3].vel = response["wheels"]["back_right"];
+
+                ankles_[0].pos = response["ankles"]["front_left"];
+                ankles_[1].pos = response["ankles"]["front_right"];
+                ankles_[2].pos = response["ankles"]["back_left"];
+                ankles_[3].pos = response["ankles"]["back_right"];
+            } catch (json::parse_error &e) {
+                RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
+                             "Failed to parse JSON response: %s", e.what());
+                return hardware_interface::return_type::ERROR;
+            }
+        } else {
+            RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
+                         "No data read from hardware");
+            return hardware_interface::return_type::ERROR;
+        }
+
         return hardware_interface::return_type::OK;
     }
 
     hardware_interface::return_type CrobotHardware::write(
         const rclcpp::Time & time, const rclcpp::Duration & period)
     {
-        // TODO: Implement write to Teensy
+        if (!serial_comm_.isConnected()) {
+            RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
+                         "Cannot write to hardware: not connected");
+            return hardware_interface::return_type::ERROR;
+        }
+
+        json j;
+        j["cmd"] = "write";
+
+        j["wheels"]["front_left"] = wheels_[0].cmd;
+        j["wheels"]["front_right"] = wheels_[1].cmd;
+        j["wheels"]["back_left"] = wheels_[2].cmd;
+        j["wheels"]["back_right"] = wheels_[3].cmd;
+
+        j["ankles"]["front_left"] = ankles_[0].cmd;
+        j["ankles"]["front_right"] = ankles_[1].cmd;
+        j["ankles"]["back_left"] = ankles_[2].cmd;
+        j["ankles"]["back_right"] = ankles_[3].cmd;
+
+        std::string j_str = j.dump() + "\n";
+        int bytesSent = serial_comm_.writeBytes(j_str.c_str(), j_str.size());
+
+        if (bytesSent != (int)j_str.size()) {
+            RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
+                         "Sent %d bytes, expected to send %zu bytes",
+                         bytesSent, j_str.size());
+            return hardware_interface::return_type::ERROR;
+        }
+
         return hardware_interface::return_type::OK;
     }
 }
