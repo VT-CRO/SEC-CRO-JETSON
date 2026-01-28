@@ -36,7 +36,7 @@ def generate_launch_description():
         launch_arguments={
             # -r is really important for starting gazebo in a running state
             # -v 4 sets the verbosity level to 4 for more detailed output
-            'gz_args': ['-r -v 4 empty.sdf']
+            'ign_args': [world_path, '-r', '-v', '4']
         }.items()
     )
 
@@ -54,7 +54,7 @@ def generate_launch_description():
 
 
     spawn_entity_node = Node(
-        package='ros_gz_sim',
+        package='ros_ign_gazebo',
         executable='create',
         arguments=[
             '-topic', '/robot_description',
@@ -68,7 +68,7 @@ def generate_launch_description():
 
     #The field
     spawn_field_node = Node(
-        package = 'ros_gz_sim',
+        package = 'ros_ign_gazebo',
         executable='create',
         arguments=[
                 '-entity', 'Field', # Name of the spawned model
