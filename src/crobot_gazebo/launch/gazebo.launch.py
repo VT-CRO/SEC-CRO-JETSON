@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from launch.actions import ExecuteProcess
@@ -36,7 +36,7 @@ def generate_launch_description():
         launch_arguments={
             # -r is really important for starting gazebo in a running state
             # -v 4 sets the verbosity level to 4 for more detailed output
-            'ign_args': [world_path, '-r', '-v', '4']
+            'ign_args': [world_path, TextSubstitution(text = ' -r -v 4')]
         }.items()
     )
 
