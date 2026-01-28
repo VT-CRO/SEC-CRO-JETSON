@@ -12,7 +12,9 @@ def generate_launch_description():
     my_pkg_share_dir = get_package_share_directory('crobot_gazebo')
     crobot_description = get_package_share_directory('crobot_description')
 
-    world_path = PathJoinSubstitution([my_pkg_share_dir,'field','field.sdf'])
+    field_path = PathJoinSubstitution([my_pkg_share_dir,'field','field.sdf'])
+
+    world_path = PathJoinSubstitution([my_pkg_share_dir, 'world', 'empty.sdf'])
     
     
     # Or use an empty world from ros_gz_sim package
@@ -26,9 +28,9 @@ def generate_launch_description():
     gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
-                get_package_share_directory('ros_gz_sim'),
+                get_package_share_directory('ros_ign_gazebo'),
                 'launch',
-                'gz_sim.launch.py'
+                'ign_gazebo.launch.py'
             ])
         ]),
         launch_arguments={
@@ -70,7 +72,7 @@ def generate_launch_description():
         executable='create',
         arguments=[
                 '-entity', 'Field', # Name of the spawned model
-                '-file', world_path,
+                '-file', field_path,
                 '-x', '0.0',
                 '-y', '0.0',
                 '-z', '0.0'

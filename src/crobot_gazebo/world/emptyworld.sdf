@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<sdf version="1.8"> <!-- Use the appropriate SDF version for Fortress, e.g., 1.8 -->
+  <world name="my_empty_world">
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+  </world>
+</sdf>
