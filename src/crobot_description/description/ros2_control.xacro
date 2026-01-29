@@ -70,4 +70,12 @@
       <state_interface   name="velocity"/>
     </joint>
   </ros2_control>
+
+  <xacro:if value="$(arg sim_mode)">
+    <gazebo>
+      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(find crobot_controller)/config/gazebo_ros2_control_use_sim.yaml</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:if>
 </robot>

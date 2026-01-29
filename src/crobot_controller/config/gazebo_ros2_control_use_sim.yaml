@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 100
+    update_rate: 30
     use_sim_time: true
 
     joint_state_broadcaster:
@@ -14,11 +14,10 @@ controller_manager:
 
 wheel_velocity_controller:
   ros__parameters:
-    joints:
-      - front_left_wheel_joint
-      - back_left_wheel_joint
-      - front_right_wheel_joint
-      - back_right_wheel_joint
+    joints: [
+      "front_left_wheel_joint", "back_left_wheel_joint",
+      "front_right_wheel_joint", "back_right_wheel_joint"
+    ]
 
 # Ankle position control (group or per-joint)
 ankle_position_controller:

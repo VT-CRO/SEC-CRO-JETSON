@@ -1,5 +1,28 @@
 controller_manager:
   ros__parameters:
-    update_rate: 30 # TODO: Determine appropriate update rate
+    update_rate: 30 
 
-    # TODO: Add controllers
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    wheel_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+    ankle_position_controller:
+      type: position_controllers/JointGroupPositionController
+
+wheel_velocity_controller:
+  ros__parameters:
+    joints:
+      - front_left_wheel_joint
+      - back_left_wheel_joint
+      - front_right_wheel_joint
+      - back_right_wheel_joint
+
+# Ankle position control (group or per-joint)
+ankle_position_controller:
+  ros__parameters:
+    joints: [
+      "front_left_ankle_joint", "front_right_ankle_joint",
+      "back_left_ankle_joint",  "back_right_ankle_joint"
+    ]
