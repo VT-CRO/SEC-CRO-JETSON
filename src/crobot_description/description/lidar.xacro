@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
 
     <joint name="laser_joint" type="fixed">
-        <parent link="chassis"/>
+        <parent link="base_link"/>
         <child link="laser_frame"/>
         <origin xyz="0.122 0 0.212" rpy="0 0 0"/>
     </joint>
@@ -36,25 +36,33 @@
     <gazebo reference="laser_frame">
         <material>Gazebo/Black</material>
 
-        <sensor name="laser" type="gpu_lidar">
-            <pose> 0 0 0 0 0 0 </pose>
-            <visualize>false</visualize>
+        <sensor name='gpu_lidar' type='gpu_lidar'>
+            <pose relative_to='laser_frame'>0 0 0 0 0 0</pose>
+            <topic>lidar</topic>
             <update_rate>10</update_rate>
-            <lidar>
+            <ray>
                 <scan>
                     <horizontal>
-                        <samples>360</samples>
-                        <min_angle>-3.14</min_angle>
-                        <max_angle>3.14</max_angle>
+                        <samples>640</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-1.396263</min_angle>
+                        <max_angle>1.396263</max_angle>
                     </horizontal>
+                    <vertical>
+                        <samples>1</samples>
+                        <resolution>0.01</resolution>
+                        <min_angle>0</min_angle>
+                        <max_angle>0</max_angle>
+                    </vertical>
                 </scan>
                 <range>
-                    <min>0.3</min>
-                    <max>12</max>
+                    <min>0.08</min>
+                    <max>10.0</max>
+                    <resolution>0.01</resolution>
                 </range>
-            </lidar>
-            <topic>scan</topic>
-            <gz_frame_id>laser_frame</gz_frame_id>
+            </ray>
+            <always_on>1</always_on>
+            <visualize>true</visualize>
         </sensor>
     </gazebo>
 
