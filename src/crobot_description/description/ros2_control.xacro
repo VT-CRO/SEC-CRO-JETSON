@@ -20,7 +20,7 @@
 
         <!-- TODO: Confirm parameters -->
         <param name="loop_rate">30.0</param>
-        <param name="dev">/dev/ttyAMC0</param>
+        <param name="dev">/dev/ttyACM0</param> <!-- ttyTHS1 for rx/tx pins, ttyACM0 for usb-->
         <param name="baud_rate">115200</param>
         <param name="timeout_ms">1000</param>
       </xacro:unless>
