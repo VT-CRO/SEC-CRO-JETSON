@@ -10,9 +10,5 @@
   <xacro:if value="$(arg use_ros2_control)">
     <xacro:include filename="ros2_control.xacro"/>
   </xacro:if>
-  <!-- TODO: We may not need to do this since we are using a different plugin from last year -->
-  <xacro:unless value="$(arg use_ros2_control)">
-    <xacro:include filename="gazebo.xacro"/>
-  </xacro:unless>
 
 </robot>

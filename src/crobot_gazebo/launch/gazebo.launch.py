@@ -36,7 +36,7 @@ def generate_launch_description():
         launch_arguments={
             # -r is really important for starting gazebo in a running state
             # -v 4 sets the verbosity level to 4 for more detailed output
-            'ign_args': [world_path, TextSubstitution(text = ' -r -v 4')]
+            'ign_args': [world_path, TextSubstitution(text = ' -r')]
         }.items()
     )
 
@@ -144,13 +144,13 @@ def generate_launch_description():
 
     return LaunchDescription([
         gazebo_launch,
-        description_launch_py,
+        # description_launch_py,
         spawn_entity_node,
         spawn_field_node,
-        spawn_joint_state_broadcaster,
+        # spawn_joint_state_broadcaster,
         # i doubt we'll use diff drive because each wheel needs to be independently controlled
         # spawn_diff_drive,
-        spawn_ankle_joint_controller,
-        spawn_wheel_velocity_controller,
+        # spawn_ankle_joint_controller,
+        # spawn_wheel_velocity_controller,
         bridge_node
     ])

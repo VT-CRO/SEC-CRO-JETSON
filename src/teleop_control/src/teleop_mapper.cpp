@@ -33,7 +33,7 @@ private:
         std_msgs::msg::Float64MultiArray wheel_msg;
 
         std::vector<double> ankles(4, 0.0);
-        std::vector<double> wheels(6, 0.0);
+        std::vector<double> wheels(4, 0.0);
 
         const double MAX_ANGLE = M_PI / 4.0;
 
@@ -50,10 +50,8 @@ private:
 
             wheels[0] = -v * s;
             wheels[1] = -v * s;
-            wheels[2] = -v * s;
+            wheels[2] = v * s;
             wheels[3] = v * s;
-            wheels[4] = v * s;
-            wheels[5] = v * s;
         }
         else
         {
@@ -64,7 +62,7 @@ private:
             ankles[2] = -steer;
             ankles[3] = -steer;
 
-            for(int i = 0; i < 6; i++) {
+            for(int i = 0; i < 4; i++) {
                 wheels[i] = linear_x;
             }
         }

@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <gazebo>
-    <!-- TODO: because this is a different plugin from last year, I'm not sure if it has to be disabled when using ros2_control-->
-    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find crobot_description)/config/controller.yaml</parameters>
-    </plugin>
-  </gazebo>
-</robot>

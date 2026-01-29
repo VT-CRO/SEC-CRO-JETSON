@@ -11,13 +11,15 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
+    # Robot State Publisher - publishes URDF and transforms
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('crobot_description'), 'launch', 'rsp.launch.py'
         )]),
-        launch_arguments={'use_sim_time': 'false', 'use_ros2_control': 'true'}.items()
+        launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
     )
 
+    # Controller Manager node
     robot_controllers = PathJoinSubstitution([
         FindPackageShare('crobot_controller'),
         "config",
@@ -56,10 +58,26 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Gazebo launch
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(
+            get_package_share_directory('crobot_gazebo'), 'launch', 'gazebo.launch.py'
+        )])
+    )
+
+    # Teleop mapper - converts /cmd_vel to wheel/ankle commands
+    teleop = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(
+            get_package_share_directory('teleop_control'), 'launch', 'teleop_launch.py'
+        )])
+    )
+
     return LaunchDescription([
         rsp,
         control_node,
         spawn_joint_state_broadcaster,
         spawn_ankle_joint_controller,
         spawn_wheel_velocity_controller,
+        gazebo,
+        teleop,
     ])
