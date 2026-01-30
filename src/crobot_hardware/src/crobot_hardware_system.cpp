@@ -290,6 +290,9 @@ namespace crobot_hardware
         j["ankles"]["back_right"] = ankles_[3].cmd;
 
         std::string j_str = j.dump() + "\n";
+
+        RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Sending JSON: %s", j_str.c_str());
+
         int bytesSent = serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 
         if (bytesSent != (int)j_str.size()) {
