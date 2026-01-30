@@ -279,15 +279,17 @@ namespace crobot_hardware
         json j;
         j["cmd"] = "write";
 
-        j["wheels"]["front_left"] = wheels_[0].cmd;
-        j["wheels"]["front_right"] = wheels_[1].cmd;
-        j["wheels"]["back_left"] = wheels_[2].cmd;
-        j["wheels"]["back_right"] = wheels_[3].cmd;
+        const double RAD_TO_DEG = 180.0 / M_PI;
 
-        j["ankles"]["front_left"] = ankles_[0].cmd;
-        j["ankles"]["front_right"] = ankles_[1].cmd;
-        j["ankles"]["back_left"] = ankles_[2].cmd;
-        j["ankles"]["back_right"] = ankles_[3].cmd;
+        j["ankles"]["front_left"] = (int)(120.0 + ankles_[0].cmd * RAD_TO_DEG);
+        j["ankles"]["front_right"] = (int)(60.0 + ankles_[1].cmd * RAD_TO_DEG);
+        j["ankles"]["back_left"] = (int)(60.0 + ankles_[2].cmd * RAD_TO_DEG);
+        j["ankles"]["back_right"] = (int)(120.0 + ankles_[3].cmd * RAD_TO_DEG);
+
+        j["wheels"]["front_left"] = (int)(wheels_[0].cmd * 255.0);
+        j["wheels"]["front_right"] = (int)(wheels_[1].cmd * 255.0);
+        j["wheels"]["back_left"] = (int)(wheels_[2].cmd * 255.0);
+        j["wheels"]["back_right"] = (int)(wheels_[3].cmd * 255.0);        
 
         std::string j_str = j.dump() + "\n";
 
