@@ -3,7 +3,8 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 
@@ -56,10 +57,22 @@ def generate_launch_description():
         output='screen'
     )
 
+    delay_spawn_ankle_joint_controller_after_joint_state_broadcaster = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=spawn_joint_state_broadcaster,
+            on_exit=[spawn_ankle_joint_controller],
+    ))
+
+    delay_spawn_wheel_velocity_controller_after_ankle_joint_controller = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=spawn_ankle_joint_controller,
+            on_exit=[spawn_wheel_velocity_controller],
+    ))
+
     return LaunchDescription([
         rsp,
         control_node,
         spawn_joint_state_broadcaster,
-        spawn_ankle_joint_controller,
-        spawn_wheel_velocity_controller,
+        delay_spawn_ankle_joint_controller_after_joint_state_broadcaster,
+        delay_spawn_wheel_velocity_controller_after_ankle_joint_controller,
     ])
