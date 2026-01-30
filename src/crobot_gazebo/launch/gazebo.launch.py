@@ -109,25 +109,6 @@ def generate_launch_description():
         output='screen'
     )
 
-    # bridge_params = os.path.join(my_pkg_share_dir,'config','ros_gz_bridge.yaml')
-    # ros_gz_bridge = Node(
-    #     package="ros_gz_bridge",
-    #     executable="parameter_bridge",
-    #     arguments=[
-    #         '--ros-args',
-    #         '-p',
-    #         f'config_file:={bridge_params}',
-    #     ]
-    # )
-
-        # Bridge
-    # bridge = Node(
-    #     package='ros_gz_bridge',
-    #     executable='parameter_bridge',
-    #     arguments=['/lidar@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan/'],
-    #     output='screen'
-    # )
-
     bridge_params = os.path.join(my_pkg_share_dir, 'config', 'ros_gz_bridge.yaml')
 
     bridge_node = Node(
