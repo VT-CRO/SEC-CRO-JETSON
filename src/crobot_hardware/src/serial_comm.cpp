@@ -24,8 +24,7 @@ namespace crobot_hardware
 
         // O_RDWR: Read and write access
         // O_NOCTTY: Do not make this terminal the controlling terminal
-        // O_NONBLOCK: Non-blocking mode
-        fd_ = open(device_path.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+        fd_ = open(device_path.c_str(), O_RDWR | O_NOCTTY);
 
         timeout_ms_ = timeout_ms;
 
@@ -60,7 +59,7 @@ namespace crobot_hardware
 
         tty.c_lflag = 0;                // non-canonical mode
 
-        tty.c_cc[VMIN]  = 0;            // read doesn't block
+        tty.c_cc[VMIN]  = VMIN;         
         tty.c_cc[VTIME] = 0;            // no read timeout
 
         speed_t speed;
