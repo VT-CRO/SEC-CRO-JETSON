@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xlmns:xacro="http://www.ros.org/wiki/xacro" >
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
 
   <!-- IMU -->
   <gazebo reference="imu_link">
@@ -52,5 +52,5 @@
         </imu>
     </sensor>
   </gazebo>
-  
+
 </robot>

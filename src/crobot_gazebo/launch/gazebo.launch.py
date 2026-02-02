@@ -121,17 +121,32 @@ def generate_launch_description():
         output='screen'
     )
 
+    # A node for remapping the lidar tf frame to visualise in RVIZ---------------ONLY to be used in debugging plugins--------not a part of
+
+    lidar_tf_fix = Node( 
+    package='tf2_ros',
+    executable='static_transform_publisher',
+    arguments=['0', '0', '0', '0', '0', '0', 'laser_frame', 'robot/base_link/gpu_lidar'],
+    parameters=[{'use_sim_time': True}],
+    output='screen'
+    )
+
+
 
 
     return LaunchDescription([
         gazebo_launch,
-        # description_launch_py,
+        # this
+        description_launch_py,
         spawn_entity_node,
         spawn_field_node,
-        # spawn_joint_state_broadcaster,
+        # this
+        spawn_joint_state_broadcaster,
         # i doubt we'll use diff drive because each wheel needs to be independently controlled
         # spawn_diff_drive,
         # spawn_ankle_joint_controller,
         # spawn_wheel_velocity_controller,
-        bridge_node
+        bridge_node,
+        # Toggle this for TESTING PLUGINS
+        lidar_tf_fix
     ])
