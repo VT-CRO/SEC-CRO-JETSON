@@ -144,8 +144,8 @@ def generate_launch_description():
         spawn_joint_state_broadcaster,
         # i doubt we'll use diff drive because each wheel needs to be independently controlled
         # spawn_diff_drive,
-        # spawn_ankle_joint_controller,
-        # spawn_wheel_velocity_controller,
+        spawn_ankle_joint_controller,
+        spawn_wheel_velocity_controller,
         bridge_node,
         # Toggle this for TESTING PLUGINS
         lidar_tf_fix

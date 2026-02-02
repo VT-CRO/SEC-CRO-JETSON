@@ -37,26 +37,26 @@ def generate_launch_description():
     )
 
     # Spawn controllers using controller_manager spawner
-    spawn_joint_state_broadcaster = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster'],
-        output='screen'
-    )
+    # spawn_joint_state_broadcaster = Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=['joint_state_broadcaster'],
+    #     output='screen'
+    # )
 
-    spawn_ankle_joint_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['ankle_position_controller'],
-        output='screen'
-    )
+    # spawn_ankle_joint_controller = Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=['ankle_position_controller'],
+    #     output='screen'
+    # )
 
-    spawn_wheel_velocity_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['wheel_velocity_controller'],
-        output='screen'
-    )
+    # spawn_wheel_velocity_controller = Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=['wheel_velocity_controller'],
+    #     output='screen'
+    # )
 
     # Gazebo launch
     gazebo = IncludeLaunchDescription(
@@ -75,9 +75,9 @@ def generate_launch_description():
     return LaunchDescription([
         rsp,
         control_node,
-        spawn_joint_state_broadcaster,
-        spawn_ankle_joint_controller,
-        spawn_wheel_velocity_controller,
+        # spawn_joint_state_broadcaster,
+        # spawn_ankle_joint_controller,
+        # spawn_wheel_velocity_controller,
         gazebo,
         teleop,
     ])
