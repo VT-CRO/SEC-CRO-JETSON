@@ -27,6 +27,7 @@ private:
     void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
     {
         double linear_x = msg->linear.x;
+        double linear_y = msg->linear.y;
         double angular_z = msg->angular.z;
 
         std_msgs::msg::Float64MultiArray ankle_msg;
@@ -35,27 +36,42 @@ private:
         std::vector<double> ankles(4, 0.0);
         std::vector<double> wheels(4, 0.0);
 
-        const double MAX_ANGLE = M_PI / 4.0;
+        const double POINT_TURN = M_PI / 4.0;
+        const double RIGHT_ANGLE = M_PI / 2.0;
 
-        if (std::abs(linear_x) < 0.01 && std::abs(angular_z) > 0.01)
+        if (std::abs(linear_x) < 0.01 && std::abs(linear_y) < 0.01 &&std::abs(angular_z) > 0.01)
         {
             // positive angular velocity is ccw, negative is cw
             double s = (angular_z > 0) ? 1.0 : -1.0;
             double v = std::abs(angular_z);
 
-            ankles[0] = -MAX_ANGLE;
-            ankles[1] = MAX_ANGLE;
-            ankles[2] = MAX_ANGLE;
-            ankles[3] = -MAX_ANGLE;
+            ankles[0] = -POINT_TURN;
+            ankles[1] = POINT_TURN;
+            ankles[2] = POINT_TURN;
+            ankles[3] = -POINT_TURN;
 
             wheels[0] = -v * s;
             wheels[1] = -v * s;
             wheels[2] = v * s;
             wheels[3] = v * s;
         }
+        // strafe 90
+        else if (std::abs(linear_y) > 0.01 && std::abs(linear_x) < 0.01)
+        {
+            double dir = (linear_y > 0) ? 1.0 : -1.0;
+
+            ankles[0] = RIGHT_ANGLE;
+            ankles[1] = RIGHT_ANGLE;
+            ankles[2] = RIGHT_ANGLE;
+            ankles[3] = RIGHT_ANGLE;
+
+            for(int i = 0; i < 4; i++) {
+                wheels[i] = linear_y;
+            }
+        }
         else
         {
-            double steer = std::max(-MAX_ANGLE, std::min(angular_z, MAX_ANGLE));
+            double steer = std::max(-POINT_TURN, std::min(angular_z, POINT_TURN));
 
             ankles[0] = steer;
             ankles[1] = steer;
