@@ -60,10 +60,10 @@ private:
         {
             double dir = (linear_y > 0) ? 1.0 : -1.0;
 
-            ankles[0] = RIGHT_ANGLE;
+            ankles[0] = -RIGHT_ANGLE;
             ankles[1] = RIGHT_ANGLE;
             ankles[2] = RIGHT_ANGLE;
-            ankles[3] = RIGHT_ANGLE;
+            ankles[3] = -RIGHT_ANGLE;
 
             for(int i = 0; i < 4; i++) {
                 wheels[i] = linear_y;
