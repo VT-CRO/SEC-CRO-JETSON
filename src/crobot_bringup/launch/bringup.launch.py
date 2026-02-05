@@ -80,13 +80,13 @@ def generate_launch_description():
             # "use_sim_time": True,  # uncomment if you want it to use sim time
         }],
     )
-    isaac_vslam = Node(
-        package="isaac_ros_visual_slam",
-        executable="isaac_ros_visual_slam_realsense",
-        name="isaac_vslam",
-        output="screen",
-        # parameters= we dont have any "YET"
-    )
+    # isaac_vslam = Node(
+    #     package="isaac_ros_visual_slam",
+    #     executable="isaac_ros_visual_slam_realsense",
+    #     name="isaac_vslam",
+    #     output="screen",
+    #     # parameters= we dont have any "YET"
+    # )
 
 
 
@@ -96,6 +96,6 @@ def generate_launch_description():
         spawn_joint_state_broadcaster,
         delay_spawn_ankle_joint_controller_after_joint_state_broadcaster,
         delay_spawn_wheel_velocity_controller_after_ankle_joint_controller,
-        isaac_vslam,
+        #isaac_vslam,
         foxglove_bridge
     ])
