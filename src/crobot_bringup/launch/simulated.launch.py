@@ -72,6 +72,18 @@ def generate_launch_description():
         )])
     )
 
+    foxglove_bridge = Node(
+        package="foxglove_bridge",
+        executable="foxglove_bridge",
+        name="foxglove_bridge",
+        output="screen",
+        parameters=[{
+            "port": 8765,
+            "address": "0.0.0.0",   # important for remote laptop access
+            # "use_sim_time": True,  # uncomment if you want it to use sim time
+        }],
+    )
+
     return LaunchDescription([
         rsp,
         control_node,
@@ -80,4 +92,5 @@ def generate_launch_description():
         # spawn_wheel_velocity_controller,
         gazebo,
         teleop,
+        foxglove_bridge
     ])
