@@ -281,10 +281,10 @@ namespace crobot_hardware
 
         const double RAD_TO_DEG = 180.0 / M_PI;
 
-        j["ankles"]["front_left"] = (int)(120.0 + ankles_[0].cmd * RAD_TO_DEG / 1.5);
-        j["ankles"]["front_right"] = (int)(60.0 + ankles_[1].cmd * RAD_TO_DEG / 1.5);
-        j["ankles"]["back_left"] = (int)(60.0 + ankles_[2].cmd * RAD_TO_DEG / 1.5);
-        j["ankles"]["back_right"] = (int)(120.0 + ankles_[3].cmd * RAD_TO_DEG / 1.5);
+        j["ankles"]["front_left"] = (int)(120.0 + ankles_[0].cmd * RAD_TO_DEG / 0.75);
+        j["ankles"]["front_right"] = (int)(60.0 + ankles_[1].cmd * RAD_TO_DEG / 0.75);
+        j["ankles"]["back_left"] = (int)(60.0 + ankles_[2].cmd * RAD_TO_DEG / 0.75);
+        j["ankles"]["back_right"] = (int)(120.0 + ankles_[3].cmd * RAD_TO_DEG / 0.75);
 
         j["wheels"]["front_left"] = (int)(wheels_[0].cmd * 255.0);
         j["wheels"]["front_right"] = (int)(wheels_[1].cmd * 255.0);
