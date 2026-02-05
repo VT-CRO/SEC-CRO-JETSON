@@ -84,6 +84,10 @@ $ git submodule update
 ## Navigation
 1. start the VSLAM node
 ```
+cd ~/isaac_ros_ws/
+source install/setup.bash
+```
+```
 ros2 launch isaac_ros_visual_slam isaac_ros_visual_slam_realsense.launch.py   enable_color:=false   enable_depth:=true   enable_gyro:=true   enable_accel:=true   unite_imu_method:=copy   enable_sync:=true   initial_reset:=true
 ```
 2. start nvblox
