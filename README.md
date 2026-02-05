@@ -71,7 +71,7 @@ ros2 launch crobot_bringup bringup.launch.py
 
 See the individual package README's for additional information on configuration.
 
-# Trouble shooting
+# Troubleshooting
 
 if the april tags folder is empty try these commands
 
@@ -80,6 +80,27 @@ $ git submodule init
 
 $ git submodule update
 ```
+
+## Navigation
+1. start the VSLAM node
+```
+ros2 launch isaac_ros_visual_slam isaac_ros_visual_slam_realsense.launch.py   enable_color:=false   enable_depth:=true   enable_gyro:=true   enable_accel:=true   unite_imu_method:=copy   enable_sync:=true   initial_reset:=true
+```
+2. start nvblox
+```
+env -i HOME=/home/vtcro bash --noprofile --norc -c '
+  source /opt/ros/humble/setup.bash
+  ros2 launch /opt/ros/humble/share/nvblox_examples_bringup/launch/perception/nvblox.launch.py \
+    mode:=static camera:=realsense num_cameras:=1 run_standalone:=True
+'
+```
+3. in a separate terminal, do
+```
+source /opt/ros/humble/setup.bash
+ros2 node list | grep -i nvblox || true
+```
+make sure you see ```/nvblox_container``` and ```/nvblox_node```
+
 ## Resources
 
 - Nav2 Docs: https://docs.nav2.org/
