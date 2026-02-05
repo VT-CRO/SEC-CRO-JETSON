@@ -101,6 +101,11 @@ ros2 node list | grep -i nvblox || true
 ```
 make sure you see ```/nvblox_container``` and ```/nvblox_node```
 
+# RVIZ Command for VSLAM
+```
+rviz2 -d $(ros2 pkg prefix isaac_ros_visual_slam --share)/rviz/realsense.cfg.rviz
+```
+
 ## Resources
 
 - Nav2 Docs: https://docs.nav2.org/
