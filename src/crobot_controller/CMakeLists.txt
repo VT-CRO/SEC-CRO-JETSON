@@ -7,9 +7,57 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(ament_cmake REQUIRED)
+find_package(controller_interface REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(realtime_tools REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+
+add_library(${PROJECT_NAME} SHARED
+  src/crobot_drive_controller.cpp
+)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+ament_target_dependencies(${PROJECT_NAME}
+  controller_interface
+  geometry_msgs
+  hardware_interface
+  nav_msgs
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
+  realtime_tools  
+)
+
+# Export plugin
+pluginlib_export_plugin_description_file(controller_interface
+crobot_controller_plugin.xml)
+
+install(TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+install(DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -23,9 +71,17 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-install(
-  DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+ament_export_dependencies(
+  controller_interface
+  geometry_msgs
+  hardware_interface
+  nav_msgs
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
+  realtime_tools
 )
 
 ament_package()

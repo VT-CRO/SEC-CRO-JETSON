@@ -1,0 +1,11 @@
+<library path="crobot_controller">
+  <class name="crobot_controller/CrobotDriveController"
+         type="crobot_controller::CrobotDriveController"
+         base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Manages 4 swerve-like wheels with ankle servos, automatically blending
+      between point turn, strafe, and Ackermann steering modes based on
+      velocity commands.
+    </description>
+  </class>
+</library>

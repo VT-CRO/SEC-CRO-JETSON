@@ -7,7 +7,7 @@
 
 namespace crobot_hardware
 {
-    struct Wheel
+    struct Motor
     {
         std::string name;
         // double pos = 0.0;
@@ -15,7 +15,7 @@ namespace crobot_hardware
         double cmd = 0.0;
     };
 
-    struct Ankle
+    struct Servo
     {
         std::string name;
         double pos = 0.0;
@@ -65,6 +65,8 @@ namespace crobot_hardware
                 std::string ankle_bl_name;
                 std::string ankle_br_name;
 
+                std::string sweeper_name;
+
                 float loop_rate = 0.0;
                 std::string device = "";
                 int baud_rate = 115200;
@@ -72,8 +74,10 @@ namespace crobot_hardware
             } cfg_;
 
             // fl, fr, bl, br)
-            std::vector<Wheel> wheels_;
-            std::vector<Ankle> ankles_;
+            std::vector<Motor> wheels_;
+            std::vector<Servo> ankles_;
+
+            Servo sweeper_;
 
             SerialComm serial_comm_;
     };

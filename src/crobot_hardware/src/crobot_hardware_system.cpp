@@ -1,6 +1,7 @@
 #include "crobot_hardware/crobot_hardware_system.hpp"
 
 #include <string>
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
@@ -28,6 +29,8 @@ namespace crobot_hardware
         cfg_.ankle_fr_name = info_.hardware_parameters["front_right_ankle_name"];
         cfg_.ankle_bl_name = info_.hardware_parameters["back_left_ankle_name"];
         cfg_.ankle_br_name = info_.hardware_parameters["back_right_ankle_name"];
+
+        cfg_.sweeper_name = info_.hardware_parameters["sweeper_name"];
 
         cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
         cfg_.device = info_.hardware_parameters["dev"];
@@ -100,7 +103,7 @@ namespace crobot_hardware
                     return hardware_interface::CallbackReturn::ERROR;
                 }
             }
-            else
+            else if (joint.name.find("wheel") != std::string::npos)
             {
                 if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
                 {
@@ -123,6 +126,34 @@ namespace crobot_hardware
                         joint.name.c_str(),
                         joint.state_interfaces[0].name.c_str(),
                         hardware_interface::HW_IF_VELOCITY
+                    );
+
+                    return hardware_interface::CallbackReturn::ERROR;
+                }
+            }
+            else if (joint.name.find("sweeper") != std::string::npos)
+            {
+                if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+                {
+                    RCLCPP_FATAL(
+                        rclcpp::get_logger("CrobotHardware"),
+                        "Joint '%s' has '%s' command interface. '%s' expected.",
+                        joint.name.c_str(),
+                        joint.command_interfaces[0].name.c_str(),
+                        hardware_interface::HW_IF_POSITION
+                    );
+
+                    return hardware_interface::CallbackReturn::ERROR;
+                }
+
+                if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+                {
+                    RCLCPP_FATAL(
+                        rclcpp::get_logger("CrobotHardware"),
+                        "Joint '%s' has '%s' state interface. '%s' expected.",
+                        joint.name.c_str(),
+                        joint.state_interfaces[0].name.c_str(),
+                        hardware_interface::HW_IF_POSITION
                     );
 
                     return hardware_interface::CallbackReturn::ERROR;
@@ -151,6 +182,10 @@ namespace crobot_hardware
             ));
         }
 
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.pos
+        ));
+
         return state_interfaces;
     }
 
@@ -171,6 +206,10 @@ namespace crobot_hardware
                 ankle.name, hardware_interface::HW_IF_POSITION, &ankle.cmd
             ));
         }
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.cmd
+        ));
         
         return command_interfaces;
     }
@@ -290,6 +329,8 @@ namespace crobot_hardware
         j["wheels"]["front_right"] = (int)(wheels_[1].cmd * 255.0);
         j["wheels"]["back_left"] = (int)(wheels_[2].cmd * 255.0);
         j["wheels"]["back_right"] = (int)(wheels_[3].cmd * 255.0);        
+
+        j["sweeper"] = std::max((int)(40.0 + sweeper_.cmd * RAD_TO_DEG), 150);
 
         std::string j_str = j.dump() + "\n";
 

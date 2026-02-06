@@ -18,6 +18,8 @@
         <param name="back_left_ankle_name">back_left_ankle_joint</param>
         <param name="back_right_ankle_name">back_right_ankle_joint</param>
 
+        <param name="sweeper_name">sweeper_joint</param>
+
         <!-- TODO: Confirm parameters -->
         <param name="loop_rate">30.0</param>
         <param name="dev">/dev/ttyTHS1</param> <!-- ttyTHS0 for uart0, but there are other uarts on jetso; ttyACM0 for usb-->
@@ -68,6 +70,10 @@
         <param name="max">10.0</param>
       </command_interface>
       <state_interface   name="velocity"/>
+    </joint>
+    <joint name="sweeper_joint">
+      <command_interface name="position"/>
+      <state_interface   name="position"/>
     </joint>
   </ros2_control>
 
