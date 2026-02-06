@@ -4,7 +4,7 @@ This workspace contains packages for the autonomous robot application of the VTC
 
 
 This workspace is designed to work with the following 3rd party packages:
-- rtabmap: A package to perform SLAM using a depth camera.
+- Issac-Ros: 
 - nav2: A set of packages for path planning and trajectory control for autonomous vehicles within a mapped out environment
 - behaviortree_ros2: A ros2 wrapper for Behavior Tree, a framework for implementing task planning and execution of autonomous agents
 
@@ -18,7 +18,7 @@ The following packages were made to support the application:
 
 ## Hardware Requirements
 - Intel Realsense Camera
-- A Microcontroller flashed with the correct SEC-CRO firmware (see SEC-CRO-LIB)
+- A Microcontroller (Teensy 4.1) flashed with the correct SEC-CRO firmware (see SEC-CRO-LIB)
 
 ## Getting Started
 
@@ -61,28 +61,26 @@ $ source install/setup.bash
 To run a simulated test environment run 
 
 ```
-ros2 launch crobot_bringup bringup_simulated.launch.py
+ros2 launch crobot_bringup bringup.launch.py
 ```
 
 To run the stack with your real hardware run
 ```
-ros2 launch crobot_bringup bringup.launch.py
+ros2 launch crobot_bringup bringup_fullstack.launch.py
 ```
 
 See the individual package README's for additional information on configuration.
 
-# Troubleshooting
-
-if the april tags folder is empty try these commands
-
+# Troubleshooting with Foxglove Studio
+Run the following command in your terminal to access foxglove with local host, by doing so you can connect to the local host port 8765 in your system. 
 ```
-$ git submodule init
+ ssh -L 8765:localhost:8765 vtcro@172.29.46.4
+ ```
 
-$ git submodule update
-```
+
 
 ## Navigation
-1. start the VSLAM node
+1. start the VSLAM node, make sure to remove the parameters for now. 
 ```
 cd ~/isaac_ros_ws/
 source install/setup.bash
