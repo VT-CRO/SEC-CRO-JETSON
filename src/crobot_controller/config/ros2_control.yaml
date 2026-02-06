@@ -38,5 +38,5 @@ crobot_drive_controller:
     base_frame_id: base_link
 
     # use ~ for namespace
-    cmd_vel_topic: ~/cmd_vel          # will be /crobot_drive_controller/cmd_vel
+    cmd_vel_topic: /cmd_vel
     odom_topic: ~/odom                # will be /crobot_drive_controller/odom

@@ -61,7 +61,7 @@ private:
         std::string base_frame_id = "base_link";
         
         // Topic names
-        std::string cmd_vel_topic = "~/cmd_vel";
+        std::string cmd_vel_topic = "/cmd_vel";
         std::string odom_topic = "~/odom";
     } params_;
 

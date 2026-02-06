@@ -19,6 +19,7 @@ controller_interface::CallbackReturn CrobotDriveController::on_init()
 {
     try
     {
+        // Declare parameters
         auto_declare<std::vector<std::string>>("wheel_joints", std::vector<std::string>());
         auto_declare<std::vector<std::string>>("ankle_joints", std::vector<std::string>());
         
@@ -241,17 +242,26 @@ CrobotDriveController::computePointTurn(double angular_z)
     // where r_turn is the distance from robot center to wheel
     double r_turn = std::hypot(params_.wheel_separation_width / 2.0, 
                                params_.wheel_separation_length / 2.0);
-    double wheel_linear_vel = angular_z * r_turn;
+    
+    // Use ABSOLUTE value of angular_z to compute magnitude
+    double wheel_linear_vel = std::abs(angular_z) * r_turn;
     double wheel_angular_vel = wheel_linear_vel / params_.wheel_radius;
 
-    // Sign convention: positive angular_z (CCW) means:
-    // Left wheels backward, right wheels forward
-    double sign = (angular_z > 0) ? 1.0 : -1.0;
+    // Sign for direction: positive angular_z (CCW) vs negative (CW)
+    double direction = (angular_z > 0) ? 1.0 : -1.0;
     
-    cmd.wheel_vels[0] = -wheel_angular_vel * sign;  // FL (left side, reversed)
-    cmd.wheel_vels[1] = -wheel_angular_vel * sign;  // FR (right side, reversed)
-    cmd.wheel_vels[2] = wheel_angular_vel * sign;   // BL (left side)
-    cmd.wheel_vels[3] = wheel_angular_vel * sign;   // BR (right side)
+    // For CCW (positive angular_z):
+    //   FL, FR go backward (negative), BL, BR go forward (positive)
+    // For CW (negative angular_z): opposite
+    cmd.wheel_vels[0] = -wheel_angular_vel * direction;  // FL
+    cmd.wheel_vels[1] = -wheel_angular_vel * direction;  // FR
+    cmd.wheel_vels[2] = wheel_angular_vel * direction;   // BL
+    cmd.wheel_vels[3] = wheel_angular_vel * direction;   // BR
+
+    RCLCPP_INFO(get_node()->get_logger(), 
+        "Point Turn: ω=%.3f, r=%.3f, wheel_vel=%.3f, [FL=%.3f, FR=%.3f, BL=%.3f, BR=%.3f]",
+        angular_z, r_turn, wheel_angular_vel,
+        cmd.wheel_vels[0], cmd.wheel_vels[1], cmd.wheel_vels[2], cmd.wheel_vels[3]);
 
     return cmd;
 }
@@ -323,7 +333,8 @@ CrobotDriveController::computeAckermannMode(double linear_x, double linear_y, do
     cmd.ankle_angles[3] = -steering_angle;  // BR (opposite for rear)
 
     // Convert linear velocity to wheel angular velocity
-    double wheel_angular_vel = speed / params_.wheel_radius;
+    // IMPORTANT: Use linear_x to preserve forward/backward direction
+    double wheel_angular_vel = linear_x / params_.wheel_radius;
     
     // All wheels drive at same speed (simplified - could add differential)
     for (int i = 0; i < 4; ++i)
@@ -342,7 +353,8 @@ CrobotDriveController::blendKinematics(double linear_x, double linear_y, double 
     // MODE 1: Point turn (very low speed, significant rotation)
     if (speed < params_.point_turn_speed_threshold && std::abs(angular_z) > 0.01)
     {
-        RCLCPP_DEBUG(get_node()->get_logger(), "Mode: Point Turn");
+        RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 1000,
+            "Mode: Point Turn (speed=%.3f, ω=%.3f)", speed, angular_z);
         return computePointTurn(angular_z);
     }
     
@@ -352,13 +364,14 @@ CrobotDriveController::blendKinematics(double linear_x, double linear_y, double 
     
     if (is_sideways && std::abs(angular_z) < 0.1)
     {
-        RCLCPP_DEBUG(get_node()->get_logger(), "Mode: Strafe");
+        RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 1000,
+            "Mode: Strafe (vx=%.3f, vy=%.3f)", linear_x, linear_y);
         return computeStrafeMode(linear_x, linear_y);
     }
     
     // MODE 3: Ackermann-style steering (default for all other cases)
-    RCLCPP_DEBUG(get_node()->get_logger(), "Mode: Ackermann (vx=%.2f, vy=%.2f, ω=%.2f)", 
-        linear_x, linear_y, angular_z);
+    RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 1000,
+        "Mode: Ackermann (vx=%.3f, vy=%.3f, ω=%.3f)", linear_x, linear_y, angular_z);
     return computeAckermannMode(linear_x, linear_y, angular_z);
 }
 
