@@ -43,30 +43,17 @@ def generate_launch_description():
         output='screen'
     )
 
-    spawn_ankle_joint_controller = Node(
+    spawn_drive_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['ankle_position_controller'],
+        arguments=['crobot_drive_controller'],
         output='screen'
     )
 
-    spawn_wheel_velocity_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['wheel_velocity_controller'],
-        output='screen'
-    )
-
-    delay_spawn_ankle_joint_controller_after_joint_state_broadcaster = RegisterEventHandler(
+    delay_drive_after_joint_state = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=spawn_joint_state_broadcaster,
-            on_exit=[spawn_ankle_joint_controller],
-    ))
-
-    delay_spawn_wheel_velocity_controller_after_ankle_joint_controller = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=spawn_ankle_joint_controller,
-            on_exit=[spawn_wheel_velocity_controller],
+            on_exit=[spawn_drive_controller],
     ))
 
     foxglove_bridge = Node(
@@ -80,6 +67,20 @@ def generate_launch_description():
             # "use_sim_time": True,  # uncomment if you want it to use sim time
         }],
     )
+
+    # Teleop Twist Keyboard (Only for manual control)
+    # now publishes to /crobot_drive_controller/cmd_vel
+    # teleop_node = Node(
+    #     package="teleop_twist_keyboard",
+    #     executable="teleop_twist_keyboard",
+    #     name="teleop_twist_keyboard",
+    #     output="screen",
+    #     prefix="xterm -e",  # open in new terminal window
+    #     remappings=[
+    #         ("/cmd_vel", "/crobot_drive_controller/cmd_vel")
+    #     ]
+    # )
+
     # isaac_vslam = Node(
     #     package="isaac_ros_visual_slam",
     #     executable="isaac_ros_visual_slam_realsense",
@@ -88,14 +89,12 @@ def generate_launch_description():
     #     # parameters= we dont have any "YET"
     # )
 
-
-
     return LaunchDescription([
         rsp,
         control_node,
         spawn_joint_state_broadcaster,
-        delay_spawn_ankle_joint_controller_after_joint_state_broadcaster,
-        delay_spawn_wheel_velocity_controller_after_ankle_joint_controller,
+        delay_drive_after_joint_state,
+        foxglove_bridge,
+        teleop_node,
         #isaac_vslam,
-        foxglove_bridge
     ])

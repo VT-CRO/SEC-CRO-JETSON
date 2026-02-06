@@ -5,23 +5,38 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    wheel_velocity_controller:
-      type: velocity_controllers/JointGroupVelocityController
+    crobot_drive_controller:
+      type: crobot_controller/CrobotDriveController
 
-    ankle_position_controller:
-      type: position_controllers/JointGroupPositionController
-
-wheel_velocity_controller:
+crobot_drive_controller:
   ros__parameters:
-    joints: [
-      "front_left_wheel_joint", "back_left_wheel_joint",
-      "front_right_wheel_joint", "back_right_wheel_joint"
-    ]
+    wheel_joints:
+      - front_left_wheel_joint
+      - front_right_wheel_joint
+      - back_left_wheel_joint
+      - back_right_wheel_joint
+    
+    ankle_joints:
+      - front_left_ankle_joint
+      - front_right_ankle_joint
+      - back_left_ankle_joint
+      - back_right_ankle_joint
 
-# Ankle position control (group or per-joint)
-ankle_position_controller:
-  ros__parameters:
-    joints: [
-      "front_left_ankle_joint", "front_right_ankle_joint",
-      "back_left_ankle_joint",  "back_right_ankle_joint"
-    ]
+    wheel_separation_width: 0.150     # 150mm left-right
+    wheel_separation_length: 0.230    # 230mm front-back
+    wheel_radius: 0.035               # 35mm radius
+
+    point_turn_speed_threshold: 0.05  # m/s - below this linear speed, use point turn
+    strafe_angle_threshold: 0.15      # rad - motion angle tolerance for strafe detection
+    max_ankle_angle: 0.785398         # rad (45 degrees) - maximum steering angle
+
+    max_linear_velocity: 0.8          # m/s
+    max_angular_velocity: 2.0         # rad/s
+
+    enable_odom_tf: true
+    odom_frame_id: odom
+    base_frame_id: base_link
+
+    # use ~ for namespace
+    cmd_vel_topic: ~/cmd_vel          # will be /crobot_drive_controller/cmd_vel
+    odom_topic: ~/odom                # will be /crobot_drive_controller/odom
