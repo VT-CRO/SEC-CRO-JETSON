@@ -95,6 +95,6 @@ def generate_launch_description():
         spawn_joint_state_broadcaster,
         delay_drive_after_joint_state,
         foxglove_bridge,
-        teleop_node,
+        # teleop_node,
         #isaac_vslam,
     ])
