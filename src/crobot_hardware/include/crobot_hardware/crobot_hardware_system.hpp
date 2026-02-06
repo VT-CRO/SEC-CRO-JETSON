@@ -65,7 +65,7 @@ namespace crobot_hardware
                 std::string ankle_bl_name;
                 std::string ankle_br_name;
 
-                std::string sweeper_name;
+                // std::string sweeper_name;
 
                 float loop_rate = 0.0;
                 std::string device = "";
@@ -77,7 +77,7 @@ namespace crobot_hardware
             std::vector<Motor> wheels_;
             std::vector<Servo> ankles_;
 
-            Servo sweeper_;
+            // Servo sweeper_;
 
             SerialComm serial_comm_;
     };

@@ -30,7 +30,7 @@ namespace crobot_hardware
         cfg_.ankle_bl_name = info_.hardware_parameters["back_left_ankle_name"];
         cfg_.ankle_br_name = info_.hardware_parameters["back_right_ankle_name"];
 
-        cfg_.sweeper_name = info_.hardware_parameters["sweeper_name"];
+        // cfg_.sweeper_name = info_.hardware_parameters["sweeper_name"];
 
         cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
         cfg_.device = info_.hardware_parameters["dev"];
@@ -182,9 +182,9 @@ namespace crobot_hardware
             ));
         }
 
-        state_interfaces.emplace_back(hardware_interface::StateInterface(
-            sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.pos
-        ));
+        // state_interfaces.emplace_back(hardware_interface::StateInterface(
+        //     sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.pos
+        // ));
 
         return state_interfaces;
     }
@@ -207,9 +207,9 @@ namespace crobot_hardware
             ));
         }
 
-        command_interfaces.emplace_back(hardware_interface::CommandInterface(
-            sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.cmd
-        ));
+        // command_interfaces.emplace_back(hardware_interface::CommandInterface(
+        //     sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.cmd
+        // ));
         
         return command_interfaces;
     }
@@ -330,7 +330,7 @@ namespace crobot_hardware
         j["wheels"]["back_left"] = (int)(wheels_[2].cmd * 255.0);
         j["wheels"]["back_right"] = (int)(wheels_[3].cmd * 255.0);        
 
-        j["sweeper"] = std::max((int)(40.0 + sweeper_.cmd * RAD_TO_DEG), 150);
+        // j["sweeper"] = std::max((int)(40.0 + sweeper_.cmd * RAD_TO_DEG), 150);
 
         std::string j_str = j.dump() + "\n";
 
