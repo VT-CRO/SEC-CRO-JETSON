@@ -79,7 +79,7 @@ namespace crobot_hardware
                 return hardware_interface::CallbackReturn::ERROR;
             }
 
-            if (joint.name.find("ankle") != std::string::npos)
+            if (joint.name.find("ankle") != std::string::npos || joint.name.find("sweeper") != std::string::npos)
             {
                 if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
                 {
@@ -107,7 +107,7 @@ namespace crobot_hardware
                     return hardware_interface::CallbackReturn::ERROR;
                 }
             }
-            else if (joint.name.find("wheel") != std::string::npos)
+            else if (joint.name.find("wheel") != std::string::npos || joint.name.find("winch") != std::string::npos)
             {
                 if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
                 {
@@ -130,34 +130,6 @@ namespace crobot_hardware
                         joint.name.c_str(),
                         joint.state_interfaces[0].name.c_str(),
                         hardware_interface::HW_IF_VELOCITY
-                    );
-
-                    return hardware_interface::CallbackReturn::ERROR;
-                }
-            }
-            else if (joint.name.find("sweeper") != std::string::npos)
-            {
-                if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
-                {
-                    RCLCPP_FATAL(
-                        rclcpp::get_logger("CrobotHardware"),
-                        "Joint '%s' has '%s' command interface. '%s' expected.",
-                        joint.name.c_str(),
-                        joint.command_interfaces[0].name.c_str(),
-                        hardware_interface::HW_IF_POSITION
-                    );
-
-                    return hardware_interface::CallbackReturn::ERROR;
-                }
-
-                if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
-                {
-                    RCLCPP_FATAL(
-                        rclcpp::get_logger("CrobotHardware"),
-                        "Joint '%s' has '%s' state interface. '%s' expected.",
-                        joint.name.c_str(),
-                        joint.state_interfaces[0].name.c_str(),
-                        hardware_interface::HW_IF_POSITION
                     );
 
                     return hardware_interface::CallbackReturn::ERROR;
@@ -186,9 +158,13 @@ namespace crobot_hardware
             ));
         }
 
-        // state_interfaces.emplace_back(hardware_interface::StateInterface(
-        //     sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.pos
-        // ));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.pos
+        ));
+
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            winch_.name, hardware_interface::HW_IF_VELOCITY, &winch_.vel
+        ));
 
         return state_interfaces;
     }
@@ -211,9 +187,13 @@ namespace crobot_hardware
             ));
         }
 
-        // command_interfaces.emplace_back(hardware_interface::CommandInterface(
-        //     sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.cmd
-        // ));
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.cmd
+        ));
+
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            winch_.name, hardware_interface::HW_IF_VELOCITY, &winch_.cmd
+        ));
         
         return command_interfaces;
     }
@@ -331,17 +311,13 @@ namespace crobot_hardware
 
         const double MAX_WHEEL_SPEED = 0.8;  // m/s corresponding to full command (255)
 
-        j["wheels"]["front_left"] = (int)(wheels_[0].cmd / MAX_WHEEL_SPEED * 255.0);
-        j["wheels"]["front_right"] = (int)(wheels_[1].cmd / MAX_WHEEL_SPEED * 255.0);
-        j["wheels"]["back_left"] = (int)(wheels_[2].cmd / MAX_WHEEL_SPEED * 255.0);
-        j["wheels"]["back_right"] = (int)(wheels_[3].cmd / MAX_WHEEL_SPEED * 255.0);    
+        j["wheels"]["front_left"] = std::clamp((int)(wheels_[0].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
+        j["wheels"]["front_right"] = std::clamp((int)(wheels_[1].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
+        j["wheels"]["back_left"] = std::clamp((int)(wheels_[2].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
+        j["wheels"]["back_right"] = std::clamp((int)(wheels_[3].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);    
         
-        j["wheels"]["front_left"] = std::clamp(j["wheels"]["front_left"].get<int>(), -255, 255);
-        j["wheels"]["front_right"] = std::clamp(j["wheels"]["front_right"].get<int>(), -255, 255);
-        j["wheels"]["back_left"] = std::clamp(j["wheels"]["back_left"].get<int>(), -255, 255);
-        j["wheels"]["back_right"] = std::clamp(j["wheels"]["back_right"].get<int>(), -255, 255);
-
-        // j["sweeper"] = std::max((int)(40.0 + sweeper_.cmd * RAD_TO_DEG), 150);
+        j["sweeper"] = std::max((int)(40.0 + sweeper_.cmd * RAD_TO_DEG), 150);
+        j["winch"] = std::clamp((int)(winch_.cmd * 255.0), -255, 255);
 
         std::string j_str = j.dump() + "\n";
 
