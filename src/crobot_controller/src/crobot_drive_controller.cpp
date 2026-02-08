@@ -357,7 +357,6 @@ CrobotDriveController::blendKinematics(double linear_x, double linear_y, double 
 void CrobotDriveController::updateOdometry(const rclcpp::Time & time, const rclcpp::Duration & period)
 {
     // Simple odometry based on commanded velocities
-    // For better accuracy, you could use wheel encoder feedback from state_interfaces_
     
     double dt = period.seconds();
     

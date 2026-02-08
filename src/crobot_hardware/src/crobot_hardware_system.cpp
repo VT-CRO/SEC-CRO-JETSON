@@ -30,7 +30,8 @@ namespace crobot_hardware
         cfg_.ankle_bl_name = info_.hardware_parameters["back_left_ankle_name"];
         cfg_.ankle_br_name = info_.hardware_parameters["back_right_ankle_name"];
 
-        // cfg_.sweeper_name = info_.hardware_parameters["sweeper_name"];
+        cfg_.sweeper_name = info_.hardware_parameters["sweeper_name"];
+        cfg_.winch_name = info_.hardware_parameters["winch_name"];
 
         cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
         cfg_.device = info_.hardware_parameters["dev"];
@@ -48,6 +49,9 @@ namespace crobot_hardware
         ankles_[1].name = cfg_.ankle_fr_name;
         ankles_[2].name = cfg_.ankle_bl_name;
         ankles_[3].name = cfg_.ankle_br_name;
+
+        sweeper_.name = cfg_.sweeper_name;
+        winch_.name = cfg_.winch_name;
 
         for (const hardware_interface::ComponentInfo & joint : info_.joints)
         {
