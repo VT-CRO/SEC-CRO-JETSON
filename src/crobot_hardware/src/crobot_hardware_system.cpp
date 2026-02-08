@@ -325,10 +325,17 @@ namespace crobot_hardware
         j["ankles"]["back_left"] = (int)(60.0 + ankles_[2].cmd * RAD_TO_DEG / 0.75);
         j["ankles"]["back_right"] = (int)(120.0 + ankles_[3].cmd * RAD_TO_DEG / 0.75);
 
-        j["wheels"]["front_left"] = (int)(wheels_[0].cmd * 255.0);
-        j["wheels"]["front_right"] = (int)(wheels_[1].cmd * 255.0);
-        j["wheels"]["back_left"] = (int)(wheels_[2].cmd * 255.0);
-        j["wheels"]["back_right"] = (int)(wheels_[3].cmd * 255.0);        
+        const double MAX_WHEEL_SPEED = 0.8;  // m/s corresponding to full command (255)
+
+        j["wheels"]["front_left"] = (int)(wheels_[0].cmd / MAX_WHEEL_SPEED * 255.0);
+        j["wheels"]["front_right"] = (int)(wheels_[1].cmd / MAX_WHEEL_SPEED * 255.0);
+        j["wheels"]["back_left"] = (int)(wheels_[2].cmd / MAX_WHEEL_SPEED * 255.0);
+        j["wheels"]["back_right"] = (int)(wheels_[3].cmd / MAX_WHEEL_SPEED * 255.0);    
+        
+        j["wheels"]["front_left"] = std::clamp(j["wheels"]["front_left"].get<int>(), -255, 255);
+        j["wheels"]["front_right"] = std::clamp(j["wheels"]["front_right"].get<int>(), -255, 255);
+        j["wheels"]["back_left"] = std::clamp(j["wheels"]["back_left"].get<int>(), -255, 255);
+        j["wheels"]["back_right"] = std::clamp(j["wheels"]["back_right"].get<int>(), -255, 255);
 
         // j["sweeper"] = std::max((int)(40.0 + sweeper_.cmd * RAD_TO_DEG), 150);
 

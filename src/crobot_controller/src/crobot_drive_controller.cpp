@@ -237,30 +237,23 @@ CrobotDriveController::computePointTurn(double angular_z)
     cmd.ankle_angles[2] = angle;   // BL
     cmd.ankle_angles[3] = -angle;  // BR
 
-    // Convert angular velocity to wheel velocity
-    // For point turn: v_wheel = ω * r_turn
-    // where r_turn is the distance from robot center to wheel
+    // Convert angular velocity to wheel linear velocity
+    // v_wheel = ω_robot × distance_from_center
     double r_turn = std::hypot(params_.wheel_separation_width / 2.0, 
                                params_.wheel_separation_length / 2.0);
-    
-    // Use ABSOLUTE value of angular_z to compute magnitude
-    double wheel_linear_vel = std::abs(angular_z) * r_turn;
-    double wheel_angular_vel = wheel_linear_vel / params_.wheel_radius;
+    double wheel_linear_vel = std::abs(angular_z) * r_turn;  // m/s
 
-    // Sign for direction: positive angular_z (CCW) vs negative (CW)
+    // Direction: positive angular_z (CCW) vs negative (CW)
     double direction = (angular_z > 0) ? 1.0 : -1.0;
-    
-    // For CCW (positive angular_z):
-    //   FL, FR go backward (negative), BL, BR go forward (positive)
-    // For CW (negative angular_z): opposite
-    cmd.wheel_vels[0] = -wheel_angular_vel * direction;  // FL
-    cmd.wheel_vels[1] = -wheel_angular_vel * direction;  // FR
-    cmd.wheel_vels[2] = wheel_angular_vel * direction;   // BL
-    cmd.wheel_vels[3] = wheel_angular_vel * direction;   // BR
+ 
+    cmd.wheel_vels[0] = -wheel_linear_vel * direction;  // FL
+    cmd.wheel_vels[1] = -wheel_linear_vel * direction;  // FR
+    cmd.wheel_vels[2] = wheel_linear_vel * direction;   // BL
+    cmd.wheel_vels[3] = wheel_linear_vel * direction;   // BR
 
     RCLCPP_INFO(get_node()->get_logger(), 
-        "Point Turn: ω=%.3f, r=%.3f, wheel_vel=%.3f, [FL=%.3f, FR=%.3f, BL=%.3f, BR=%.3f]",
-        angular_z, r_turn, wheel_angular_vel,
+        "Point Turn: ω=%.3f rad/s, r=%.3f m, v_wheel=%.3f m/s, [FL=%.3f, FR=%.3f, BL=%.3f, BR=%.3f] m/s",
+        angular_z, r_turn, wheel_linear_vel,
         cmd.wheel_vels[0], cmd.wheel_vels[1], cmd.wheel_vels[2], cmd.wheel_vels[3]);
 
     return cmd;
@@ -272,25 +265,23 @@ CrobotDriveController::computeStrafeMode(double linear_x, double linear_y)
     WheelAnkleCommand cmd;
     cmd.ankle_angles.resize(4);
     cmd.wheel_vels.resize(4);
-
+    
     // Pure strafe: all wheels at 90 degrees
     const double angle = M_PI / 2.0;
-    
-    // If moving +Y (left), ankles point left
-    // If moving -Y (right), ankles point right
+
     double sign = (linear_y > 0) ? 1.0 : -1.0;
     
-    cmd.ankle_angles[0] = -angle * sign;  // FL
-    cmd.ankle_angles[1] = angle * sign;   // FR
-    cmd.ankle_angles[2] = angle * sign;   // BL
-    cmd.ankle_angles[3] = -angle * sign;  // BR
+    cmd.ankle_angles[0] = -angle;  // FL
+    cmd.ankle_angles[1] = angle;   // FR
+    cmd.ankle_angles[2] = angle;   // BL
+    cmd.ankle_angles[3] = -angle;  // BR
 
-    // All wheels same speed for lateral motion
-    double wheel_angular_vel = std::abs(linear_y) / params_.wheel_radius;
+    // All wheels same speed for lateral motion (in m/s)
+    double wheel_linear_vel = std::abs(linear_y);
     
     for (int i = 0; i < 4; ++i)
     {
-        cmd.wheel_vels[i] = wheel_angular_vel * sign;
+        cmd.wheel_vels[i] = wheel_linear_vel * sign;
     }
 
     return cmd;
@@ -303,43 +294,27 @@ CrobotDriveController::computeAckermannMode(double linear_x, double linear_y, do
     cmd.ankle_angles.resize(4);
     cmd.wheel_vels.resize(4);
 
-    // Compute desired heading from linear velocities
-    double speed = std::hypot(linear_x, linear_y);
-    double heading = std::atan2(linear_y, linear_x);
+    double max_steering_angle = M_PI / 8.0;
     
-    // Compute steering angle from curvature
-    // For Ackermann: ω = v / R, so R = v / ω
-    // Steering angle ≈ L / R (for small angles)
+    // Scale ankle angle based on angular_z
     double steering_angle = 0.0;
-    if (speed > 0.01)  // Avoid division by zero
+    if (std::abs(angular_z) > 0.01)
     {
-        double turn_radius = speed / std::abs(angular_z);
-        // Use wheelbase as characteristic length
-        steering_angle = std::atan2(params_.wheel_separation_length, turn_radius);
-        steering_angle = std::clamp(steering_angle, -params_.max_ankle_angle, params_.max_ankle_angle);
-        
-        // Preserve sign from angular_z
-        if (angular_z < 0)
-        {
-            steering_angle = -steering_angle;
-        }
+        // Proportional: more angular_z → more ankle angle
+        steering_angle = (angular_z / params_.max_angular_velocity) * max_steering_angle;
+        steering_angle = std::clamp(steering_angle, -max_steering_angle, max_steering_angle);
     }
 
-    // Simple Ackermann: front wheels steer, back wheels follow
-    // In practice, for better control, we'll use parallel steering (all same angle)
     cmd.ankle_angles[0] = steering_angle;   // FL
     cmd.ankle_angles[1] = steering_angle;   // FR
-    cmd.ankle_angles[2] = -steering_angle;  // BL (opposite for rear)
-    cmd.ankle_angles[3] = -steering_angle;  // BR (opposite for rear)
+    cmd.ankle_angles[2] = -steering_angle;  // BL
+    cmd.ankle_angles[3] = -steering_angle;  // BR
 
-    // Convert linear velocity to wheel angular velocity
-    // IMPORTANT: Use linear_x to preserve forward/backward direction
-    double wheel_angular_vel = linear_x / params_.wheel_radius;
+    double wheel_linear_vel = linear_x;
     
-    // All wheels drive at same speed (simplified - could add differential)
     for (int i = 0; i < 4; ++i)
     {
-        cmd.wheel_vels[i] = wheel_angular_vel;
+        cmd.wheel_vels[i] = wheel_linear_vel;  // m/s
     }
 
     return cmd;
