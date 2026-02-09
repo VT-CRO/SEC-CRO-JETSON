@@ -43,17 +43,17 @@ def generate_launch_description():
         output='screen'
     )
 
-    spawn_drive_controller = Node(
+    spawn_controllers = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['crobot_drive_controller'],
+        arguments=['crobot_drive_controller', 'sweeper_position_controller', 'winch_velocity_controller'],
         output='screen'
     )
 
-    delay_drive_after_joint_state = RegisterEventHandler(
+    delay_controllers_after_joint_state = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=spawn_joint_state_broadcaster,
-            on_exit=[spawn_drive_controller],
+            on_exit=[spawn_controllers],
     ))
 
     foxglove_bridge = Node(
@@ -93,7 +93,7 @@ def generate_launch_description():
         rsp,
         control_node,
         spawn_joint_state_broadcaster,
-        delay_drive_after_joint_state,
+        delay_controllers_after_joint_state,
         foxglove_bridge,
         # teleop_node,
         #isaac_vslam,
