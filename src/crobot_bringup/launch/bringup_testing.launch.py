@@ -81,13 +81,19 @@ def generate_launch_description():
     #     ]
     # )
 
-    # isaac_vslam = Node(
-    #     package="isaac_ros_visual_slam",
-    #     executable="isaac_ros_visual_slam_realsense",
-    #     name="isaac_vslam",
-    #     output="screen",
-    #     # parameters= we dont have any "YET"
-    # )
+    isaac_vslam = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution([
+                    FindPackageShare('isaac_ros_visual_slam'),
+                    'launch',
+                    'isaac_ros_visual_slam.launch.py',  # replace with real file
+                ])
+            ),
+            launch_arguments={
+                'use_sim_time': 'true',
+                # add other args that Isaac launch exposes (if any)
+            }.items()
+        )
 
     return LaunchDescription([
         rsp,
