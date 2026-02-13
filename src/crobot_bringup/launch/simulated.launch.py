@@ -3,7 +3,8 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 
@@ -37,26 +38,25 @@ def generate_launch_description():
     )
 
     # Spawn controllers using controller_manager spawner
-    # spawn_joint_state_broadcaster = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=['joint_state_broadcaster'],
-    #     output='screen'
-    # )
+    spawn_joint_state_broadcaster = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster'],
+        output='screen'
+    )
 
-    # spawn_ankle_joint_controller = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=['ankle_position_controller'],
-    #     output='screen'
-    # )
+    spawn_controllers = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['crobot_drive_controller', 'sweeper_position_controller', 'winch_velocity_controller'],
+        output='screen'
+    )
 
-    # spawn_wheel_velocity_controller = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=['wheel_velocity_controller'],
-    #     output='screen'
-    # )
+    delay_controllers_after_joint_state = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=spawn_joint_state_broadcaster,
+            on_exit=[spawn_controllers],
+    ))
 
     # Gazebo launch
     gazebo = IncludeLaunchDescription(
@@ -65,32 +65,23 @@ def generate_launch_description():
         )])
     )
 
-    # Teleop mapper - converts /cmd_vel to wheel/ankle commands
-    teleop = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory('teleop_control'), 'launch', 'teleop_launch.py'
-        )])
-    )
-
-    foxglove_bridge = Node(
-        package="foxglove_bridge",
-        executable="foxglove_bridge",
-        name="foxglove_bridge",
-        output="screen",
-        parameters=[{
-            "port": 8765,
-            "address": "0.0.0.0",   # important for remote laptop access
-            # "use_sim_time": True,  # uncomment if you want it to use sim time
-        }],
-    )
+    # foxglove_bridge = Node(
+    #     package="foxglove_bridge",
+    #     executable="foxglove_bridge",
+    #     name="foxglove_bridge",
+    #     output="screen",
+    #     parameters=[{
+    #         "port": 8765,
+    #         "address": "0.0.0.0",   # important for remote laptop access
+    #         # "use_sim_time": True,  # uncomment if you want it to use sim time
+    #     }],
+    # )
 
     return LaunchDescription([
         rsp,
         control_node,
-        # spawn_joint_state_broadcaster,
-        # spawn_ankle_joint_controller,
-        # spawn_wheel_velocity_controller,
+        spawn_joint_state_broadcaster,
+        delay_controllers_after_joint_state,
         gazebo,
-        teleop,
-        foxglove_bridge
+        # foxglove_bridge
     ])
