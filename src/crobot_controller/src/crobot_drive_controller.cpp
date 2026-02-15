@@ -197,18 +197,71 @@ controller_interface::return_type CrobotDriveController::update(
 
     // Compute kinematics
     auto commands = blendKinematics(linear_x, linear_y, angular_z);
+    
+    double dt = period.seconds();
 
-    // Apply commands
-    // Ankles: command_interfaces_[0..3]
+    // --- OPEN-LOOP SWERVE OPTIMIZATION & ALIGNMENT ---
     for (size_t i = 0; i < 4; ++i)
     {
-        command_interfaces_[i].set_value(commands.ankle_angles[i]);
+        double current_assumed_angle = assumed_ankle_angles_[i];
+        double target_angle = commands.ankle_angles[i];
+        double target_vel = commands.wheel_vels[i];
+
+        // Find the shortest angular distance
+        double error = normalizeAngle(target_angle - current_assumed_angle);
+
+        // 1. Swerve Optimization (Flip 180 degrees if turn is > 90 degrees)
+        if (error > M_PI / 2.0)
+        {
+            target_angle -= M_PI;
+            target_vel = -target_vel;
+            error -= M_PI;
+        }
+        else if (error < -M_PI / 2.0)
+        {
+            target_angle += M_PI;
+            target_vel = -target_vel;
+            error += M_PI;
+        }
+
+        // 2. Advance our software's "assumed" position based on expected servo speed
+        double max_step = assumed_servo_speed_ * dt;
+        
+        if (std::abs(error) <= max_step) {
+            // The servo has arrived at the target
+            assumed_ankle_angles_[i] = normalizeAngle(target_angle);
+        } else {
+            // Move our assumed position closer to the target at the max servo speed
+            assumed_ankle_angles_[i] = normalizeAngle(current_assumed_angle + std::copysign(max_step, error));
+        }
+
+        // Recalculate error based on our new assumed position for velocity scaling
+        double current_error = normalizeAngle(target_angle - assumed_ankle_angles_[i]);
+
+        // 3. Wait for Ankles:
+        // If the assumed position is still > ~25 degrees (0.45 rad) away, stop the wheel motor
+        if (std::abs(current_error) > 0.45) 
+        {
+            target_vel = 0.0;
+        }
+        else 
+        {
+            // Smoothly ramp up drive speed as the assumed ankle finishes aligning
+            target_vel *= std::cos(current_error);
+        }
+
+        // Output to hardware
+        // We command the physical servo to the absolute target angle immediately
+        commands.ankle_angles[i] = normalizeAngle(target_angle);
+        commands.wheel_vels[i] = target_vel;
     }
+    // -------------------------------------------------
 
-    // Wheels: command_interfaces_[4..7]
+    // Apply commands to hardware interfaces
     for (size_t i = 0; i < 4; ++i)
     {
-        command_interfaces_[i + 4].set_value(commands.wheel_vels[i]);
+        command_interfaces_[i].set_value(commands.ankle_angles[i]);      // Ankles
+        command_interfaces_[i + 4].set_value(commands.wheel_vels[i]);     // Wheels
     }
 
     // Update odometry
@@ -241,14 +294,14 @@ CrobotDriveController::computePointTurn(double angular_z)
     // v_wheel = ω_robot × distance_from_center
     double r_turn = std::hypot(params_.wheel_separation_width / 2.0, 
                                params_.wheel_separation_length / 2.0);
-    double wheel_linear_vel = std::abs(angular_z) * r_turn;  // m/s
+    double wheel_linear_vel = std::abs(angular_z) /* * r_turn */;  // m/s
 
     // Direction: positive angular_z (CCW) vs negative (CW)
     double direction = (angular_z > 0) ? 1.0 : -1.0;
  
     cmd.wheel_vels[0] = -wheel_linear_vel * direction;  // FL
-    cmd.wheel_vels[1] = -wheel_linear_vel * direction;  // FR
-    cmd.wheel_vels[2] = wheel_linear_vel * direction;   // BL
+    cmd.wheel_vels[1] = wheel_linear_vel * direction;   // FR
+    cmd.wheel_vels[2] = -wheel_linear_vel * direction;  // BL
     cmd.wheel_vels[3] = wheel_linear_vel * direction;   // BR
 
     RCLCPP_INFO(get_node()->get_logger(), 
@@ -279,10 +332,10 @@ CrobotDriveController::computeStrafeMode(double linear_x, double linear_y)
     // All wheels same speed for lateral motion (in m/s)
     double wheel_linear_vel = std::abs(linear_y);
     
-    for (int i = 0; i < 4; ++i)
-    {
-        cmd.wheel_vels[i] = wheel_linear_vel * sign;
-    }
+    cmd.wheel_vels[0] = wheel_linear_vel * -sign; // FL
+    cmd.wheel_vels[1] = wheel_linear_vel * sign; // FR
+    cmd.wheel_vels[2] = wheel_linear_vel * sign; // BL
+    cmd.wheel_vels[3] = wheel_linear_vel * -sign; // BR
 
     return cmd;
 }

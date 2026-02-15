@@ -102,6 +102,13 @@ private:
     // Helper functions
     void resetOdometry();
     double normalizeAngle(double angle);
+
+    // Track the estimated position of the servos since we can't read them
+    std::vector<double> assumed_ankle_angles_ = {0.0, 0.0, 0.0, 0.0};
+    
+    // Estimate of how fast your servos can physically rotate in rad/s
+    // (e.g., 5.0 rad/s is roughly 0.2 seconds per 60 degrees)
+    double assumed_servo_speed_ = 4.0;
 };
 
 }  // namespace crobot_controller
