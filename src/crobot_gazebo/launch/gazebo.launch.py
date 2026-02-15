@@ -10,7 +10,6 @@ import os
 def generate_launch_description():
     # Get the share directory of your package
     my_pkg_share_dir = get_package_share_directory('crobot_gazebo')
-    crobot_description = get_package_share_directory('crobot_description')
 
     field_path = PathJoinSubstitution([my_pkg_share_dir,'field','field.sdf'])
 
@@ -40,19 +39,6 @@ def generate_launch_description():
         }.items()
     )
 
-    # Spawning a URDF model 
-    # robot_description_path = crobot_description + "/description/robot.urdf.xacro"
-    # with open(robot_description_path, 'r') as file:
-    #     robot_description_content = file.read()
-
-    description_launch_py = IncludeLaunchDescription(
-        PathJoinSubstitution([get_package_share_directory('crobot_description'), 'launch', 'rsp.launch.py']),
-        launch_arguments={
-            'urdf_package': 'crobot_description',
-            'urdf_package_path': 'description/robot.urdf.xacro'}.items()
-    )
-
-
     spawn_entity_node = Node(
         package='ros_ign_gazebo',
         executable='create',
@@ -80,35 +66,6 @@ def generate_launch_description():
         output='screen'
     )
 
-    # spawn controllers using controller_manager spawner
-    spawn_joint_state_broadcaster = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster'],
-        output='screen'
-    )
-
-    # spawn_diff_drive = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=['diff_drive_controller'],
-    #     output='screen'
-    # )
-
-    spawn_ankle_joint_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['ankle_position_controller'],
-        output='screen'
-    )
-
-    spawn_wheel_velocity_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['wheel_velocity_controller'],
-        output='screen'
-    )
-
     bridge_params = os.path.join(my_pkg_share_dir, 'config', 'ros_gz_bridge.yaml')
 
     bridge_node = Node(
@@ -131,21 +88,11 @@ def generate_launch_description():
     output='screen'
     )
 
-
-
-
     return LaunchDescription([
         gazebo_launch,
         # this
-        description_launch_py,
         spawn_entity_node,
         spawn_field_node,
-        # this
-        spawn_joint_state_broadcaster,
-        # i doubt we'll use diff drive because each wheel needs to be independently controlled
-        # spawn_diff_drive,
-        spawn_ankle_joint_controller,
-        spawn_wheel_velocity_controller,
         bridge_node,
         # Toggle this for TESTING PLUGINS
         lidar_tf_fix
