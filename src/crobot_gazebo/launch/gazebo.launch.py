@@ -46,7 +46,7 @@ def generate_launch_description():
             '-topic', '/robot_description',
             '-entity', 'crobot',
             '-x', '0.53',
-            '-y', '-3.10',
+            '-y', '-1.10',
             '-z', '0.43'
         ],
         output='screen'
