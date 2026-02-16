@@ -53,89 +53,89 @@ namespace crobot_hardware
         sweeper_.name = cfg_.sweeper_name;
         winch_.name = cfg_.winch_name;
 
-        for (const hardware_interface::ComponentInfo & joint : info_.joints)
-        {
-            if (joint.command_interfaces.size() != 1)
-            {
-                RCLCPP_FATAL(
-                    rclcpp::get_logger("CrobotHardware"),
-                    "Joint '%s' has %zu command interfaces found. 1 expected.",
-                    joint.name.c_str(),
-                    joint.command_interfaces.size()
-                );
+        // for (const hardware_interface::ComponentInfo & joint : info_.joints)
+        // {
+        //     if (joint.command_interfaces.size() != 1)
+        //     {
+        //         RCLCPP_FATAL(
+        //             rclcpp::get_logger("CrobotHardware"),
+        //             "Joint '%s' has %zu command interfaces found. 1 expected.",
+        //             joint.name.c_str(),
+        //             joint.command_interfaces.size()
+        //         );
 
-                return hardware_interface::CallbackReturn::ERROR;
-            }
+        //         return hardware_interface::CallbackReturn::ERROR;
+        //     }
 
-            if (joint.state_interfaces.size() != 1)
-            {
-                RCLCPP_FATAL(
-                    rclcpp::get_logger("CrobotHardware"),
-                    "Joint '%s' has %zu state interfaces found. 1 expected.",
-                    joint.name.c_str(),
-                    joint.state_interfaces.size()
-                );
+        //     if (joint.state_interfaces.size() != 1)
+        //     {
+        //         RCLCPP_FATAL(
+        //             rclcpp::get_logger("CrobotHardware"),
+        //             "Joint '%s' has %zu state interfaces found. 1 expected.",
+        //             joint.name.c_str(),
+        //             joint.state_interfaces.size()
+        //         );
 
-                return hardware_interface::CallbackReturn::ERROR;
-            }
+        //         return hardware_interface::CallbackReturn::ERROR;
+        //     }
 
-            if (joint.name.find("ankle") != std::string::npos || joint.name.find("sweeper") != std::string::npos)
-            {
-                if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
-                {
-                    RCLCPP_FATAL(
-                        rclcpp::get_logger("CrobotHardware"),
-                        "Joint '%s' has '%s' command interface. '%s' expected.",
-                        joint.name.c_str(),
-                        joint.command_interfaces[0].name.c_str(),
-                        hardware_interface::HW_IF_POSITION
-                    );
+        //     if (joint.name.find("ankle") != std::string::npos || joint.name.find("sweeper") != std::string::npos)
+        //     {
+        //         if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+        //         {
+        //             RCLCPP_FATAL(
+        //                 rclcpp::get_logger("CrobotHardware"),
+        //                 "Joint '%s' has '%s' command interface. '%s' expected.",
+        //                 joint.name.c_str(),
+        //                 joint.command_interfaces[0].name.c_str(),
+        //                 hardware_interface::HW_IF_POSITION
+        //             );
 
-                    return hardware_interface::CallbackReturn::ERROR;
-                }
+        //             return hardware_interface::CallbackReturn::ERROR;
+        //         }
 
-                if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
-                {
-                    RCLCPP_FATAL(
-                        rclcpp::get_logger("CrobotHardware"),
-                        "Joint '%s' has '%s' state interface. '%s' expected.",
-                        joint.name.c_str(),
-                        joint.state_interfaces[0].name.c_str(),
-                        hardware_interface::HW_IF_POSITION
-                    );
+        //         if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+        //         {
+        //             RCLCPP_FATAL(
+        //                 rclcpp::get_logger("CrobotHardware"),
+        //                 "Joint '%s' has '%s' state interface. '%s' expected.",
+        //                 joint.name.c_str(),
+        //                 joint.state_interfaces[0].name.c_str(),
+        //                 hardware_interface::HW_IF_POSITION
+        //             );
 
-                    return hardware_interface::CallbackReturn::ERROR;
-                }
-            }
-            else if (joint.name.find("wheel") != std::string::npos || joint.name.find("winch") != std::string::npos)
-            {
-                if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
-                {
-                    RCLCPP_FATAL(
-                        rclcpp::get_logger("CrobotHardware"),
-                        "Joint '%s' has '%s' command interface. '%s' expected.",
-                        joint.name.c_str(),
-                        joint.command_interfaces[0].name.c_str(),
-                        hardware_interface::HW_IF_VELOCITY
-                    );
+        //             return hardware_interface::CallbackReturn::ERROR;
+        //         }
+        //     }
+        //     else if (joint.name.find("wheel") != std::string::npos || joint.name.find("winch") != std::string::npos)
+        //     {
+        //         if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
+        //         {
+        //             RCLCPP_FATAL(
+        //                 rclcpp::get_logger("CrobotHardware"),
+        //                 "Joint '%s' has '%s' command interface. '%s' expected.",
+        //                 joint.name.c_str(),
+        //                 joint.command_interfaces[0].name.c_str(),
+        //                 hardware_interface::HW_IF_VELOCITY
+        //             );
 
-                    return hardware_interface::CallbackReturn::ERROR;
-                }
+        //             return hardware_interface::CallbackReturn::ERROR;
+        //         }
 
-                if (joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
-                {
-                    RCLCPP_FATAL(
-                        rclcpp::get_logger("CrobotHardware"),
-                        "Joint '%s' has '%s' state interface. '%s' expected.",
-                        joint.name.c_str(),
-                        joint.state_interfaces[0].name.c_str(),
-                        hardware_interface::HW_IF_VELOCITY
-                    );
+        //         if (joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
+        //         {
+        //             RCLCPP_FATAL(
+        //                 rclcpp::get_logger("CrobotHardware"),
+        //                 "Joint '%s' has '%s' state interface. '%s' expected.",
+        //                 joint.name.c_str(),
+        //                 joint.state_interfaces[0].name.c_str(),
+        //                 hardware_interface::HW_IF_VELOCITY
+        //             );
 
-                    return hardware_interface::CallbackReturn::ERROR;
-                }
-            }
-        }
+        //             return hardware_interface::CallbackReturn::ERROR;
+        //         }
+        //     }
+        // }
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -148,6 +148,10 @@ namespace crobot_hardware
         {
             state_interfaces.emplace_back(hardware_interface::StateInterface(
                 wheel.name, hardware_interface::HW_IF_VELOCITY, &wheel.vel
+            ));
+            
+            state_interfaces.emplace_back(hardware_interface::StateInterface(
+                wheel.name, hardware_interface::HW_IF_POSITION, &wheel.pos
             ));
         }
 

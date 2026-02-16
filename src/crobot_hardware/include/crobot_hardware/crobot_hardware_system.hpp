@@ -10,7 +10,7 @@ namespace crobot_hardware
     struct Motor
     {
         std::string name;
-        // double pos = 0.0;
+        double pos = 0.0;
         double vel = 0.0;
         double cmd = 0.0;
     };
