@@ -1,0 +1,85 @@
+amcl:
+  ros__parameters:
+    use_sim_time: true
+    base_frame_id: base_link
+    odom_frame_id: odom
+    global_frame_id: map
+    scan_topic: scan
+    odom_topic: crobot_drive_controller/odom
+
+map_server:
+  ros__parameters:
+    use_sim_time: true
+    yaml_filename: "/opt/ros/humble/share/turtlebot3_navigation2/map/turtlebot3_world.yaml"
+
+planner_server:
+  ros__parameters:
+    use_sim_time: true
+    expected_planner_frequency: 2.0
+    planner_plugins: ["GridBased"]
+
+    GridBased:
+      plugin: "nav2_navfn_planner/NavfnPlanner"
+
+controller_server:
+  ros__parameters:
+    use_sim_time: true
+    controller_plugins: ["FollowPath"]
+    odom_topic: crobot_drive_controller/odom
+
+    controller_plugins: ["FollowPath"]
+
+    FollowPath:
+      plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+
+      desired_linear_vel: 0.2
+      lookahead_dist: 0.6
+      min_lookahead_dist: 0.3
+      max_lookahead_dist: 0.9
+      lookahead_time: 1.5
+      rotate_to_heading_angular_vel: 1.0
+      use_velocity_scaled_lookahead_dist: true
+
+bt_navigator:
+  ros__parameters:
+    use_sim_time: true
+    odom_topic: crobot_drive_controller/odom
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      use_sim_time: true
+      global_frame: map
+      robot_base_frame: base_link
+      resolution: 0.08
+      robot_radius: 0.105
+
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      use_sim_time: true
+      global_frame: odom
+      robot_base_frame: base_link
+      resolution: 0.08
+      robot_radius: 0.105
+
+
+lifecycle_manager:
+  ros__parameters:
+    use_sim_time: true
+    autostart: true
+    node_names:
+      - map_server
+      - amcl
+      - planner_server
+      - controller_server
+      - bt_navigator
+
+slam_toolbox:
+  ros__parameters:
+    base_frame: base_link
+    odom_frame: odom
+    map_frame: map
+    scan_topic: /scan
+    odom_topic: crobot_drive_controller/odom
