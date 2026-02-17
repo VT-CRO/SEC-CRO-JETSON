@@ -71,7 +71,8 @@ def generate_launch_description():
     vslam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             bringup_dir, 'launch', 'perception', 'vslam.launch.py')]),
-        launch_arguments={'output_odom_frame_name': global_frame}.items())
+        # launch_arguments={'output_odom_frame_name': global_frame}.items()
+        )
 
     # Nvblox
     nvblox_launch = IncludeLaunchDescription(

@@ -33,6 +33,7 @@ def generate_launch_description():
             'enable_image_denoising': True,
             'enable_localization_n_mapping': True,
             'rectified_images': True,
+            'enable_rectified_pose': True,
             'enable_imu_fusion': True,
             'gyro_noise_density': 0.000244,
             'gyro_random_walk': 0.000019393,
@@ -43,7 +44,7 @@ def generate_launch_description():
             'base_frame': 'base_link',
             'imu_frame': 'camera_gyro_optical_frame',
             'enable_slam_visualization': True,
-            'enable_landmarks_view': False,
+            'enable_landmarks_view': True, # why was this false by default 
             'enable_observations_view': True,
             'feature_detector_threshold': 0.005,
             'num_features_threshold': 40,
