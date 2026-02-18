@@ -6,6 +6,7 @@
 //nodes
 #include "crobot_behavior/action_nodes/go_to_pose.hpp"
 #include "crobot_behavior/NavigationServer.hpp"
+#include "crobot_behavior/action_nodes/sweeper_controls.hpp"
 
 
 int main(int argc, char** argv)
@@ -23,6 +24,13 @@ int main(int argc, char** argv)
     [node](const std::string& name, const BT::NodeConfiguration& config)
     {
       return std::make_unique<GoToPose>(name, config, node);
+    }
+  );
+    factory.registerBuilder<SweeperControl>(
+    "SweeperControl",
+    [node](const std::string& name, const BT::NodeConfiguration& config)
+    {
+      return std::make_unique<SweeperControl>(name, config, node);
     }
   );
 

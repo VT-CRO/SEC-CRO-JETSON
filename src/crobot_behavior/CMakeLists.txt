@@ -20,6 +20,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 add_library(crobot_behavior_lib SHARED
   src/NavigationServer.cpp
   src/action_nodes/go_to_pose.cpp
+  src/action_nodes/sweeper_controls.cpp
 )
 
 ament_target_dependencies(crobot_behavior_lib
