@@ -6,8 +6,8 @@ from launch_ros.descriptions import ComposableNode
 def generate_launch_description():
     """Launch file which brings up visual slam node configured for RealSense."""
     realsense_camera_node = Node(
-        name='camera',
-        namespace='camera',
+        name='camera0',
+        namespace='camera0',
         package='realsense2_camera',
         executable='realsense2_camera_node',
         parameters=[{
@@ -21,9 +21,31 @@ def generate_launch_description():
             'enable_accel': True,
             'gyro_fps': 200,
             'accel_fps': 200,
-            'unite_imu_method': 2
+            'unite_imu_method': 2,
+            # 'base_frame_id':'camera0_link',
+            'camera_name': 'camera0'
         }],
     )
+
+    splitter_node = ComposableNode(
+        namespace='camera0',
+        name='realsense_splitter_node',
+        package='realsense_splitter',
+        plugin='nvblox::RealsenseSplitterNode',
+        parameters=[{
+            'input_qos': 'SENSOR_DATA',
+            'output_qos': 'SENSOR_DATA'
+        }],
+        remappings=[
+            ('input/infra_1', f'/camera0/infra1/image_rect_raw'),
+            ('input/infra_1_metadata', f'/camera0/infra1/metadata'),
+            ('input/infra_2', f'/camera0/infra2/image_rect_raw'),
+            ('input/infra_2_metadata', f'/camera0/infra2/metadata'),
+            ('input/depth', f'/camera0/depth/image_rect_raw'),
+            ('input/depth_metadata', f'/camera0/depth/metadata'),
+            ('input/pointcloud', f'/camera0/depth/color/points'),
+            ('input/pointcloud_metadata', f'/camera0/depth/metadata'),
+        ])
 
     visual_slam_node = ComposableNode(
         name='visual_slam_node',
@@ -42,7 +64,7 @@ def generate_launch_description():
             'calibration_frequency': 200.0,
             'image_jitter_threshold_ms': 22.00,
             'base_frame': 'base_link',
-            'imu_frame': 'camera_gyro_optical_frame',
+            'imu_frame': 'camera0_gyro_optical_frame',
             'enable_slam_visualization': True,
             'enable_landmarks_view': True, # why was this false by default 
             'enable_observations_view': True,
@@ -50,16 +72,16 @@ def generate_launch_description():
             'num_features_threshold': 40,
             'harris_k': 0.08,
             'camera_optical_frames': [
-                'camera_infra1_optical_frame',
-                'camera_infra2_optical_frame',
+                'camera0_infra1_optical_frame',
+                'camera0_infra2_optical_frame',
             ],
         }],
         remappings=[
-            ('visual_slam/image_0', 'camera/infra1/image_rect_raw'),
-            ('visual_slam/camera_info_0', 'camera/infra1/camera_info'),
-            ('visual_slam/image_1', 'camera/infra2/image_rect_raw'),
-            ('visual_slam/camera_info_1', 'camera/infra2/camera_info'),
-            ('visual_slam/imu', 'camera/imu'),
+            ('visual_slam/image_0', 'camera0/infra1/image_rect_raw'),
+            ('visual_slam/camera_info_0', 'camera0/infra1/camera_info'),
+            ('visual_slam/image_1', 'camera0/infra2/image_rect_raw'),
+            ('visual_slam/camera_info_1', 'camera0/infra2/camera_info'),
+            ('visual_slam/imu', 'camera0/imu'),
         ],
     )
 
@@ -68,8 +90,7 @@ def generate_launch_description():
         namespace='',
         package='rclcpp_components',
         executable='component_container',
-        composable_node_descriptions=[visual_slam_node],
+        composable_node_descriptions=[visual_slam_node, splitter_node],
         output='screen',
     )
-
     return launch.LaunchDescription([visual_slam_launch_container, realsense_camera_node])
