@@ -187,15 +187,15 @@ def generate_launch_description() -> LaunchDescription:
             condition=IfCondition(lu.is_valid(args.rosbag))))
 
     # Visualization
-    actions.append(
-        lu.include(
-            'nvblox_examples_bringup',
-            'launch/visualization/visualization.launch.py',
-            launch_arguments={
-                'mode': args.mode,
-                'camera': camera_mode,
-                'use_foxglove_whitelist': args.use_foxglove_whitelist,
-            }))
+    # actions.append(
+    #     lu.include(
+    #         'nvblox_examples_bringup',
+    #         'launch/visualization/visualization.launch.py',
+    #         launch_arguments={
+    #             'mode': args.mode,
+    #             'camera': camera_mode,
+    #             'use_foxglove_whitelist': args.use_foxglove_whitelist,
+    #         }))
 
     # Container
     # NOTE: By default (attach_to_container:=False) we launch a container which all nodes are

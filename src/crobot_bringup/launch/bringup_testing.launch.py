@@ -100,7 +100,7 @@ def generate_launch_description():
         control_node,
         spawn_joint_state_broadcaster,
         delay_controllers_after_joint_state,
-        foxglove_bridge,
+        # foxglove_bridge,
         # teleop_node,
         #isaac_vslam,
     ])
