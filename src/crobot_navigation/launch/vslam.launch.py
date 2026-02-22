@@ -24,8 +24,11 @@ def generate_launch_description():
             'accel_fps': 200,
             'unite_imu_method': 2,
             # 'base_frame_id':'camera0_link',
-            'camera_name': 'camera0'
-        }],
+            'camera_name': 'camera0',
+            'depth_module.depth_units':0.001,
+            'depth_module.min_distance':0.1,
+            'depth_module.max_distance':1.0, #meters
+         }],
     )
 
     splitter_node = ComposableNode(
