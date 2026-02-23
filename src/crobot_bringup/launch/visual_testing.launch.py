@@ -49,7 +49,7 @@ def generate_launch_description():
             target_action=bringup_launch,
             on_completion=[
                 LogInfo(msg='Bringup finished! Starting VSLAM...'),
-                launch_2,
+                vslam_launch,
             ]
         )
     )
@@ -59,7 +59,7 @@ def generate_launch_description():
             target_action=vslam_launch,
             on_completion=[
                 LogInfo(msg='VSLAM finished! Starting NVBLOX...'),
-                launch_3,
+                nvblox_launch,
             ]
         )
     )
