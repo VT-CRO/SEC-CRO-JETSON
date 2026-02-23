@@ -57,9 +57,22 @@ def generate_launch_description():
         ]
     )
 
+    foxglove_bridge = Node(
+        package="foxglove_bridge",
+        executable="foxglove_bridge",
+        name="foxglove_bridge",
+        output="screen",
+        parameters=[{
+            "port": 8765,
+            "address": "0.0.0.0",   # important for remote laptop access
+            # "use_sim_time": True,  # uncomment if you want it to use sim time
+        }],
+    )
+
     return LaunchDescription([
         LogInfo(msg='Starting Bringup...'),
         bringup_launch,
         delayed_vslam,
         delayed_nvblox,
+        foxglove_bridge
     ])
