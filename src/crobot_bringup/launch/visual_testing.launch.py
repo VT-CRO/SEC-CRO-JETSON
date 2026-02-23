@@ -44,12 +44,9 @@ def generate_launch_description():
         ])
     )
 
-    # --- Chain them using OnExecutionComplete ---
-    # launch_1 runs first, when it completes launch_2 starts, then launch_3
-
     start_vslam_after_bringup = RegisterEventHandler(
         OnExecutionComplete(
-            target_action=launch_1,
+            target_action=bringup_launch,
             on_completion=[
                 LogInfo(msg='Bringup finished! Starting VSLAM...'),
                 launch_2,
@@ -59,7 +56,7 @@ def generate_launch_description():
 
     start_nvblox_after_vslam = RegisterEventHandler(
         OnExecutionComplete(
-            target_action=launch_2,
+            target_action=vslam_launch,
             on_completion=[
                 LogInfo(msg='VSLAM finished! Starting NVBLOX...'),
                 launch_3,
