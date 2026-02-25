@@ -74,6 +74,6 @@ def generate_launch_description():
         LogInfo(msg='Starting Bringup...'),
         bringup_launch,
         delayed_vslam,
-        delayed_nvblox,
-        foxglove_bridge
+        # delayed_nvblox,
+        # foxglove_bridge
     ])
