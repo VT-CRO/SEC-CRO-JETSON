@@ -56,6 +56,8 @@ def generate_launch_description():
         package='isaac_ros_visual_slam',
         plugin='nvidia::isaac_ros::visual_slam::VisualSlamNode',
         parameters=[{
+            'use_imu': True,
+            'enable_loop_closure': True,
             'enable_image_denoising': True,
             'enable_localization_n_mapping': True,
             'rectified_images': True,
@@ -86,6 +88,11 @@ def generate_launch_description():
             ('visual_slam/image_1', 'camera0/infra2/image_rect_raw'),
             ('visual_slam/camera_info_1', 'camera0/infra2/camera_info'),
             ('visual_slam/imu', 'camera0/imu'),
+            ('imu','/camera0/imu'),
+            # ('/camera/infra1/image_rect_raw','/camera0/infra1/image_rect_raw'),
+            # ('/camera/infra2/image_rect_raw','/camera0/infra2/image_rect_raw'),
+            # ('/camera/infra1/camera_info','/camera0/infra1/camera_info'),
+            # ('/camera/infra2/camera_info','/camera0/infra2/camera_info'),
         ],
     )
 
