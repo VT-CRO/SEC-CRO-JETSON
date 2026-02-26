@@ -177,7 +177,7 @@ def generate_launch_description() -> LaunchDescription:
                 'mode': args.mode,
                 'camera': camera_mode,
                 'num_cameras': args.num_cameras,
-                'voxel_size':0.001,
+                'voxel_size':0.01,
                 'mesh_update_rate_hz':1.0,
                 'output_pessimistic_distance_map': True,
                 'esdf_2d': True,
