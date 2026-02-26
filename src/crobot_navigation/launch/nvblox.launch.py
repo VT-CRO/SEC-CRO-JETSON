@@ -181,7 +181,7 @@ def generate_launch_description() -> LaunchDescription:
                 'mesh_update_rate_hz':1.0,
                 'output_pessimistic_distance_map': True,
                 'esdf_2d': True,
-                'esdf_slice_height': 0.2,
+                'esdf_slice_height': 0.06,
                 'esdf_update_rate_hz': '1.0',
                 'input_qos': 'SYSTEM_DEFAULT',
                 'after_shutdown_map_save_path': '~/ssd/olivia_test_ws/'
