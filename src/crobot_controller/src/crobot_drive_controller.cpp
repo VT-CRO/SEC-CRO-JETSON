@@ -320,14 +320,14 @@ CrobotDriveController::computeStrafeMode(double linear_x, double linear_y)
     cmd.wheel_vels.resize(4);
     
     // Pure strafe: all wheels at 90 degrees
-    const double angle = M_PI / 2.0;
+    // const double angle = M_PI / 2.0;
 
     double sign = (linear_y > 0) ? 1.0 : -1.0;
     
-    cmd.ankle_angles[0] = -angle;  // FL
-    cmd.ankle_angles[1] = angle;   // FR
-    cmd.ankle_angles[2] = angle;   // BL
-    cmd.ankle_angles[3] = -angle;  // BR
+    cmd.ankle_angles[0] = -120.0 * M_PI / 180.0;  // FL
+    cmd.ankle_angles[1] = 60.0 * M_PI / 180.0;   // FR
+    cmd.ankle_angles[2] = 30.0 * M_PI / 180.0;   // BL
+    cmd.ankle_angles[3] = -150.0 * M_PI / 180.0;  // BR
 
     // All wheels same speed for lateral motion (in m/s)
     double wheel_linear_vel = std::abs(linear_y);

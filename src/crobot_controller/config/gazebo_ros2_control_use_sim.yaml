@@ -34,7 +34,7 @@ crobot_drive_controller:
     max_linear_velocity: 20.0          # m/s
     max_angular_velocity: 20.0         # rad/s
 
-    enable_odom_tf: false
+    enable_odom_tf: true
     odom_frame_id: odom
     base_frame_id: base_link
 
