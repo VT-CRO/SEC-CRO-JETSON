@@ -108,7 +108,7 @@ private:
     
     // Estimate of how fast your servos can physically rotate in rad/s
     // (e.g., 5.0 rad/s is roughly 0.2 seconds per 60 degrees)
-    double assumed_servo_speed_ = 4.0;
+    double assumed_servo_speed_ = 2.0;
 };
 
 }  // namespace crobot_controller
