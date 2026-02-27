@@ -15,6 +15,8 @@ def generate_launch_description():
             'enable_infra2': True,
             'enable_color': True,
             'enable_depth': True,
+            'enable_pointcloud': True,      
+            'pointcloud.enable': True,
             'depth_module.emitter_enabled': 1,
             'depth_module.emitter_on_off': True,
             'depth_module.profile': '640x360x60',

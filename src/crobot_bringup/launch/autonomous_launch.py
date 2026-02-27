@@ -3,7 +3,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, TimerAction,LogInfo
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler, TimerAction, LogInfo, ExecuteProcess
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
@@ -83,18 +83,18 @@ def generate_launch_description():
         parameters=[{
             'target_frame': 'base_link',
             'transform_tolerance': 0.01,
-            'min_height': 0.0,
-            'max_height': 0.06,        # only scan up to 30cm high (your obstacle height)
+            'min_height': 0.05,
+            'max_height': 0.1,        # only scan up to 30cm high (your obstacle height)
             'angle_min': -1.5708,     # -90°
             'angle_max': 1.5708,      # 90°
             'angle_increment': 0.0087,
             'scan_time': 0.3333,
-            'range_min': 0.15,
-            'range_max': 4.0,
+            'range_min': 0.30,
+            'range_max': 1.0,
             'use_inf': True,
         }], 
         remappings=[
-            ('cloud_in', '/visual_slam/vis/landmarks_cloud'),  # ← your realsense pointcloud topic
+            ('cloud_in', '/camera0/depth/color/points'),  # ← your realsense pointcloud topic
             ('scan', '/scan')
         ]
     )
@@ -109,6 +109,19 @@ def generate_launch_description():
             "address": "0.0.0.0",   # important for remote laptop access
             # "use_sim_time": True,  # uncomment if you want it to use sim time
         }],
+    )
+
+    initial_pose = ExecuteProcess(
+        cmd=['ros2', 'topic', 'pub', '--times', '10', '/initialpose',
+            'geometry_msgs/msg/PoseWithCovarianceStamped',
+            '{"header": {"frame_id": "map"}, "pose": {"pose": {"position": {"x": 0.541, "y": -0.976, "z": 0.0}, "orientation": {"x": 0.0, "y": 0.0, "z": -0.6926, "w": 0.7214}}}}'
+        ],
+        output='screen'
+    )
+
+    delay_initial_pose = TimerAction(
+        period=20.0,
+        actions=[initial_pose]
     )
     
     delayed_vslam = TimerAction(
@@ -150,5 +163,6 @@ def generate_launch_description():
         delayed_rviz2,
         nav2_launch,
         delayed_foxglove,
+        delay_initial_pose,
         pointcloud_to_laserscan
     ])
