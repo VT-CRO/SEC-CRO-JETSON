@@ -7,7 +7,6 @@ from launch.actions import IncludeLaunchDescription, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
-
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -18,6 +17,39 @@ def generate_launch_description():
             get_package_share_directory('crobot_description'), 'launch', 'rsp.launch.py'
         )]),
         launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
+    )
+    #launches the nav2 server
+    nav2_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                get_package_share_directory('nav2_bringup'),
+                'launch',
+                'bringup_launch.py'  
+            ])
+        ]),
+        launch_arguments={
+            'use_sim_time': 'true',
+            'map': PathJoinSubstitution([
+                get_package_share_directory('crobot_gazebo'),
+                'field',
+                'map.yaml'
+            ]),  
+            'params_file': PathJoinSubstitution([
+                get_package_share_directory('crobot_behavior'),
+                'config',
+                'nav2_params.yaml'
+            ])
+        }.items()
+    )
+    #launches rviz2
+    rviz2_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                get_package_share_directory('nav2_bringup'),
+                'launch',
+                'rviz_launch.py'
+            ])
+        ])
     )
 
     # Controller Manager node
@@ -52,11 +84,13 @@ def generate_launch_description():
         output='screen'
     )
 
+
     delay_controllers_after_joint_state = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=spawn_joint_state_broadcaster,
             on_exit=[spawn_controllers],
     ))
+
 
     # Gazebo launch
     gazebo = IncludeLaunchDescription(
@@ -64,6 +98,7 @@ def generate_launch_description():
             get_package_share_directory('crobot_gazebo'), 'launch', 'gazebo.launch.py'
         )])
     )
+
 
     # foxglove_bridge = Node(
     #     package="foxglove_bridge",
@@ -83,5 +118,7 @@ def generate_launch_description():
         spawn_joint_state_broadcaster,
         delay_controllers_after_joint_state,
         gazebo,
+        nav2_launch,
+        rviz2_launch,
         # foxglove_bridge
     ])

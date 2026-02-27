@@ -14,6 +14,8 @@ def generate_launch_description():
     field_path = PathJoinSubstitution([my_pkg_share_dir,'field','field.sdf'])
 
     world_path = PathJoinSubstitution([my_pkg_share_dir, 'world', 'empty.sdf'])
+
+    map_path = os.path.join(my_pkg_share_dir, 'field','map.yaml')
     
     
     # Or use an empty world from ros_gz_sim package
@@ -66,6 +68,15 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Keep map→odom static since we're not doing localization
+    map_to_odom_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom'],
+        parameters=[{'use_sim_time': True}],
+        output='screen'
+    )
+
     bridge_params = os.path.join(my_pkg_share_dir, 'config', 'ros_gz_bridge.yaml')
 
     bridge_node = Node(
@@ -88,12 +99,24 @@ def generate_launch_description():
     output='screen'
     )
 
+    ekf_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
+        output='screen',
+        parameters=[
+            os.path.join(my_pkg_share_dir, 'config', 'ekf.yaml'),
+            {'use_sim_time': True}
+        ]
+    )
+
     return LaunchDescription([
         gazebo_launch,
-        # this
         spawn_entity_node,
         spawn_field_node,
         bridge_node,
         # Toggle this for TESTING PLUGINS
-        lidar_tf_fix
+        lidar_tf_fix,
+        map_to_odom_tf,
+        ekf_node
     ])

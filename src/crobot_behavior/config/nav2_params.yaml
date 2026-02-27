@@ -5,12 +5,21 @@ amcl:
     odom_frame_id: odom
     global_frame_id: map
     scan_topic: scan
-    odom_topic: crobot_drive_controller/odom
+    min_particles: 500
+    max_particles: 2000
+    laser_max_range: 10.0
+    laser_min_range: 0.1
+    laser_max_beams: 60
+    alpha1: 0.2
+    alpha2: 0.2
+    alpha3: 0.2
+    alpha4: 0.2
+    alpha5: 0.2
 
 map_server:
   ros__parameters:
     use_sim_time: true
-    yaml_filename: "/opt/ros/humble/share/turtlebot3_navigation2/map/turtlebot3_world.yaml"
+    yaml_filename: "/home/ros/ws/src/crobot_gazebo/field/map.yaml"
 
 planner_server:
   ros__parameters:
@@ -27,18 +36,24 @@ controller_server:
     controller_plugins: ["FollowPath"]
     odom_topic: crobot_drive_controller/odom
 
-    controller_plugins: ["FollowPath"]
 
     FollowPath:
       plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
 
-      desired_linear_vel: 0.2
-      lookahead_dist: 0.6
-      min_lookahead_dist: 0.3
-      max_lookahead_dist: 0.9
-      lookahead_time: 1.5
+      desired_linear_vel: 5.0
       rotate_to_heading_angular_vel: 1.0
       use_velocity_scaled_lookahead_dist: true
+      max_linear_accel: 10.0
+      max_linear_decel: 10.0
+      
+      lookahead_dist: 0.8          # was 0.6, increase for faster movement
+      min_lookahead_dist: 0.4      # was 0.3
+      max_lookahead_dist: 1.2      # was 0.9
+      lookahead_time: 1.5
+
+      rotate_to_heading_angular_vel: 1.8   # faster rotation
+      max_angular_accel: 3.2
+      
 
 bt_navigator:
   ros__parameters:
@@ -51,9 +66,23 @@ global_costmap:
       use_sim_time: true
       global_frame: map
       robot_base_frame: base_link
-      resolution: 0.08
+      resolution: 0.05       
       robot_radius: 0.105
-
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: true
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: true
+          marking: true
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        inflation_radius: 0.3
 
 local_costmap:
   local_costmap:
@@ -63,6 +92,21 @@ local_costmap:
       robot_base_frame: base_link
       resolution: 0.08
       robot_radius: 0.105
+      rolling_window: true
+      width: 3          # ← size of local window in meters
+      height: 3
+      plugins: ["obstacle_layer", "inflation_layer"]
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: true
+          marking: true
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        inflation_radius: 0.3
 
 
 lifecycle_manager:

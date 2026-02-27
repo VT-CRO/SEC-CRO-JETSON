@@ -2,8 +2,11 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">  
   <ros2_control name="Crobot" type="system">
     <hardware>
-      <xacro:if value="$(arg sim_mode)">
+      <!-- <xacro:if value="$(arg sim_mode)">
         <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </xacro:if> -->
+      <xacro:if value="$(arg sim_mode)">
+        <plugin>ign_ros2_control/IgnitionSystem</plugin>
       </xacro:if>
       <xacro:unless value="$(arg sim_mode)">
         <plugin>crobot_hardware/CrobotHardware</plugin>
@@ -73,12 +76,22 @@
       <state_interface   name="velocity"/>
     </joint>
   </ros2_control>
-
+     
   <xacro:if value="$(arg sim_mode)">
     <gazebo>
-      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <!-- <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <parameters>$(find crobot_controller)/config/gazebo_ros2_control_use_sim.yaml</parameters>
+      </plugin> -->
+      <plugin filename="ign_ros2_control-system" 
+            name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <parameters>$(find crobot_controller)/config/gazebo_ros2_control_use_sim.yaml</parameters>
       </plugin>
+      <plugin filename="ignition-gazebo-odometry-publisher-system"
+            name="ignition::gazebo::systems::OdometryPublisher">
+      <odom_frame>odom</odom_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+      <odom_publish_frequency>50</odom_publish_frequency>
+    </plugin>
     </gazebo>
   </xacro:if>
 </robot>
