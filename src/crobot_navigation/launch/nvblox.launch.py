@@ -168,7 +168,7 @@ def generate_launch_description() -> LaunchDescription:
     #         condition=IfCondition(lu.has_substring(args.mode, NvbloxMode.people_detection))))
 
     actions.append(SetParameter(name='static_mapper.projective_integrator_max_integration_distance_m', value=2.0))
-    actions.append(SetParameter(name='map_clearing_radius_m', value=2.0))
+    # actions.append(SetParameter(name='map_clearing_radius_m', value=2.0))
 
     # Nvblox
     actions.append(
@@ -180,7 +180,7 @@ def generate_launch_description() -> LaunchDescription:
                 'mode': args.mode,
                 'camera': camera_mode,
                 'num_cameras': args.num_cameras,
-                'voxel_size':0.03,
+                'voxel_size':0.02,
                 'mesh_update_rate_hz':1.0,
                 'output_pessimistic_distance_map': True,
                 'esdf_2d': True,
