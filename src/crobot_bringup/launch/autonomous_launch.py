@@ -75,6 +75,41 @@ def generate_launch_description():
             ])
         ])
     )
+
+    pointcloud_to_laserscan = Node(
+        package='pointcloud_to_laserscan',
+        executable='pointcloud_to_laserscan_node',
+        name='pointcloud_to_laserscan',
+        parameters=[{
+            'target_frame': 'base_link',
+            'transform_tolerance': 0.01,
+            'min_height': 0.0,
+            'max_height': 0.06,        # only scan up to 30cm high (your obstacle height)
+            'angle_min': -1.5708,     # -90°
+            'angle_max': 1.5708,      # 90°
+            'angle_increment': 0.0087,
+            'scan_time': 0.3333,
+            'range_min': 0.15,
+            'range_max': 4.0,
+            'use_inf': True,
+        }], 
+        remappings=[
+            ('cloud_in', '/visual_slam/vis/landmarks_cloud'),  # ← your realsense pointcloud topic
+            ('scan', '/scan')
+        ]
+    )
+
+    foxglove_bridge = Node(
+        package="foxglove_bridge",
+        executable="foxglove_bridge",
+        name="foxglove_bridge",
+        output="screen",
+        parameters=[{
+            "port": 8765,
+            "address": "0.0.0.0",   # important for remote laptop access
+            # "use_sim_time": True,  # uncomment if you want it to use sim time
+        }],
+    )
     
     delayed_vslam = TimerAction(
         period=5.0,      
@@ -95,21 +130,17 @@ def generate_launch_description():
     delayed_rviz2 = TimerAction(
         period=15.0,
         actions=[
-            LogInfo(msg='Starting NVBLOX...'),
+            LogInfo(msg='Starting RVIZ2...'),
             rviz2_launch,      
         ]
     )
 
-    foxglove_bridge = Node(
-        package="foxglove_bridge",
-        executable="foxglove_bridge",
-        name="foxglove_bridge",
-        output="screen",
-        parameters=[{
-            "port": 8765,
-            "address": "0.0.0.0",   # important for remote laptop access
-            # "use_sim_time": True,  # uncomment if you want it to use sim time
-        }],
+    delayed_foxglove = TimerAction(
+        period=15.0,
+        actions=[
+            LogInfo(msg='Starting FOXGLOVE...'),
+            foxglove_bridge,      
+        ]
     )
 
     return LaunchDescription([
@@ -118,5 +149,6 @@ def generate_launch_description():
         delayed_nvblox,
         delayed_rviz2,
         nav2_launch,
-        foxglove_bridge,
+        delayed_foxglove,
+        pointcloud_to_laserscan
     ])
