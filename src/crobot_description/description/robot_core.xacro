@@ -230,12 +230,12 @@
   </joint>
 
   <gazebo reference="mid_left_wheel">
-    <mu1>1.0</mu1>
+    <mu1>0.0</mu1>
     <mu2>0.0</mu2> 
   </gazebo>
 
   <gazebo reference="mid_right_wheel">
-    <mu1>1.0</mu1>
+    <mu1>0.0</mu1>
     <mu2>0.0</mu2>
   </gazebo>
 
