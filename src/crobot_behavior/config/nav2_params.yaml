@@ -113,8 +113,8 @@ velocity_smoother:
     use_sim_time: true
     smoothing_frequency: 20.0
     scale_velocities: false
-    max_velocity: [5.0, 0.0, 5.0]      # [x, y, theta]
-    min_velocity: [-5.0, 0.0, -5.0]
+    max_velocity: [10.0, 0.0, 10.0]      # [x, y, theta]
+    min_velocity: [-10.0, 0.0, -10.0]
     max_accel: [10.0, 0.0, 10.0]
     max_decel: [-10.0, 0.0, -10.0]
     odom_topic: crobot_drive_controller/odom

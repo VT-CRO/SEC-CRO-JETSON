@@ -2,10 +2,10 @@
   <BehaviorTree ID="MainTree">
     <SequenceStar>
       <!-- <SweeperControl name="Sweeper Control" sweeper_command="1.0"/> -->
-      <GoToPose name="StartingPosition" goalPoses="-1.9813506603240967,0.0034863941837102175,0"/>
-      <GoToPose name="Position_1" goalPoses="-0.432,-0.00937,0"/>
+      <GoToPose name="StartingPosition" goalPoses="0.381,-1.373,0"/>
+      <!-- <GoToPose name="Position_1" goalPoses="-0.432,-0.00937,0"/>
       <GoToPose name="Position_2" goalPoses="1.744858741760254,0.007635449059307575,0"/>
-      <GoToPose name="Position_3_with_midpoint" goalPoses="0.5305623412132263,-0.5350819230079651,1.57;-0.47404271364212036,0.5535049438476562,0"/>
+      <GoToPose name="Position_3_with_midpoint" goalPoses="0.5305623412132263,-0.5350819230079651,1.57;-0.47404271364212036,0.5535049438476562,0"/> -->
 
     </SequenceStar>
   </BehaviorTree>
