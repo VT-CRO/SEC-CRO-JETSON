@@ -185,8 +185,18 @@ def generate_launch_description():
         ]
     )
 
-    delayed_rviz2 = TimerAction(
+    delayed_nav2 = TimerAction(
         period=15.0,
+        actions=[
+            LogInfo(msg='Starting NAV2'),
+            nav2_launch,
+            map_server,
+            map_lifecycle,
+        ]
+    )
+
+    delayed_rviz2 = TimerAction(
+        period=20.0,
         actions=[
             LogInfo(msg='Starting RVIZ2...'),
             rviz2_launch,      
@@ -203,13 +213,13 @@ def generate_launch_description():
 
     return LaunchDescription([
         bringup_launch,
-        map_server,
-        map_lifecycle,
+        # map_server,
+        # map_lifecycle,
         delayed_vslam,
         delayed_nvblox,
         delayed_rviz2,
-        nav2_launch,
+        delayed_nav2,
         delayed_foxglove,
-        delay_initial_pose,
-        pointcloud_to_laserscan
+        # delay_initial_pose,
+        # pointcloud_to_laserscan
     ])

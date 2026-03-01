@@ -19,7 +19,8 @@ def generate_launch_description():
             'pointcloud.enable': True,
             'depth_module.emitter_enabled': 1,
             'depth_module.emitter_on_off': True,
-            'depth_module.profile': '640x360x60',
+            # '640x360x60'
+            'depth_module.profile': '640x360x30',
             'enable_gyro': True,
             'enable_accel': True,
             'gyro_fps': 200,
@@ -29,7 +30,7 @@ def generate_launch_description():
             'camera_name': 'camera0',
             'depth_module.depth_units':0.001,
             'depth_module.min_distance':0.1,
-            'depth_module.max_distance':1.0, #meters
+            'depth_module.max_distance':1.0, # meters
          }],
     )
 
