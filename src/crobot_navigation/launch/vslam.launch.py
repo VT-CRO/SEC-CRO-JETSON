@@ -20,7 +20,7 @@ def generate_launch_description():
             'depth_module.emitter_enabled': 1,
             'depth_module.emitter_on_off': True,
             # '640x360x60'
-            'depth_module.profile': '640x360x30',
+            'depth_module.profile': '640x360x90',
             'enable_gyro': True,
             'enable_accel': True,
             'gyro_fps': 200,
@@ -60,9 +60,9 @@ def generate_launch_description():
         plugin='nvidia::isaac_ros::visual_slam::VisualSlamNode',
         parameters=[{
             'use_imu': True,
-            'enable_loop_closure': True,
+            'enable_loop_closure': False,
             'enable_image_denoising': True,
-            'enable_localization_n_mapping': True,
+            'enable_localization_n_mapping': False,
             'rectified_images': True,
             'enable_rectified_pose': True,
             'enable_imu_fusion': True,
@@ -71,14 +71,14 @@ def generate_launch_description():
             'accel_noise_density': 0.001862,
             'accel_random_walk': 0.003,
             'calibration_frequency': 200.0,
-            'image_jitter_threshold_ms': 22.00,
+            'image_jitter_threshold_ms': 35.00,
             'base_frame': 'base_link',
             'imu_frame': 'camera0_gyro_optical_frame',
             'enable_slam_visualization': True,
             'enable_landmarks_view': True, # why was this false by default 
             'enable_observations_view': True,
             'feature_detector_threshold': 0.005,
-            'num_features_threshold': 40,
+            'num_features_threshold': 20,
             'harris_k': 0.08,
             'camera_optical_frames': [
                 'camera0_infra1_optical_frame',
