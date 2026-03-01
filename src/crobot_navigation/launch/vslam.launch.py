@@ -20,7 +20,8 @@ def generate_launch_description():
             'depth_module.emitter_enabled': 1,
             'depth_module.emitter_on_off': True,
             # '640x360x60'
-            'depth_module.profile': '640x360x90',
+            'depth_module.profile': '640x480x15',
+            'rgb_camera.profile': '640x480x15',
             'enable_gyro': True,
             'enable_accel': True,
             'gyro_fps': 200,
@@ -30,7 +31,7 @@ def generate_launch_description():
             'camera_name': 'camera0',
             'depth_module.depth_units':0.001,
             'depth_module.min_distance':0.1,
-            'depth_module.max_distance':1.0, # meters
+            'depth_module.max_distance':4.0, # meters
          }],
     )
 
@@ -71,7 +72,7 @@ def generate_launch_description():
             'accel_noise_density': 0.001862,
             'accel_random_walk': 0.003,
             'calibration_frequency': 200.0,
-            'image_jitter_threshold_ms': 35.00,
+            'image_jitter_threshold_ms': 50.00,
             'base_frame': 'base_link',
             'imu_frame': 'camera0_gyro_optical_frame',
             'enable_slam_visualization': True,
