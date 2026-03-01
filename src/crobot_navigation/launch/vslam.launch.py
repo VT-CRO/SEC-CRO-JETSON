@@ -59,7 +59,7 @@ def generate_launch_description():
         plugin='nvidia::isaac_ros::visual_slam::VisualSlamNode',
         parameters=[{
             'use_imu': True,
-            'enable_loop_closure': False,
+            'enable_loop_closure': True,
             'enable_image_denoising': True,
             'enable_localization_n_mapping': True,
             'rectified_images': True,

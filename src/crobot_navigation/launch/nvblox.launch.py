@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 # SPDX-License-Identifier: Apache-2.0
-
+import os
+from ament_index_python.packages import get_package_share_directory
 from isaac_ros_launch_utils.all_types import *
 import isaac_ros_launch_utils as lu
-
+from launch.actions import TimerAction, ExecuteProcess
 from nvblox_ros_python_utils.nvblox_launch_utils import NvbloxMode, NvbloxCamera, NvbloxPeopleSegmentation
 from nvblox_ros_python_utils.nvblox_constants import NVBLOX_CONTAINER_NAME
 
@@ -167,7 +168,7 @@ def generate_launch_description() -> LaunchDescription:
     #         },
     #         condition=IfCondition(lu.has_substring(args.mode, NvbloxMode.people_detection))))
 
-    actions.append(SetParameter(name='static_mapper.projective_integrator_max_integration_distance_m', value=2.0))
+    # actions.append(SetParameter(name='static_mapper.projective_integrator_max_integration_distance_m', value=2.0))
     # actions.append(SetParameter(name='map_clearing_radius_m', value=2.0))
 
     # Nvblox
@@ -180,15 +181,46 @@ def generate_launch_description() -> LaunchDescription:
                 'mode': args.mode,
                 'camera': camera_mode,
                 'num_cameras': args.num_cameras,
-                'voxel_size':0.02,
-                'mesh_update_rate_hz':1.0,
-                'output_pessimistic_distance_map': True,
-                'esdf_2d': True,
-                'esdf_slice_height': 0.06,
+                'voxel_size':'0.02',
+                'mesh_update_rate_hz': '1.0',
+                'output_pessimistic_distance_map': 'True',
+                'esdf_2d': 'True',
+                'esdf_slice_height': '0.06',
                 'esdf_update_rate_hz': '1.0',
                 'input_qos': 'SYSTEM_DEFAULT',
-                'after_shutdown_map_save_path': '~/ssd/olivia_test_ws/'
+                'after_shutdown_map_save_path': '~/ssd/olivia_test_ws/',
             }))
+    #note, nvblox doesnt take in a param file for its config, so if we want to edit
+    #nvblox params, we need to do it after it has launched.
+    actions.append(
+        TimerAction(
+            period=10.0, 
+            actions=[
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'map_clearing_radius_m', '0.0'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'clear_map_outside_radius_rate_hz', '0.0'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'decay_dynamic_occupancy_rate_hz', '0.0'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'decay_tsdf_rate_hz', '0.0'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'static_mapper.max_unobserved_to_keep_consecutive_occupancy_ms', '1000000'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'static_mapper.occupied_region_decay_probability', '0.0'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'static_mapper.tsdf_decay_factor', '1.0'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'static_mapper.projective_integrator_max_integration_distance_m', '2.4384'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'static_mapper.esdf_slice_height', '0.06'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'static_mapper.esdf_slice_max_height', '0.12'], output='screen'),
+                ExecuteProcess(cmd=['ros2', 'param', 'set', '/nvblox_node',
+                    'static_mapper.esdf_slice_min_height', '0.01'], output='screen'),
+            ]
+        )
+        )
 
     # Play ros2bag
     actions.append(

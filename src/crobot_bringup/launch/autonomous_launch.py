@@ -17,16 +17,11 @@ def generate_launch_description():
             PathJoinSubstitution([
                 get_package_share_directory('nav2_bringup'),
                 'launch',
-                'bringup_launch.py'  
+                'navigation_launch.py'  
             ])
         ]),
         launch_arguments={
-            'use_sim_time': 'true',
-            'map': PathJoinSubstitution([
-                get_package_share_directory('crobot_gazebo'),
-                'field',
-                'map.yaml'
-            ]),  
+            'use_sim_time': 'false',
             'params_file': PathJoinSubstitution([
                 get_package_share_directory('crobot_behavior'),
                 'config',
@@ -34,6 +29,29 @@ def generate_launch_description():
             ])
         }.items()
     )
+    # nav2_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([
+    #         PathJoinSubstitution([
+    #             get_package_share_directory('nav2_bringup'),
+    #             'launch',
+    #             'bringup_launch.py'  
+    #         ])
+    #     ]),
+    #     launch_arguments={
+    #         'use_sim_time': 'false',
+    #         'slam': False,
+    #         'map': PathJoinSubstitution([
+    #             get_package_share_directory('crobot_gazebo'),
+    #             'field',
+    #             'map.yaml'
+    #         ]),  
+    #         'params_file': PathJoinSubstitution([
+    #             get_package_share_directory('crobot_behavior'),
+    #             'config',
+    #             'nav2_params.yaml'
+    #         ])
+    #     }.items()
+    # )
 
     #launch bringup
     bringup_launch = IncludeLaunchDescription(
@@ -111,6 +129,33 @@ def generate_launch_description():
         }],
     )
 
+    map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[{
+            'yaml_filename': PathJoinSubstitution([
+                get_package_share_directory('crobot_gazebo'),
+                'field',
+                'map.yaml'
+            ]),  
+            'use_sim_time': False
+        }]
+    )
+
+    map_lifecycle = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_map',
+        output='screen',
+        parameters=[{
+            'use_sim_time': False,
+            'autostart': True,
+            'node_names': ['map_server']
+        }]
+    )
+
     initial_pose = ExecuteProcess(
         cmd=['ros2', 'topic', 'pub', '--times', '10', '/initialpose',
             'geometry_msgs/msg/PoseWithCovarianceStamped',
@@ -158,6 +203,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         bringup_launch,
+        map_server,
+        map_lifecycle,
         delayed_vslam,
         delayed_nvblox,
         delayed_rviz2,
