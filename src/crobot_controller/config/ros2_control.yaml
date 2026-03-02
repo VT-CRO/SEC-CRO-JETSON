@@ -32,7 +32,7 @@ crobot_drive_controller:
     wheel_separation_length: 0.230    # 230mm front-back
     wheel_radius: 0.035               # 35mm radius
 
-    point_turn_speed_threshold: 0.05  # m/s - below this linear speed, use point turn
+    point_turn_speed_threshold: 0.02  # m/s - below this linear speed, use point turn
     strafe_angle_threshold: 0.15      # rad - motion angle tolerance for strafe detection
     max_ankle_angle: 1.5708           # rad (90 degrees) - maximum steering angle
 
