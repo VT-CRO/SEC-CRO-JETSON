@@ -44,6 +44,7 @@ controller_server:
   ros__parameters:
     use_sim_time: false
     controller_plugins: ["FollowPath"]
+    #CHANGE THIS TO odometry/filtered if using EKF
     odom_topic: crobot_drive_controller/odom
 
 
@@ -77,6 +78,8 @@ controller_server:
 bt_navigator:
   ros__parameters:
     use_sim_time: false
+    #CHANGE THIS TO odometry/filtered if using EKF
+    #else, crobot_drive_controller/odom
     odom_topic: crobot_drive_controller/odom
 
 global_costmap:
@@ -101,8 +104,8 @@ global_costmap:
         #   marking: true
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        inflation_radius: 0.1 # radius of inflation around obstacles. Lower = less inflation but higher chance of accidental collision
-        cost_scaling_factor: 5.0  # higher = steeper dropoff from obstacles
+        inflation_radius: 0.2 # radius of inflation around obstacles. Lower = less inflation but higher chance of accidental collision
+        cost_scaling_factor: 2.0  # higher = steeper dropoff from obstacles
 
 local_costmap:
   local_costmap:
@@ -152,6 +155,7 @@ velocity_smoother:
     min_velocity: [-0.3, 0.0, -0.3]
     max_accel: [1.0, 0.0, 1.0]
     max_decel: [-1.0, 0.0, -1.0]
+    #CHANGE THIS TO odometry/filtered if using EKF
     odom_topic: crobot_drive_controller/odom
     odom_duration: 0.1
 

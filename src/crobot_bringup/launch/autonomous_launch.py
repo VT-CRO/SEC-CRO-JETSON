@@ -164,7 +164,7 @@ def generate_launch_description():
     parameters=[PathJoinSubstitution([
                 get_package_share_directory('crobot_behavior'),
                 'config',
-                'nav2_params.yaml'
+                'ekf.yaml'
             ])]
         )
 
@@ -236,7 +236,7 @@ def generate_launch_description():
         # map_server,
         # map_lifecycle,
         delayed_vslam,
-        delayed_ekf,
+        # delayed_ekf,
         # delayed_nvblox,
         delayed_rviz2,
         delayed_nav2,

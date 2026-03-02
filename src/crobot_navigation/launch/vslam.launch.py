@@ -60,6 +60,9 @@ def generate_launch_description():
         package='isaac_ros_visual_slam',
         plugin='nvidia::isaac_ros::visual_slam::VisualSlamNode',
         parameters=[{
+            'publish_map_to_odom_tf': True,
+            #change this to false if using EKF (ekef publishes this automatically)
+            'publish_odom_to_base_tf': True,
             'use_imu': True,
             'enable_loop_closure': False,
             'enable_image_denoising': True,
@@ -72,14 +75,14 @@ def generate_launch_description():
             'accel_noise_density': 0.001862,
             'accel_random_walk': 0.003,
             'calibration_frequency': 200.0,
-            'image_jitter_threshold_ms': 50.00,
+            'image_jitter_threshold_ms': 22.00,
             'base_frame': 'base_link',
             'imu_frame': 'camera0_gyro_optical_frame',
             'enable_slam_visualization': True,
             'enable_landmarks_view': True, # why was this false by default 
             'enable_observations_view': True,
             'feature_detector_threshold': 0.02,
-            'num_features_threshold': 15,
+            'num_features_threshold': 45,
             'harris_k': 0.08,
             'camera_optical_frames': [
                 'camera0_infra1_optical_frame',
