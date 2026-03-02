@@ -156,6 +156,18 @@ def generate_launch_description():
         }]
     )
 
+    ekf_localization = Node(
+    package='robot_localization',
+    executable='ekf_node',
+    name='ekf_filter_node',
+    output='screen',
+    parameters=[PathJoinSubstitution([
+                get_package_share_directory('crobot_behavior'),
+                'config',
+                'nav2_params.yaml'
+            ])]
+        )
+
     initial_pose = ExecuteProcess(
         cmd=['ros2', 'topic', 'pub', '--times', '10', '/initialpose',
             'geometry_msgs/msg/PoseWithCovarianceStamped',
@@ -174,6 +186,14 @@ def generate_launch_description():
         actions=[
             LogInfo(msg='Starting VSLAM...'),
             vslam_launch,
+        ]
+    )
+
+    delayed_ekf = TimerAction(
+        period=7.0,
+        actions=[
+            LogInfo(msg='Starting EKF...'),
+            ekf_localization,
         ]
     )
 
@@ -216,6 +236,7 @@ def generate_launch_description():
         # map_server,
         # map_lifecycle,
         delayed_vslam,
+        delayed_ekf,
         # delayed_nvblox,
         delayed_rviz2,
         delayed_nav2,
