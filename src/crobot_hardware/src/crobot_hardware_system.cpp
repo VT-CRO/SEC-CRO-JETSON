@@ -260,7 +260,7 @@ namespace crobot_hardware
         std::string j_str = j.dump() + "\n";
         serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 
-        char buffer[512];
+        char buffer[256];
         int bytesRead = serial_comm_.readBytes(buffer, sizeof(buffer) - 1);
 
         if (bytesRead > 0) {
@@ -282,6 +282,7 @@ namespace crobot_hardware
 
                 if (response.contains("encoders")) {
                     static bool first_read = true;
+                    std::cout << "the encoders should work" << std::endl; 
                     static int32_t last_ticks_fl = 0;
                     static int32_t last_ticks_fr = 0;
                     static int32_t last_ticks_br = 0;
