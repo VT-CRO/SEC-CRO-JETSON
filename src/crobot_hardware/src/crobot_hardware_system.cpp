@@ -251,45 +251,88 @@ namespace crobot_hardware
     hardware_interface::return_type CrobotHardware::read(
         const rclcpp::Time & time, const rclcpp::Duration & period)
     {
-        // if (!serial_comm_.isConnected()) {
-        //     RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
-        //                  "Cannot read from hardware: not connected");
-        //     return hardware_interface::return_type::ERROR;
-        // }
+        if (!serial_comm_.isConnected()) {
+            RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
+                         "Cannot read from hardware: not connected");
+            return hardware_interface::return_type::ERROR;
+        }
 
-        // json j;
-        // j["cmd"] = "read";
-        // std::string j_str = j.dump() + "\n";
-        // serial_comm_.writeBytes(j_str.c_str(), j_str.size());
+        json j;
+        j["cmd"] = "read";
+        std::string j_str = j.dump() + "\n";
+        serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 
-        // char buffer[256];
-        // int bytesRead = serial_comm_.readBytes(buffer, sizeof(buffer) - 1);
+        char buffer[256];
+        int bytesRead = serial_comm_.readBytes(buffer, sizeof(buffer) - 1);
 
-        // if (bytesRead > 0)
-        // {
-        //     buffer[bytesRead] = '\0';
-        //     try {
-        //         json response = json::parse(buffer);
+        if (bytesRead > 0)
+        {
+            buffer[bytesRead] = '\0';
+            try {
+                json response = json::parse(buffer);
 
-        //         wheels_[0].vel = response["wheels"]["front_left"];
-        //         wheels_[1].vel = response["wheels"]["front_right"];
-        //         wheels_[2].vel = response["wheels"]["back_left"];
-        //         wheels_[3].vel = response["wheels"]["back_right"];
+                // wheels_[0].vel = response["wheels"]["front_left"];
+                // wheels_[1].vel = response["wheels"]["front_right"];
+                // wheels_[2].vel = response["wheels"]["back_left"];
+                // wheels_[3].vel = response["wheels"]["back_right"];
 
-        //         ankles_[0].pos = response["ankles"]["front_left"];
-        //         ankles_[1].pos = response["ankles"]["front_right"];
-        //         ankles_[2].pos = response["ankles"]["back_left"];
-        //         ankles_[3].pos = response["ankles"]["back_right"];
-        //     } catch (json::parse_error &e) {
-        //         RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
-        //                      "Failed to parse JSON response: %s", e.what());
-        //         return hardware_interface::return_type::ERROR;
-        //     }
-        // } else {
-        //     RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
-        //                  "No data read from hardware");
-        //     return hardware_interface::return_type::ERROR;
-        // }
+                // ankles_[0].pos = response["ankles"]["front_left"];
+                // ankles_[1].pos = response["ankles"]["front_right"];
+                // ankles_[2].pos = response["ankles"]["back_left"];
+                // ankles_[3].pos = response["ankles"]["back_right"];
+
+                // stuff olivia added/changed
+                static bool first_read = true;
+                static int32_t last_ticks_fl = 0;
+                static int32_t last_ticks_fr = 0;
+                static int32_t last_ticks_br = 0;
+
+                // i'm pretty sure this should be 4096 because spec 
+                // says 2048 cycles/rev, and channel A changes twice
+                // per cycle, so 4096 ticks/rev
+                const double COUNTS_PER_REV = 4096.0;
+                const double TWO_PI = 2.0 * M_PI;
+                const double dt = period.seconds();
+
+                int32_t ticks_fl = response["encoders"]["front_left"];
+                int32_t ticks_fr = response["encoders"]["front_right"];
+                int32_t ticks_br = response["encoders"]["back_right"];
+
+                wheels_[0].pos = (ticks_fl / COUNTS_PER_REV) * TWO_PI;
+                wheels_[1].pos = (ticks_fr / COUNTS_PER_REV) * TWO_PI;
+                wheels_[3].pos = (ticks_br / COUNTS_PER_REV) * TWO_PI;
+
+                wheels_[2].pos = wheels_[0].pos; // this is the bl wheel with no encoder
+
+                if (!first_read && dt > 0.0) {
+                    wheels_[0].vel = ((ticks_fl - last_ticks_fl) / COUNTS_PER_REV) * TWO_PI / dt; 
+                    wheels_[1].vel = ((ticks_fr - last_ticks_fr) / COUNTS_PER_REV) * TWO_PI / dt; 
+                    wheels_[3].vel = ((ticks_br - last_ticks_br) / COUNTS_PER_REV) * TWO_PI / dt; 
+
+                    wheels_[2].vel = wheels_[0].vel; // bl wheel with no encoder!!
+                } else {
+                    wheels_[0].vel = 0.0;
+                    wheels_[1].vel = 0.0;
+                    wheels_[2].vel = 0.0;
+                    wheels_[3].vel = 0.0;
+                }
+
+                last_ticks_fl = ticks_fl;
+                last_ticks_fr = ticks_fr;
+                last_ticks_br = ticks_br;
+                first_read = false;
+
+                
+            } catch (json::parse_error &e) {
+                RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
+                             "Failed to parse JSON response: %s", e.what());
+                return hardware_interface::return_type::ERROR;
+            }
+        } else {
+            RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
+                         "No data read from hardware");
+            return hardware_interface::return_type::ERROR;
+        }
 
         return hardware_interface::return_type::OK;
     }

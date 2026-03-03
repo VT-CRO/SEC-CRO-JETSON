@@ -412,13 +412,39 @@ void CrobotDriveController::updateOdometry(const rclcpp::Time & time, const rclc
     // Simple odometry based on commanded velocities
     
     double dt = period.seconds();
+
+    // if (dt <= 0.0) {
+    //     return;
+    // }
     
     // Get current commanded velocities from the last command
     auto cmd_vel = received_cmd_vel_.readFromRT();
     if (cmd_vel && *cmd_vel)
     {
-        double vx = (*cmd_vel)->linear.x;
-        double vy = (*cmd_vel)->linear.y;
+        // double vx = (*cmd_vel)->linear.x;
+        // double vy = (*cmd_vel)->linear.y;
+
+        double wheel_omega[4];
+        for (int i = 0; i < 4; ++i) {
+            wheel_omega[i] = state_interfaces_[4 + i].get_value();
+        }
+
+        double wheel_v[4];
+        for (int i = 0; i < 4; ++i) {
+            wheel_v[i] = params_.wheel_radius * wheel_omega[i];
+        }
+
+        double vx = 0.0;
+        double vy = 0.0;
+
+        for (int i = 0; i < 4; ++i) {
+            vx += wheel_v[i] * std::cos(assumed_ankle_angles_[i]);
+            vy += wheel_v[i] * std::sin(assumed_ankle_angles_[i]);
+        }
+
+        vx /= 4.0;
+        vy /= 4.0;
+
         double omega = (*cmd_vel)->angular.z;
         
         // Update pose using simple integration
