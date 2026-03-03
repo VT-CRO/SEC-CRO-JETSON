@@ -431,7 +431,8 @@ void CrobotDriveController::updateOdometry(const rclcpp::Time & time, const rclc
 
         double wheel_v[4];
         for (int i = 0; i < 4; ++i) {
-            wheel_v[i] = params_.wheel_radius * wheel_omega[i];
+            // tryna change this to (-) because velocities are backwards
+            wheel_v[i] = -(params_.wheel_radius * wheel_omega[i]);
         }
 
         double vx = 0.0;

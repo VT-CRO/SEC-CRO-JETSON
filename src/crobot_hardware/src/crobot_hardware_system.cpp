@@ -260,11 +260,11 @@ namespace crobot_hardware
         std::string j_str = j.dump() + "\n";
         serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 
-        char buffer[256];
+        char buffer[512];
         int bytesRead = serial_comm_.readBytes(buffer, sizeof(buffer) - 1);
 
-        if (bytesRead > 0)
-        {
+        if (bytesRead > 0) {
+            // buffer[bytesRead] = '\0';   
             try {
                 // wheels_[0].vel = response["wheels"]["front_left"];
                 // wheels_[1].vel = response["wheels"]["front_right"];
