@@ -62,7 +62,7 @@ def generate_launch_description():
         parameters=[{
             'publish_map_to_odom_tf': True,
             #change this to false if using EKF (ekef publishes this automatically)
-            'publish_odom_to_base_tf': True,
+            'publish_odom_to_base_tf': False,
             'use_imu': True,
             'enable_loop_closure': False,
             'enable_image_denoising': True,
@@ -108,7 +108,8 @@ def generate_launch_description():
         namespace='',
         package='rclcpp_components',
         executable='component_container',
-        composable_node_descriptions=[visual_slam_node, splitter_node],
+        # composable_node_descriptions=[visual_slam_node, splitter_node],
+        composable_node_descriptions=[visual_slam_node],
         output='screen',
     )
     return launch.LaunchDescription([visual_slam_launch_container, realsense_camera_node])

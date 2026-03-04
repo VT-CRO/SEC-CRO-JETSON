@@ -173,10 +173,34 @@ namespace crobot_hardware
         return bytesRead;
     }
 
+    std::string SerialComm::readLine()
+    {
+        char tmp[64];
+        
+        for (int attempts = 0; attempts < 20; ++attempts)
+        {
+            auto newline_pos = read_buffer_.find('\n');
+            if (newline_pos != std::string::npos)
+            {
+                std::string line = read_buffer_.substr(0, newline_pos);
+                read_buffer_ = read_buffer_.substr(newline_pos + 1);
+                return line;
+            }
+
+            int numBytes = readBytes(tmp, sizeof(tmp));
+            if (numBytes > 0) {
+                read_buffer_.append(tmp, numBytes);
+            }
+        }
+        // found no full line, return nothing
+        return "";
+    }
+
     void SerialComm::clearBuffers()
     {
         if (isConnected()) {
             tcflush(fd_, TCIOFLUSH);
         }
+        read_buffer_.clear();
     }
 }

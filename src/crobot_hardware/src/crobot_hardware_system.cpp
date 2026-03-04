@@ -260,34 +260,21 @@ namespace crobot_hardware
         std::string j_str = j.dump() + "\n";
         serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 
-        char buffer[256];
-        int bytesRead = serial_comm_.readBytes(buffer, sizeof(buffer) - 1);
+        std::string line = serial_comm_.readLine();
 
-        if (bytesRead > 0) {
-            // buffer[bytesRead] = '\0';   
-            try {
-                // wheels_[0].vel = response["wheels"]["front_left"];
-                // wheels_[1].vel = response["wheels"]["front_right"];
-                // wheels_[2].vel = response["wheels"]["back_left"];
-                // wheels_[3].vel = response["wheels"]["back_right"];
-
-                // ankles_[0].pos = response["ankles"]["front_left"];
-                // ankles_[1].pos = response["ankles"]["front_right"];
-                // ankles_[2].pos = response["ankles"]["back_left"];
-                // ankles_[3].pos = response["ankles"]["back_right"];
-
-                // stuff olivia added/changed
-                std::string raw_data(buffer, bytesRead);                
-                json response = json::parse(raw_data);
+        if (!line.empty()) {
+            try {            
+                json response = json::parse(line);
 
                 if (response.contains("encoders")) {
                     static bool first_read = true;
-                    std::cout << "the encoders should work" << std::endl; 
+                    // std::string response_str = response.dump() + "\n";
+                    // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "We received encoders data: %s", response_str.c_str()); 
                     static int32_t last_ticks_fl = 0;
                     static int32_t last_ticks_fr = 0;
                     static int32_t last_ticks_br = 0;
 
-                    const double COUNTS_PER_REV = 4096.0;
+                    const double COUNTS_PER_REV = 2048.0;
                     const double TWO_PI = 2.0 * M_PI;
                     const double dt = period.seconds();
 
@@ -312,7 +299,7 @@ namespace crobot_hardware
                     first_read = false;
                 }
             } catch (json::parse_error &e) {
-                RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Bad serial packet: %s", e.what());
+                RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Bad serial packet: %s, raw string: %s", e.what(), line.c_str());
                 return hardware_interface::return_type::OK; 
             }
         }

@@ -18,6 +18,7 @@ namespace crobot_hardware
 
             int writeBytes(const char *bytes, int numBytes);
             int readBytes(char *buff, int numBytes);
+            std::string readLine();
 
             void clearBuffers();
 
@@ -25,6 +26,7 @@ namespace crobot_hardware
             int fd_;
             int timeout_ms_;
             static constexpr int INVALID_FD = -1;
+            std::string read_buffer_;
     };
 }
 

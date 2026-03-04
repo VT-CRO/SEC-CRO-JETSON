@@ -96,6 +96,8 @@ controller_interface::CallbackReturn CrobotDriveController::on_configure(
         get_node()->create_publisher<nav_msgs::msg::Odometry>(
             params_.odom_topic, rclcpp::SystemDefaultsQoS()));
 
+    tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(get_node());
+
     RCLCPP_INFO(get_node()->get_logger(), "Configured CrobotDriveController");
     return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -488,6 +490,25 @@ void CrobotDriveController::updateOdometry(const rclcpp::Time & time, const rclc
         odom_msg.twist.twist.angular.z = odom_state_.angular_z;
         
         odom_pub_->unlockAndPublish();
+    }
+
+    if (params_.enable_odom_tf && tf_broadcaster_)
+    {
+        geometry_msgs::msg::TransformStamped tf_msg;
+        tf_msg.header.stamp = time;
+        tf_msg.header.frame_id = params_.odom_frame_id;
+        tf_msg.child_frame_id = params_.base_frame_id;
+
+        tf_msg.transform.translation.x = odom_state_.x;
+        tf_msg.transform.translation.y = odom_state_.y;
+        tf_msg.transform.translation.z = 0.0;
+
+        tf_msg.transform.rotation.x = 0.0;
+        tf_msg.transform.rotation.y = 0.0;
+        tf_msg.transform.rotation.z = std::sin(odom_state_.theta / 2.0);
+        tf_msg.transform.rotation.w = std::cos(odom_state_.theta / 2.0);
+
+        tf_broadcaster_->sendTransform(tf_msg);
     }
 }
 
