@@ -365,6 +365,8 @@ void CrobotDriveController::updateOdometry(
     vx /= 4.0;
     vy /= 4.0;
 
+    RCLCPP_INFO(get_node()->get_logger(), "VX: %f VY: %f", vx, vy);
+
     // Angular velocity from command (no gyro integration here)
     double omega = 0.0;
     auto cmd_vel = received_cmd_vel_.readFromRT();
