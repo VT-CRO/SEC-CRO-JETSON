@@ -35,8 +35,8 @@ crobot_drive_controller:
     max_ankle_angle: 1.5708           # rad (90 degrees) - maximum steering angle
     assumed_servo_speed_: 2.0         # rad/s - estimated maximum servo slew rate
 
-    max_linear_velocity: 1.5          # m/s
-    max_angular_velocity: 1.5         # rad/s
+    max_linear_velocity: 0.5          # m/s
+    max_angular_velocity: 0.5         # rad/s
 
     enable_odom_tf: true
     odom_frame_id: odom
