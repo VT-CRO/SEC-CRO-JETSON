@@ -82,6 +82,11 @@ namespace crobot_hardware
             Motor winch_;
 
             SerialComm serial_comm_;
+
+            bool first_read_ = true;
+            int32_t last_ticks_fl_ = 0;
+            int32_t last_ticks_fr_ = 0;
+            int32_t last_ticks_br_ = 0;
     };
 }
 
