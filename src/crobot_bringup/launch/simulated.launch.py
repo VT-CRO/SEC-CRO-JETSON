@@ -118,7 +118,7 @@ def generate_launch_description():
         spawn_joint_state_broadcaster,
         delay_controllers_after_joint_state,
         gazebo,
-        nav2_launch,
+        # nav2_launch,
         rviz2_launch,
         # foxglove_bridge
     ])
