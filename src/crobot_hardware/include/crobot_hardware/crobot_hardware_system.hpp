@@ -68,6 +68,9 @@ namespace crobot_hardware
                 std::string sweeper_name;
                 std::string winch_name;
 
+                float max_wheel_speed_meters = 0.36; // m/s corresponding to full command (255)
+                float wheel_radius = 0.035; // meters
+
                 float loop_rate = 0.0;
                 std::string device = "";
                 int baud_rate = 115200;

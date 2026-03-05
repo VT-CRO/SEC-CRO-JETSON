@@ -29,6 +29,8 @@
         <param name="dev">/dev/ttyTHS1</param> <!-- ttyTHS1 for uart1; ttyACM0 for usb-->
         <param name="baud_rate">115200</param>
         <param name="timeout_ms">5</param>
+        <param name="wheel_radius">0.035</param> <!-- meters -->
+        <param name="max_wheel_speed_meters">0.36</param> <!-- m/s corresponding to full command (255) -->
       </xacro:unless>
     </hardware>
     <joint name="front_left_ankle_joint">

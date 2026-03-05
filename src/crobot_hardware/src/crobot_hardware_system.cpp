@@ -339,7 +339,7 @@ namespace crobot_hardware
         j["ankles"]["back_left"] = (int)(60.0 + ankles_[2].cmd * RAD_TO_DEG / 0.75);
         j["ankles"]["back_right"] = (int)(120.0 + ankles_[3].cmd * RAD_TO_DEG / 0.75);
 
-        const double MAX_WHEEL_SPEED = 0.36 / 0.035;  // m/s corresponding to full command (255)
+        const double MAX_WHEEL_SPEED = cfg_.max_wheel_speed_meters / cfg_.wheel_radius;  // r/s corresponding to full command (255)
 
         j["wheels"]["front_left"] = std::clamp((int)(wheels_[0].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
         j["wheels"]["front_right"] = std::clamp((int)(wheels_[1].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
