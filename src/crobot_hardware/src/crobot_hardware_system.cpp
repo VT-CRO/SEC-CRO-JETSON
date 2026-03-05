@@ -286,8 +286,8 @@ namespace crobot_hardware
                 json response = json::parse(line);
 
                 if (response.contains("encoders")) {
-                    // std::string response_str = response.dump() + "\n";
-                    // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "We received encoders data: %s", response_str.c_str()); 
+                    std::string response_str = response.dump() + "\n";
+                    RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "We received encoders data: %s", response_str.c_str()); 
                     const double COUNTS_PER_REV = 2048.0;
                     const double TWO_PI = 2.0 * M_PI;
                     const double dt = period.seconds();
