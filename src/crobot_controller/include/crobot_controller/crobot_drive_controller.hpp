@@ -50,7 +50,7 @@ private:
         double wheel_radius            = 0.035;   // wheel radius
 
         // Estimated maximum servo slew rate (rad/s); tune to match physical servo speed
-        double assumed_servo_speed_ = 2.0;
+        double assumed_servo_speed_ = 1.57;
 
         // Swerve optimization
         double max_ankle_angle = M_PI / 2.0;      // hard limit from servo range

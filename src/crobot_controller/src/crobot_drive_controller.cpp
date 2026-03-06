@@ -116,11 +116,15 @@ CrobotDriveController::state_interface_configuration() const
     controller_interface::InterfaceConfiguration config;
     config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-    for (const auto & joint : params_.ankle_joints)
-        config.names.push_back(joint + "/" + hardware_interface::HW_IF_POSITION);
+    // for (const auto & joint : params_.ankle_joints)
+    //     config.names.push_back(joint + "/" + hardware_interface::HW_IF_POSITION);
 
     for (const auto & joint : params_.wheel_joints)
-        config.names.push_back(joint + "/" + hardware_interface::HW_IF_VELOCITY);
+        if (joint.find("front") != std::string::npos)  // Only front wheels have state interfaces
+        {
+            config.names.push_back(joint + "/" + hardware_interface::HW_IF_VELOCITY);
+            // config.names.push_back(joint + "/" + hardware_interface::HW_IF_POSITION);
+        }
 
     return config;
 }
@@ -352,18 +356,18 @@ void CrobotDriveController::updateOdometry(
     double vx = 0.0;
     double vy = 0.0;
 
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 2; ++i)
     {
         // Wheel velocity from encoder (state interface 4+i), sign-corrected
-        double wheel_omega = state_interfaces_[4 + i].get_value();
+        double wheel_omega = state_interfaces_[i].get_value();
         double wheel_v     = -(params_.wheel_radius * wheel_omega);   // m/s
 
         vx += wheel_v * std::cos(assumed_ankle_angles_[i]);
         vy += wheel_v * std::sin(assumed_ankle_angles_[i]);
     }
 
-    vx /= 4.0;
-    vy /= 4.0;
+    vx /= 2.0;
+    vy /= 2.0;
 
     // Angular velocity from command (no gyro integration here)
     double omega = 0.0;
