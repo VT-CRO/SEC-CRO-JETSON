@@ -275,10 +275,10 @@ namespace crobot_hardware
             return hardware_interface::return_type::ERROR;
         }
 
-        // json j;
-        // j["cmd"] = "read";
-        // std::string j_str = j.dump() + "\n";
-        // serial_comm_.writeBytes(j_str.c_str(), j_str.size());
+        json j;
+        j["cmd"] = "read";
+        std::string j_str = j.dump() + "\n";
+        serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 
         std::string line = serial_comm_.readLine();
 
