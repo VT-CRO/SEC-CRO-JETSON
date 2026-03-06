@@ -237,6 +237,7 @@ namespace crobot_hardware
     hardware_interface::CallbackReturn CrobotHardware::on_activate(
         const rclcpp_lifecycle::State & previous_state)
     {
+        serial_comm_.clearBuffers();
         first_read_ = true; // Reset first read flag on activation
         last_ticks_fl_ = 0;
         last_ticks_fr_ = 0;
