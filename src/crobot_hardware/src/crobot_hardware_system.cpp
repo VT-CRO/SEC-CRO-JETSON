@@ -291,7 +291,7 @@ namespace crobot_hardware
 
                 if (response.contains("encoders")) {
                     std::string response_str = response.dump() + "\n";
-                    // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "We received encoders data: %s", response_str.c_str()); 
+                    RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "We received encoders data: %s", response_str.c_str()); 
                     const double COUNTS_PER_REV = 4096.0;
                     const double TWO_PI = 2.0 * M_PI;
                     const double dt = period.seconds();
