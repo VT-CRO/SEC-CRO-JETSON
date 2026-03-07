@@ -292,8 +292,7 @@ namespace crobot_hardware
                 if (response.contains("encoders")) {
                     std::string response_str = response.dump() + "\n";
                     // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "We received encoders data: %s", response_str.c_str()); 
-                    const double COUNTS_PER_REV_FL = 2048.0;
-                    const double COUNTS_PER_REV_FR = 4096.0;
+                    const double COUNTS_PER_REV = 4096.0;
                     const double TWO_PI = 2.0 * M_PI;
                     const double dt = period.seconds();
 
@@ -301,14 +300,14 @@ namespace crobot_hardware
                     int32_t ticks_fr = response["encoders"]["front_right"];
                     // int32_t ticks_br = response["encoders"]["back_right"];
 
-                    wheels_[0].pos = (ticks_fl / COUNTS_PER_REV_FL) * TWO_PI;
-                    wheels_[1].pos = (ticks_fr / COUNTS_PER_REV_FR) * TWO_PI;
+                    wheels_[0].pos = (ticks_fl / COUNTS_PER_REV) * TWO_PI;
+                    wheels_[1].pos = (ticks_fr / COUNTS_PER_REV) * TWO_PI;
                     // wheels_[2].pos = wheels_[0].pos; 
                     // wheels_[3].pos = wheels_[1].pos; 
 
                     if (!first_read_ && dt > 0.0) {
-                        wheels_[0].vel = ((ticks_fl - last_ticks_fl_) / COUNTS_PER_REV_FL) * TWO_PI / dt; 
-                        wheels_[1].vel = ((ticks_fr - last_ticks_fr_) / COUNTS_PER_REV_FR) * TWO_PI / dt; 
+                        wheels_[0].vel = ((ticks_fl - last_ticks_fl_) / COUNTS_PER_REV) * TWO_PI / dt; 
+                        wheels_[1].vel = ((ticks_fr - last_ticks_fr_) / COUNTS_PER_REV) * TWO_PI / dt; 
                         // wheels_[3].vel = ((ticks_br - last_ticks_br_) / COUNTS_PER_REV) * TWO_PI / dt; 
                         wheels_[2].vel = wheels_[0].vel;
                     }
