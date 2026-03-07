@@ -231,16 +231,24 @@ def generate_launch_description():
         ]
     )
 
+    map_odom_publisher = Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            output='screen',
+            arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom']
+        )
+
     return LaunchDescription([
         bringup_launch,
         # map_server,
         # map_lifecycle,
-        delayed_vslam,
+        # delayed_vslam,
         # delayed_ekf,
         # delayed_nvblox,
         delayed_rviz2,
         delayed_nav2,
         delayed_foxglove,
         # delay_initial_pose,
-        # pointcloud_to_laserscan
+        # pointcloud_to_laserscan,
+        map_odom_publisher,
     ])
