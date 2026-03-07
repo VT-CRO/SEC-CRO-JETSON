@@ -28,8 +28,8 @@ crobot_drive_controller:
       - back_left_ankle_joint
       - back_right_ankle_joint
 
-    wheel_separation_width: 0.150     # 150mm left-right
-    wheel_separation_length: 0.230    # 230mm front-back
+    wheel_separation_width: 0.175     # 175mm left-right
+    wheel_separation_length: 0.237    # 237mm front-back
     wheel_radius: 0.035               # 35mm radius
 
     max_ankle_angle: 1.5708           # rad (90 degrees) - maximum steering angle
