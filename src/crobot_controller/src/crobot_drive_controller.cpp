@@ -207,50 +207,50 @@ controller_interface::return_type CrobotDriveController::update(
     //   2. Hold wheel speed at zero while the ankle is still rotating into place.
     //   3. Ramp speed up smoothly as the ankle finishes aligning.
     // -------------------------------------------------------------------------
-    // for (size_t i = 0; i < 4; ++i)
-    // {
-    //     double current_assumed = assumed_ankle_angles_[i];
-    //     double target_angle    = commands.ankle_angles[i];
-    //     double target_vel      = commands.wheel_vels[i];
+    for (size_t i = 0; i < 4; ++i)
+    {
+        double current_assumed = assumed_ankle_angles_[i];
+        double target_angle    = commands.ankle_angles[i];
+        double target_vel      = commands.wheel_vels[i];
 
-    //     // Shortest-path angular error
-    //     double error = normalizeAngle(target_angle - current_assumed);
+        // Shortest-path angular error
+        double error = normalizeAngle(target_angle - current_assumed);
 
-    //     // Swerve optimization: if turning > 90°, flip 180° and negate velocity
-    //     if (error > M_PI / 2.0)
-    //     {
-    //         target_angle = normalizeAngle(target_angle - M_PI);
-    //         target_vel   = -target_vel;
-    //         error       -= M_PI;
-    //     }
-    //     else if (error < -M_PI / 2.0)
-    //     {
-    //         target_angle = normalizeAngle(target_angle + M_PI);
-    //         target_vel   = -target_vel;
-    //         error       += M_PI;
-    //     }
+        // Swerve optimization: if turning > 90°, flip 180° and negate velocity
+        if (error > M_PI / 2.0)
+        {
+            target_angle = normalizeAngle(target_angle - M_PI);
+            target_vel   = -target_vel;
+            error       -= M_PI;
+        }
+        else if (error < -M_PI / 2.0)
+        {
+            target_angle = normalizeAngle(target_angle + M_PI);
+            target_vel   = -target_vel;
+            error       += M_PI;
+        }
 
-    //     // Advance the assumed ankle position at the physical servo slew rate
-    //     double max_step = params_.assumed_servo_speed_ * dt;
-    //     if (std::abs(error) <= max_step)
-    //         assumed_ankle_angles_[i] = normalizeAngle(target_angle);
-    //     else
-    //         assumed_ankle_angles_[i] = normalizeAngle(
-    //             current_assumed + std::copysign(max_step, error));
+        // Advance the assumed ankle position at the physical servo slew rate
+        double max_step = params_.assumed_servo_speed_ * dt;
+        if (std::abs(error) <= max_step)
+            assumed_ankle_angles_[i] = normalizeAngle(target_angle);
+        else
+            assumed_ankle_angles_[i] = normalizeAngle(
+                current_assumed + std::copysign(max_step, error));
 
-    //     // Remaining error after the model step
-    //     double remaining_error = normalizeAngle(target_angle - assumed_ankle_angles_[i]);
+        // Remaining error after the model step
+        double remaining_error = normalizeAngle(target_angle - assumed_ankle_angles_[i]);
 
-    //     // Hold wheels while ankle is more than ~25° out of position,
-    //     // then smoothly ramp up as it finishes aligning
-    //     if (std::abs(remaining_error) > 0.45)
-    //         target_vel = 0.0;
-    //     else
-    //         target_vel *= std::cos(remaining_error);
+        // Hold wheels while ankle is more than ~25° out of position,
+        // then smoothly ramp up as it finishes aligning
+        if (std::abs(remaining_error) > 0.45)
+            target_vel = 0.0;
+        else
+            target_vel *= std::cos(remaining_error);
 
-    //     commands.ankle_angles[i] = target_angle;
-    //     commands.wheel_vels[i]   = target_vel;
-    // }
+        commands.ankle_angles[i] = target_angle;
+        commands.wheel_vels[i]   = target_vel;
+    }
 
     // Write to hardware interfaces
     for (size_t i = 0; i < 4; ++i)
