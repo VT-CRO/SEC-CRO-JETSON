@@ -121,6 +121,7 @@ CrobotDriveController::state_interface_configuration() const
         std::string joint_name = interface.get_name();
         std::string interface_name = interface.get_interface_name();
         // Log or use the names as needed
+        RCLCPP_INFO(get_node()->get_logger(), "State Interface: %s, %s", joint_name.c_str(), interface_name.c_str());
     }
 
     // for (const auto & joint : params_.ankle_joints)
