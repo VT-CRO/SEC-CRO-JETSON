@@ -328,8 +328,7 @@ namespace crobot_hardware
                     first_read_ = false;
                 }
 
-                double raw_yaw_rate_deg = response["yaw"];
-                double raw_yaw_rate_rad = raw_yaw_rate_deg * M_PI / 180.0;
+                double raw_yaw_rate_rad = response["yaw"];
 
                 // Collect stationary bias samples at startup
                 if (!bias_calibrated_) {
