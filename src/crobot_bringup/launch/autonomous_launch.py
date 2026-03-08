@@ -242,7 +242,7 @@ def generate_launch_description():
         bringup_launch,
         # map_server,
         # map_lifecycle,
-        delayed_vslam,
+        # delayed_vslam,
         # delayed_ekf,
         # delayed_nvblox,
         delayed_rviz2,
@@ -250,5 +250,5 @@ def generate_launch_description():
         delayed_foxglove,
         # delay_initial_pose,
         # pointcloud_to_laserscan,
-        # map_odom_publisher,
+        map_odom_publisher,
     ])
