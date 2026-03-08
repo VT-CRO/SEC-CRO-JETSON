@@ -386,15 +386,15 @@ void CrobotDriveController::updateOdometry(
     // Angular velocity from command
     double omega = 0.0;
 
-    // for (int i = 0; i < 2; ++i) {
-    //     // Wheel velocity from encoder (state interface 4+i), sign-corrected
-    //     double wheel_omega = state_interfaces_[i].get_value();
+    for (int i = 0; i < 2; ++i) {
+        // Wheel velocity from encoder (state interface 4+i), sign-corrected
+        double wheel_omega = state_interfaces_[i].get_value();
 
-    //     // Contribution to angular velocity from this wheel's tangential speed
-    //     omega += -wheel_omega *
-    //              std::sin(assumed_ankle_angles_[i]) *  // sin(steering angle)
-    //              (params_.wheel_separation_length / 2.0);  // distance from center
-    // }
+        // Contribution to angular velocity from this wheel's tangential speed
+        omega += -wheel_omega *
+                 std::sin(assumed_ankle_angles_[i]) *  // sin(steering angle)
+                 (params_.wheel_separation_length / 2.0);  // distance from center
+    }
 
     // omega /= 2.0;
 
@@ -425,13 +425,16 @@ void CrobotDriveController::updateOdometry(
         msg.pose.pose.orientation.y = 0.0;
         msg.pose.pose.orientation.z = std::sin(odom_state_.theta / 2.0);
         msg.pose.pose.orientation.w = std::cos(odom_state_.theta / 2.0);
+        msg.pose.covariance[0] = 0.01;
+        msg.pose.covariance[7] = 0.01;
+        msg.pose.covariance[35] = 0.5; // some uncertainty on orientation
 
         msg.twist.twist.linear.x  = odom_state_.linear_x;
         msg.twist.twist.linear.y  = odom_state_.linear_y;
         msg.twist.twist.angular.z = odom_state_.angular_z;
-        msg.twist.covariance[0] = 0.01; // variance on x
-        msg.twist.covariance[7] = 0.01; // variance on y
-        msg.twist.covariance[35] = 1e6; // very high variance on angular velocity since it's not directly measured
+        msg.twist.covariance[0] = 0.001; // variance on x
+        msg.twist.covariance[7] = 0.001; // variance on y
+        msg.twist.covariance[35] = 1e4; // very high variance on angular velocity since it's not directly measured
 
         odom_pub_->unlockAndPublish();
     }
