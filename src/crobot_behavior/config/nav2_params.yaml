@@ -151,8 +151,8 @@ velocity_smoother:
     use_sim_time: false
     smoothing_frequency: 20.0
     scale_velocities: false
-    max_velocity: [0.3, 0.0, 0.3]      # [x, y, theta]
-    min_velocity: [-0.3, 0.0, -0.3]
+    max_velocity: [0.10, 0.0, 0.3]      # [x, y, theta]
+    min_velocity: [-0.15, 0.0, -0.3]
     max_accel: [1.0, 0.0, 1.0]
     max_decel: [-1.0, 0.0, -1.0]
     #CHANGE THIS TO odometry/filtered if using EKF
