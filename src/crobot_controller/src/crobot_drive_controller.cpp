@@ -26,6 +26,8 @@ controller_interface::CallbackReturn CrobotDriveController::on_init()
         auto_declare<std::vector<std::string>>("wheel_joints", std::vector<std::string>());
         auto_declare<std::vector<std::string>>("ankle_joints", std::vector<std::string>());
 
+        auto_declare<std::string>("imu_joint", "base_to_imu_joint");
+
         auto_declare<double>("wheel_separation_width",  params_.wheel_separation_width);
         auto_declare<double>("wheel_separation_length", params_.wheel_separation_length);
         auto_declare<double>("wheel_radius",            params_.wheel_radius);
@@ -116,13 +118,13 @@ CrobotDriveController::state_interface_configuration() const
     controller_interface::InterfaceConfiguration config;
     config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-    for (const auto& interface : state_interfaces_) {
-        // Access details like name and interface name
-        std::string joint_name = interface.get_name();
-        std::string interface_name = interface.get_interface_name();
-        // Log or use the names as needed
-        RCLCPP_INFO(get_node()->get_logger(), "State Interface: %s, %s", joint_name.c_str(), interface_name.c_str());
-    }
+    // for (const auto& interface : state_interfaces_) {
+    //     // Access details like name and interface name
+    //     std::string joint_name = interface.get_name();
+    //     std::string interface_name = interface.get_interface_name();
+    //     // Log or use the names as needed
+    //     RCLCPP_INFO(get_node()->get_logger(), "State Interface: %s, %s", joint_name.c_str(), interface_name.c_str());
+    // }
 
     // for (const auto & joint : params_.ankle_joints)
     //     config.names.push_back(joint + "/" + hardware_interface::HW_IF_POSITION);
