@@ -116,6 +116,13 @@ CrobotDriveController::state_interface_configuration() const
     controller_interface::InterfaceConfiguration config;
     config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
+    for (const auto& interface : state_interfaces_) {
+        // Access details like name and interface name
+        std::string joint_name = interface.get_name();
+        std::string interface_name = interface.get_interface_name();
+        // Log or use the names as needed
+    }
+
     // for (const auto & joint : params_.ankle_joints)
     //     config.names.push_back(joint + "/" + hardware_interface::HW_IF_POSITION);
 
