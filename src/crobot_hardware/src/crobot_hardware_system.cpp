@@ -9,6 +9,8 @@
 
 using json = nlohmann::json;
 
+using namespace std;
+
 namespace crobot_hardware
 {
     hardware_interface::CallbackReturn CrobotHardware::on_init(
@@ -355,8 +357,8 @@ namespace crobot_hardware
                 imu_msg.angular_velocity.z = corrected_yaw_rate;
 
                 // Tell EKF the variance on omega_z (~0.01 rad²/s² is reasonable for a decent IMU)
-                imu_msg.angular_velocity_covariance[8] = 0.01;
-
+                imu_msg.angular_velocity_covariance[8] = 0.0000001;
+                
                 // Mark orientation and linear accel as unknown (diagonal = -1 means "don't use")
                 imu_msg.orientation_covariance[0] = -1.0;
                 imu_msg.linear_acceleration_covariance[0] = -1.0;

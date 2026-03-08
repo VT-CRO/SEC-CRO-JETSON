@@ -242,7 +242,7 @@ def generate_launch_description():
         bringup_launch,
         # map_server,
         # map_lifecycle,
-        delayed_vslam,
+        # delayed_vslam,
         delayed_ekf,
         # delayed_nvblox,
         delayed_rviz2,
