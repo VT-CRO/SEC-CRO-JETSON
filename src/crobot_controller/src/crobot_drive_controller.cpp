@@ -371,9 +371,21 @@ void CrobotDriveController::updateOdometry(
 
     // Angular velocity from command (no gyro integration here)
     double omega = 0.0;
-    auto cmd_vel = received_cmd_vel_.readFromRT();
-    if (cmd_vel && *cmd_vel)
-        omega = (*cmd_vel)->angular.z;
+    // auto cmd_vel = received_cmd_vel_.readFromRT();
+    // if (cmd_vel && *cmd_vel)
+    //     omega = (*cmd_vel)->angular.z;
+
+    for (int i = 0; i < 2; ++i) {
+        // Wheel velocity from encoder (state interface 4+i), sign-corrected
+        double wheel_omega = state_interfaces_[i].get_value();
+
+        // Contribution to angular velocity from this wheel's tangential speed
+        omega += -wheel_omega *
+                 std::sin(assumed_ankle_angles_[i]) *  // sin(steering angle)
+                 (params_.wheel_separation_length / 2.0);  // distance from center
+    }
+
+    omega /= 2.0;
 
     // Integrate pose in world frame
     odom_state_.x     += (vx * std::cos(odom_state_.theta) - vy * std::sin(odom_state_.theta)) * dt;
