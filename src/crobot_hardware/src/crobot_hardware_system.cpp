@@ -388,7 +388,7 @@ namespace crobot_hardware
         j["cmd"] = "write";
 
         const double RAD_TO_DEG = 180.0 / M_PI;
-        const float hardware_conversion_factor = 1.0;
+        const float hardware_conversion_factor = 0.9;
 
         j["ankles"]["front_left"] = (int)(130.0 + ankles_[0].cmd * RAD_TO_DEG / hardware_conversion_factor);
         j["ankles"]["front_right"] = (int)(53.0 + ankles_[1].cmd * RAD_TO_DEG / hardware_conversion_factor);
