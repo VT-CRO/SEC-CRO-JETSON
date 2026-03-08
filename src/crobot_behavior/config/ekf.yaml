@@ -62,16 +62,16 @@ ekf_filter_node:
     odom0_relative: false
 
     #VSLAM as absolute pose input
-    pose0: /visual_slam/tracking/odometry
-    pose0_config:
+    odom1: /visual_slam/tracking/odometry
+    odom1_config:
         [true, true, false,
         false, false, true,
         false, false, false,
         false, false, false,
         false, false, false]
-    pose0_relative: false
+    odom1_relative: false
     #if vslam jumps more than 2 meters, reject it
-    pose0_rejection_threshold: 0.5   # rejects teleports automatically
+    odom1_rejection_threshold: 0.5   # rejects teleports automatically
 
     # IMU — yaw rate only, bias already removed in hardware interface
     imu0: /imu/raw
