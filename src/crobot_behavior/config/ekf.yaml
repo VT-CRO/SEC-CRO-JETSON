@@ -47,6 +47,10 @@ ekf_filter_node:
     map_frame: map
     odom_frame: odom
     base_link_frame: base_link
+
+    # if set to...
+    # odom: node publishes odom -> base_link (fuses continuous data, like IMU and wheel encoders)
+    # map: node publishes map -> odom (fuses global data like SLAM)
     world_frame: odom   # IMPORTANT
 
     # Wheel odometry (velocity only)
