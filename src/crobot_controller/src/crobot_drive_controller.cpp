@@ -427,7 +427,7 @@ void CrobotDriveController::updateOdometry(
         msg.pose.pose.orientation.w = std::cos(odom_state_.theta / 2.0);
         msg.pose.covariance[0] = 0.01;
         msg.pose.covariance[7] = 0.01;
-        msg.pose.covariance[35] = 0.5; // some uncertainty on orientation
+        msg.pose.covariance[35] = 1e4; // some uncertainty on orientation
 
         msg.twist.twist.linear.x  = odom_state_.linear_x;
         msg.twist.twist.linear.y  = odom_state_.linear_y;
