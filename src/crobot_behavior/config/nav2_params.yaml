@@ -156,7 +156,7 @@ velocity_smoother:
     max_accel: [1.0, 0.0, 1.0]
     max_decel: [-1.0, 0.0, -1.0]
     #CHANGE THIS TO odometry/filtered if using EKF
-    odom_topic: crobot_drive_controller/odom
+    odom_topic: odometry/filtered
     odom_duration: 0.1
 
 lifecycle_manager:

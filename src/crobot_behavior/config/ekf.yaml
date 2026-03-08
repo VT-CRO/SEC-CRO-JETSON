@@ -1,296 +1,105 @@
----
+# ekf_filter_node:
+#   ros__parameters:
+#     frequency: 30.0
+#     sensor_timeout: 0.1
+#     two_d_mode: true #ignores z, roll and pitch
+#     publish_tf: true
+#     print_diagnostics: true
+#     map_frame: map
+#     odom_frame: odom
+#     base_link_frame: base_link
+#     #vslam should around publish map, so this should only update odom.
+#     world_frame: odom
+
+#     # cmd_vel odometry
+#     odom0: /crobot_drive_controller/odom
+#     odom0_config: [false, false, false,
+#                    false, false, false,
+#                    true,  false, false,
+#                    false, false, true,
+#                    false, false, false]
+#     odom0_differential: false
+#     odom0_relative: false
+
+#     #ignores large velocity and pose jumps
+#     odom0_pose_rejection_threshold: 0.5
+#     odom0_twist_rejection_threshold: 0.5
+
+#     # imu0: /camera0/imu
+#     # imu0_config: [false, false, false,
+#     #               false, false, false,
+#     #               false, false, false,
+#     #               false, false, true,
+#     #               false, false, false]
+#     # imu0_differential: false
+#     # imu0_relative: false
+#     # imu0_remove_gravitational_acceleration: true
+
+
 ekf_filter_node:
   ros__parameters:
-    frequency: 30
+    frequency: 30.0
     sensor_timeout: 0.1
     two_d_mode: true
     publish_tf: true
     print_diagnostics: true
+
     map_frame: map
     odom_frame: odom
     base_link_frame: base_link
-    world_frame: odom
+    world_frame: odom   # IMPORTANT
+
+    # Wheel odometry (velocity only)
     odom0: /crobot_drive_controller/odom
-    odom0_config:
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - true
-      - true
-      - false
-      - false
-      - false
-      - true
-      - false
-      - false
-      - false
+    odom0_config: [false, false, false,
+                   false, false, false,
+                   true,  true, false,
+                   false, false, true,
+                   false, false, false]
+
     odom0_differential: false
     odom0_relative: false
+
+    #VSLAM as absolute pose input
     pose0: /visual_slam/tracking/odometry
     pose0_config:
-      - true
-      - true
-      - false
-      - false
-      - false
-      - true
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
+        [true, true, false,
+        false, false, true,
+        false, false, false,
+        false, false, false,
+        false, false, false]
     pose0_relative: false
-    pose0_rejection_threshold: 0.3
+    #if vslam jumps more than 2 meters, reject it
+    pose0_rejection_threshold: 0.3   # rejects teleports automatically
+
+    ################################################
+    # IMU — yaw rate only, bias already removed in hardware interface
     imu0: /imu/raw
-    imu0_config:
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - false
-      - true
-      - false
-      - false
-      - false
+    imu0_config: [false, false, false,
+                  false, false, false,   # no absolute orientation (it drifts)
+                  false, false, false,   # no linear acceleration
+                  false, false, true,    # ONLY omega_z ← this is the one we trust
+                  false, false, false]
     imu0_differential: false
     imu0_relative: false
-    imu0_remove_gravitational_acceleration: false
-    process_noise_covariance:
-      - 0.01
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0.025
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0.04
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0.01
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0.025
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0.025
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0.01
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0.025
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
+    imu0_remove_gravitational_acceleration: false  # we're not using accel at all
+
+
+    # this matrix is bad
+    # process_noise_covariance: [
+    #   0.01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, # X Pos
+    #   0, 0.025, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, # Y Pos
+    #   0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, # Z Pos
+    #   0, 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, # Roll pos
+    #   0, 0, 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, # Pitch pos
+    #   0, 0, 0, 0, 0, 0.04, 0, 0, 0, 0, 0, 0, 0, 0, 0, # Yaw pos
+    #   0, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0, 0, 0, 0, # X Vel
+    #   0, 0, 0, 0, 0, 0, 0, 0.025, 0, 0, 0, 0, 0, 0, 0, # Y Vel
+    #   0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0, 0, 0, 0, 0, 0, # Z Vel
+    #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0, 0, 0, 0, 0, # Roll Vel
+    #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0, 0, 0, 0, # Pitch Vel
+    #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.025, 0, 0, 0, # Yaw Vel
+    #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0, 0, # X Accel
+    #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.025, 0, # Y Accel
+    #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0 # Z Accel
+    # ]
