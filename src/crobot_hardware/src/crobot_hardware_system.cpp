@@ -33,6 +33,8 @@ namespace crobot_hardware
         cfg_.sweeper_name = info_.hardware_parameters["sweeper_name"];
         cfg_.winch_name = info_.hardware_parameters["winch_name"];
 
+        cfg_.imu_name = info_.hardware_parameters["imu_name"];
+
         cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
         cfg_.device = info_.hardware_parameters["dev"];
         cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
@@ -146,29 +148,36 @@ namespace crobot_hardware
 
         for (auto & wheel : wheels_)
         {
-            state_interfaces.emplace_back(hardware_interface::StateInterface(
-                wheel.name, hardware_interface::HW_IF_VELOCITY, &wheel.vel
-            ));
-            
-            state_interfaces.emplace_back(hardware_interface::StateInterface(
-                wheel.name, hardware_interface::HW_IF_POSITION, &wheel.pos
-            ));
-        }
-
-        for (auto & ankle : ankles_)
-        {
-            state_interfaces.emplace_back(hardware_interface::StateInterface(
-                ankle.name, hardware_interface::HW_IF_POSITION, &ankle.pos
-            ));
+            if (wheel.name.find("front") != std::string::npos) 
+            {
+                    state_interfaces.emplace_back(hardware_interface::StateInterface(
+                    wheel.name, hardware_interface::HW_IF_VELOCITY, &wheel.vel
+                ));
+                
+                state_interfaces.emplace_back(hardware_interface::StateInterface(
+                    wheel.name, hardware_interface::HW_IF_POSITION, &wheel.pos
+                ));
+            }
         }
 
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.pos
+            cfg_.imu_name, hardware_interface::HW_IF_VELOCITY, &imu_vel
         ));
 
-        state_interfaces.emplace_back(hardware_interface::StateInterface(
-            winch_.name, hardware_interface::HW_IF_VELOCITY, &winch_.vel
-        ));
+        // for (auto & ankle : ankles_)
+        // {
+        //     state_interfaces.emplace_back(hardware_interface::StateInterface(
+        //         ankle.name, hardware_interface::HW_IF_POSITION, &ankle.pos
+        //     ));
+        // }
+
+        // state_interfaces.emplace_back(hardware_interface::StateInterface(
+        //     sweeper_.name, hardware_interface::HW_IF_POSITION, &sweeper_.pos
+        // ));
+
+        // state_interfaces.emplace_back(hardware_interface::StateInterface(
+        //     winch_.name, hardware_interface::HW_IF_VELOCITY, &winch_.vel
+        // ));
 
         return state_interfaces;
     }
@@ -237,10 +246,11 @@ namespace crobot_hardware
     hardware_interface::CallbackReturn CrobotHardware::on_activate(
         const rclcpp_lifecycle::State & previous_state)
     {
+        serial_comm_.clearBuffers();
         first_read_ = true; // Reset first read flag on activation
         last_ticks_fl_ = 0;
         last_ticks_fr_ = 0;
-        last_ticks_br_ = 0;
+        // last_ticks_br_ = 0;
 
         for (int i = 0; i < 4; ++i) {
             wheels_[i].pos = 0.0;
@@ -288,30 +298,32 @@ namespace crobot_hardware
                 if (response.contains("encoders")) {
                     // std::string response_str = response.dump() + "\n";
                     // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "We received encoders data: %s", response_str.c_str()); 
-                    const double COUNTS_PER_REV = 2048.0;
+                    const double COUNTS_PER_REV = 4096.0;
                     const double TWO_PI = 2.0 * M_PI;
                     const double dt = period.seconds();
 
                     int32_t ticks_fl = response["encoders"]["front_left"];
                     int32_t ticks_fr = response["encoders"]["front_right"];
-                    int32_t ticks_br = response["encoders"]["back_right"];
+                    // int32_t ticks_br = response["encoders"]["back_right"];
 
                     wheels_[0].pos = (ticks_fl / COUNTS_PER_REV) * TWO_PI;
                     wheels_[1].pos = (ticks_fr / COUNTS_PER_REV) * TWO_PI;
-                    wheels_[3].pos = (ticks_br / COUNTS_PER_REV) * TWO_PI;
-                    wheels_[2].pos = wheels_[0].pos; 
+                    // wheels_[2].pos = wheels_[0].pos; 
+                    // wheels_[3].pos = wheels_[1].pos; 
 
                     if (!first_read_ && dt > 0.0) {
                         wheels_[0].vel = ((ticks_fl - last_ticks_fl_) / COUNTS_PER_REV) * TWO_PI / dt; 
                         wheels_[1].vel = ((ticks_fr - last_ticks_fr_) / COUNTS_PER_REV) * TWO_PI / dt; 
-                        wheels_[3].vel = ((ticks_br - last_ticks_br_) / COUNTS_PER_REV) * TWO_PI / dt; 
+                        // wheels_[3].vel = ((ticks_br - last_ticks_br_) / COUNTS_PER_REV) * TWO_PI / dt; 
                         wheels_[2].vel = wheels_[0].vel;
                     }
                     last_ticks_fl_ = ticks_fl;
                     last_ticks_fr_ = ticks_fr;
-                    last_ticks_br_ = ticks_br;
+                    // last_ticks_br_ = ticks_br;
                     first_read_ = false;
                 }
+
+                imu_vel = response["yaw"];
             } catch (json::parse_error &e) {
                 RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Bad serial packet: %s, raw string: %s", e.what(), line.c_str());
                 return hardware_interface::return_type::OK; 
@@ -333,13 +345,14 @@ namespace crobot_hardware
         j["cmd"] = "write";
 
         const double RAD_TO_DEG = 180.0 / M_PI;
+        const float hardware_conversion_factor = 1.0;
 
-        j["ankles"]["front_left"] = (int)(120.0 + ankles_[0].cmd * RAD_TO_DEG / 0.75);
-        j["ankles"]["front_right"] = (int)(60.0 + ankles_[1].cmd * RAD_TO_DEG / 0.75);
-        j["ankles"]["back_left"] = (int)(60.0 + ankles_[2].cmd * RAD_TO_DEG / 0.75);
-        j["ankles"]["back_right"] = (int)(120.0 + ankles_[3].cmd * RAD_TO_DEG / 0.75);
+        j["ankles"]["front_left"] = (int)(130.0 + ankles_[0].cmd * RAD_TO_DEG / hardware_conversion_factor);
+        j["ankles"]["front_right"] = (int)(53.0 + ankles_[1].cmd * RAD_TO_DEG / hardware_conversion_factor);
+        j["ankles"]["back_left"] = (int)(57.0 + ankles_[2].cmd * RAD_TO_DEG / hardware_conversion_factor);
+        j["ankles"]["back_right"] = (int)(110.0 + ankles_[3].cmd * RAD_TO_DEG / hardware_conversion_factor);
 
-        const double MAX_WHEEL_SPEED = 0.8;  // m/s corresponding to full command (255)
+        const double MAX_WHEEL_SPEED = cfg_.max_wheel_speed_meters / cfg_.wheel_radius;  // r/s corresponding to full command (255)
 
         j["wheels"]["front_left"] = std::clamp((int)(wheels_[0].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
         j["wheels"]["front_right"] = std::clamp((int)(wheels_[1].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
@@ -351,7 +364,7 @@ namespace crobot_hardware
 
         std::string j_str = j.dump() + "\n";
 
-        // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Sending JSON: %s", j_str.c_str());
+        RCLCPP_DEBUG(rclcpp::get_logger("CrobotHardware"), "Sending JSON: %s", j_str.c_str());
 
         int bytesSent = serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 

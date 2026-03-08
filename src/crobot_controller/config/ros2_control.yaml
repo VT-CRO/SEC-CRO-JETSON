@@ -28,15 +28,16 @@ crobot_drive_controller:
       - back_left_ankle_joint
       - back_right_ankle_joint
 
-    wheel_separation_width: 0.150     # 150mm left-right
-    wheel_separation_length: 0.230    # 230mm front-back
+    imu_joint: base_to_imu_joint
+
+    wheel_separation_width: 0.175     # 175mm left-right
+    wheel_separation_length: 0.237    # 237mm front-back
     wheel_radius: 0.035               # 35mm radius
 
-    point_turn_speed_threshold: 0.02  # m/s - below this linear speed, use point turn
-    strafe_angle_threshold: 0.15      # rad - motion angle tolerance for strafe detection
     max_ankle_angle: 1.5708           # rad (90 degrees) - maximum steering angle
+    assumed_servo_speed_: 1.8      # rad/s - estimated maximum servo slew rate (actual value is probably 90 deg/s)
 
-    max_linear_velocity: 1.5          # m/s
+    max_linear_velocity: 0.5          # m/s
     max_angular_velocity: 1.5         # rad/s
 
     enable_odom_tf: true

@@ -43,77 +43,69 @@ private:
     {
         std::vector<std::string> wheel_joints;  // [fl, fr, bl, br]
         std::vector<std::string> ankle_joints;  // [fl, fr, bl, br]
-        
+
+        std::string imu_joint;
+
         // Robot geometry (meters)
-        double wheel_separation_width = 0.150;   // 150mm left-right
-        double wheel_separation_length = 0.230;  // 230mm front-back
-        double wheel_radius = 0.035;             // 35mm radius
-        
-        double point_turn_speed_threshold = 0.05;  // m/s - below this, use point turn
-        double strafe_angle_threshold = 0.1;       // rad - if motion is nearly perpendicular
-        double max_ankle_angle = M_PI / 4.0;       // 45 degrees max steering
-        
+        double wheel_separation_width  = 0.150;   // left-right wheel spacing
+        double wheel_separation_length = 0.230;   // front-back wheel spacing
+        double wheel_radius            = 0.035;   // wheel radius
+
+        // Estimated maximum servo slew rate (rad/s); tune to match physical servo speed
+        double assumed_servo_speed_ = 1.57;
+
+        // Swerve optimization
+        double max_ankle_angle = M_PI / 2.0;      // hard limit from servo range
+
         // Velocity limits
-        double max_linear_velocity = 1.0;   // m/s
-        double max_angular_velocity = 2.0;  // rad/s
-        
+        double max_linear_velocity  = 1.5;   // m/s
+        double max_angular_velocity = 1.5;   // rad/s
+
         // Odometry
-        bool enable_odom_tf = true;
-        std::string odom_frame_id = "odom";
-        std::string base_frame_id = "base_link";
-        
-        // Topic names
+        bool        enable_odom_tf  = true;
+        std::string odom_frame_id   = "odom";
+        std::string base_frame_id   = "base_link";
+
+        // Topics
         std::string cmd_vel_topic = "/cmd_vel";
-        std::string odom_topic = "~/odom";
+        std::string odom_topic    = "~/odom";
     } params_;
 
     // Command velocity subscriber
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
     realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::Twist>> received_cmd_vel_;
-    
+
     // Odometry publisher
     std::shared_ptr<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>> odom_pub_;
-    
+
     // TF broadcaster
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-    
+
     // Odometry state
     struct OdomState
     {
-        double x = 0.0;
-        double y = 0.0;
-        double theta = 0.0;
-        double linear_x = 0.0;
-        double linear_y = 0.0;
-        double angular_z = 0.0;
+        double x = 0.0, y = 0.0, theta = 0.0;
+        double linear_x = 0.0, linear_y = 0.0, angular_z = 0.0;
         rclcpp::Time timestamp;
     } odom_state_;
 
-    // Kinematics functions
+    // Per-wheel swerve module command
     struct WheelAnkleCommand
     {
-        std::vector<double> ankle_angles;  // [fl, fr, bl, br] in radians
-        std::vector<double> wheel_vels;    // [fl, fr, bl, br] in rad/s
+        std::vector<double> ankle_angles;  // [fl, fr, bl, br] radians
+        std::vector<double> wheel_vels;    // [fl, fr, bl, br] rad/s
     };
-    
-    WheelAnkleCommand computePointTurn(double angular_z);
-    WheelAnkleCommand computeStrafeMode(double linear_x, double linear_y);
-    WheelAnkleCommand computeAckermannMode(double linear_x, double linear_y, double angular_z);
-    WheelAnkleCommand blendKinematics(double linear_x, double linear_y, double angular_z);
-    
-    // Odometry computation
+
+    WheelAnkleCommand computeSwerve(double linear_x, double linear_y, double angular_z);
+
+    // Odometry
     void updateOdometry(const rclcpp::Time & time, const rclcpp::Duration & period);
-    
-    // Helper functions
     void resetOdometry();
+
     double normalizeAngle(double angle);
 
-    // Track the estimated position of the servos since we can't read them
+    // Open-loop ankle angle tracking (servos have no position feedback)
     std::vector<double> assumed_ankle_angles_ = {0.0, 0.0, 0.0, 0.0};
-    
-    // Estimate of how fast your servos can physically rotate in rad/s
-    // (e.g., 5.0 rad/s is roughly 0.2 seconds per 60 degrees)
-    double assumed_servo_speed_ = 2.0;
 };
 
 }  // namespace crobot_controller

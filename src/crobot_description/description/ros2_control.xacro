@@ -21,6 +21,8 @@
         <param name="back_left_ankle_name">back_left_ankle_joint</param>
         <param name="back_right_ankle_name">back_right_ankle_joint</param>
 
+        <param name="imu_name">base_to_imu_joint</param>
+
         <param name="sweeper_name">sweeper_joint</param>
         <param name="winch_name">winch_joint</param>
 
@@ -29,23 +31,25 @@
         <param name="dev">/dev/ttyTHS1</param> <!-- ttyTHS1 for uart1; ttyACM0 for usb-->
         <param name="baud_rate">115200</param>
         <param name="timeout_ms">5</param>
+        <param name="wheel_radius">0.035</param> <!-- meters -->
+        <param name="max_wheel_speed_meters">0.36</param> <!-- m/s corresponding to full command (255) -->
       </xacro:unless>
     </hardware>
     <joint name="front_left_ankle_joint">
       <command_interface name="position"/>
-      <state_interface   name="position"/>
+      <!-- <state_interface   name="position"/> -->
     </joint>
     <joint name="front_right_ankle_joint">
       <command_interface name="position"/>
-      <state_interface   name="position"/>
+      <!-- <state_interface   name="position"/> -->
     </joint>
     <joint name="back_left_ankle_joint">
       <command_interface name="position"/>
-      <state_interface   name="position"/>
+      <!-- <state_interface   name="position"/> -->
     </joint>
     <joint name="back_right_ankle_joint">
       <command_interface name="position"/>
-      <state_interface   name="position"/>
+      <!-- <state_interface   name="position"/> -->
     </joint>
     <joint name="front_left_wheel_joint">
       <command_interface name="velocity"/>
@@ -59,20 +63,23 @@
     </joint>
     <joint name="back_left_wheel_joint">
       <command_interface name="velocity"/>
-      <state_interface   name="velocity"/>
-      <state_interface   name="position"/>
+      <!-- <state_interface   name="velocity"/> -->
+      <!-- <state_interface   name="position"/> -->
     </joint>
     <joint name="back_right_wheel_joint">
       <command_interface name="velocity"/>
-      <state_interface   name="velocity"/>
-      <state_interface   name="position"/>
+      <!-- <state_interface   name="velocity"/> -->
+      <!-- <state_interface   name="position"/> -->
     </joint>
     <joint name="sweeper_joint">
       <command_interface name="position"/>
-      <state_interface   name="position"/>
+      <!-- <state_interface   name="position"/> -->
     </joint>
     <joint name="winch_joint">
       <command_interface name="velocity"/>
+      <!-- <state_interface   name="velocity"/> -->
+    </joint>
+    <joint name="base_to_imu_joint">
       <state_interface   name="velocity"/>
     </joint>
   </ros2_control>
