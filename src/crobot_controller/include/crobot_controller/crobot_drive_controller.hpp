@@ -44,6 +44,8 @@ private:
         std::vector<std::string> wheel_joints;  // [fl, fr, bl, br]
         std::vector<std::string> ankle_joints;  // [fl, fr, bl, br]
 
+        std::string imu_joint;
+
         // Robot geometry (meters)
         double wheel_separation_width  = 0.150;   // left-right wheel spacing
         double wheel_separation_length = 0.230;   // front-back wheel spacing

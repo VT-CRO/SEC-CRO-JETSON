@@ -126,6 +126,8 @@ CrobotDriveController::state_interface_configuration() const
             // config.names.push_back(joint + "/" + hardware_interface::HW_IF_POSITION);
         }
 
+    config.names.push_back(params_.imu_joint + "/" + hardware_interface::HW_IF_VELOCITY);
+
     return config;
 }
 
@@ -369,20 +371,22 @@ void CrobotDriveController::updateOdometry(
     vx /= 2.0;
     vy /= 2.0;
 
-    // Angular velocity from command (no gyro integration here)
+    // Angular velocity from command
     double omega = 0.0;
 
-    for (int i = 0; i < 2; ++i) {
-        // Wheel velocity from encoder (state interface 4+i), sign-corrected
-        double wheel_omega = state_interfaces_[i].get_value();
+    // for (int i = 0; i < 2; ++i) {
+    //     // Wheel velocity from encoder (state interface 4+i), sign-corrected
+    //     double wheel_omega = state_interfaces_[i].get_value();
 
-        // Contribution to angular velocity from this wheel's tangential speed
-        omega += -wheel_omega *
-                 std::sin(assumed_ankle_angles_[i]) *  // sin(steering angle)
-                 (params_.wheel_separation_length / 2.0);  // distance from center
-    }
+    //     // Contribution to angular velocity from this wheel's tangential speed
+    //     omega += -wheel_omega *
+    //              std::sin(assumed_ankle_angles_[i]) *  // sin(steering angle)
+    //              (params_.wheel_separation_length / 2.0);  // distance from center
+    // }
 
-    omega /= 2.0;
+    // omega /= 2.0;
+
+    omega = state_interfaces_[2].get_value() * M_PI / 180.0;  // Use IMU angular velocity
 
     // Integrate pose in world frame
     odom_state_.x     += (vx * std::cos(odom_state_.theta) - vy * std::sin(odom_state_.theta)) * dt;

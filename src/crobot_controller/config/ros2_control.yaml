@@ -28,6 +28,8 @@ crobot_drive_controller:
       - back_left_ankle_joint
       - back_right_ankle_joint
 
+    imu_joint: base_to_imu_joint
+
     wheel_separation_width: 0.175     # 175mm left-right
     wheel_separation_length: 0.237    # 237mm front-back
     wheel_radius: 0.035               # 35mm radius

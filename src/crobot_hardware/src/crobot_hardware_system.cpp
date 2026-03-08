@@ -33,6 +33,8 @@ namespace crobot_hardware
         cfg_.sweeper_name = info_.hardware_parameters["sweeper_name"];
         cfg_.winch_name = info_.hardware_parameters["winch_name"];
 
+        cfg_.imu_name = info_.hardware_parameters["imu_name"];
+
         cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
         cfg_.device = info_.hardware_parameters["dev"];
         cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
@@ -157,6 +159,10 @@ namespace crobot_hardware
                 ));
             }
         }
+
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            cfg_.imu_name, hardware_interface::HW_IF_VELOCITY, &imu_vel
+        ));
 
         // for (auto & ankle : ankles_)
         // {
@@ -290,7 +296,7 @@ namespace crobot_hardware
                 json response = json::parse(line);
 
                 if (response.contains("encoders")) {
-                    std::string response_str = response.dump() + "\n";
+                    // std::string response_str = response.dump() + "\n";
                     // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "We received encoders data: %s", response_str.c_str()); 
                     const double COUNTS_PER_REV = 4096.0;
                     const double TWO_PI = 2.0 * M_PI;
@@ -316,6 +322,8 @@ namespace crobot_hardware
                     // last_ticks_br_ = ticks_br;
                     first_read_ = false;
                 }
+
+                imu_vel = response["yaw"];
             } catch (json::parse_error &e) {
                 RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Bad serial packet: %s, raw string: %s", e.what(), line.c_str());
                 return hardware_interface::return_type::OK; 

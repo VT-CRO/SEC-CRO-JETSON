@@ -22,6 +22,8 @@ namespace crobot_hardware
         double cmd = 0.0;
     };
 
+    double imu_vel = 0.0;
+
     class CrobotHardware : public hardware_interface::SystemInterface
     {
         public:
@@ -67,6 +69,8 @@ namespace crobot_hardware
 
                 std::string sweeper_name;
                 std::string winch_name;
+
+                std::string imu_name;
 
                 float max_wheel_speed_meters = 0.36; // m/s corresponding to full command (255)
                 float wheel_radius = 0.035; // meters

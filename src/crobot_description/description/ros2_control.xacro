@@ -21,6 +21,8 @@
         <param name="back_left_ankle_name">back_left_ankle_joint</param>
         <param name="back_right_ankle_name">back_right_ankle_joint</param>
 
+        <param name="imu_name">base_to_imu_joint</param>
+
         <param name="sweeper_name">sweeper_joint</param>
         <param name="winch_name">winch_joint</param>
 
@@ -76,6 +78,9 @@
     <joint name="winch_joint">
       <command_interface name="velocity"/>
       <!-- <state_interface   name="velocity"/> -->
+    </joint>
+    <joint name="base_to_imu_joint">
+      <state_interface   name="velocity"/>
     </joint>
   </ros2_control>
      
