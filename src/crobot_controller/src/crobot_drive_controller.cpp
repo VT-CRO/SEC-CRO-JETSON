@@ -398,7 +398,7 @@ void CrobotDriveController::updateOdometry(
 
     // omega /= 2.0;
 
-    omega = state_interfaces_[2].get_value() * M_PI / 180.0;  // Use IMU angular velocity
+    // omega = state_interfaces_[2].get_value() * M_PI / 180.0;  // Use IMU angular velocity
 
     // Integrate pose in world frame
     odom_state_.x     += (vx * std::cos(odom_state_.theta) - vy * std::sin(odom_state_.theta)) * dt;
@@ -429,6 +429,9 @@ void CrobotDriveController::updateOdometry(
         msg.twist.twist.linear.x  = odom_state_.linear_x;
         msg.twist.twist.linear.y  = odom_state_.linear_y;
         msg.twist.twist.angular.z = odom_state_.angular_z;
+        msg.twist.covariance[0] = 0.01; // variance on x
+        msg.twist.covariance[7] = 0.01; // variance on y
+        msg.twist.covariance[35] = 1e6; // very high variance on angular velocity since it's not directly measured
 
         odom_pub_->unlockAndPublish();
     }

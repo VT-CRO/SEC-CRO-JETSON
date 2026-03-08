@@ -60,7 +60,7 @@ def generate_launch_description():
         package='isaac_ros_visual_slam',
         plugin='nvidia::isaac_ros::visual_slam::VisualSlamNode',
         parameters=[{
-            'publish_map_to_odom_tf': True,
+            'publish_map_to_odom_tf': False,
             #change this to false if using EKF (ekef publishes this automatically)
             'publish_odom_to_base_tf': False,
             'use_imu': True,

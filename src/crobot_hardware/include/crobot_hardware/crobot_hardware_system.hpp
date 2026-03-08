@@ -4,6 +4,7 @@
 #include "hardware_interface/system_interface.hpp"
 #include "crobot_hardware/serial_comm.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/imu.hpp"
 
 namespace crobot_hardware
 {
@@ -94,6 +95,13 @@ namespace crobot_hardware
             int32_t last_ticks_fl_ = 0;
             int32_t last_ticks_fr_ = 0;
             // int32_t last_ticks_br_ = 0;
+
+            rclcpp::Node::SharedPtr imu_node_;
+            rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_pub_;
+            double imu_yaw_bias_ = 0.0;
+            int bias_sample_count_ = 0;
+            static constexpr int BIAS_SAMPLES = 60;  // ~2 seconds at 100Hz
+            bool bias_calibrated_ = false;
     };
 }
 

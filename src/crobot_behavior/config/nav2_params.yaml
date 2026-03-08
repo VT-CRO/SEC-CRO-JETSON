@@ -45,7 +45,7 @@ controller_server:
     use_sim_time: false
     controller_plugins: ["FollowPath"]
     #CHANGE THIS TO odometry/filtered if using EKF
-    odom_topic: crobot_drive_controller/odom
+    odom_topic: odometry/filtered
 
 
     FollowPath:
@@ -80,7 +80,7 @@ bt_navigator:
     use_sim_time: false
     #CHANGE THIS TO odometry/filtered if using EKF
     #else, crobot_drive_controller/odom
-    odom_topic: crobot_drive_controller/odom
+    odom_topic: odometry/filtered
 
 global_costmap:
   global_costmap:
@@ -177,4 +177,4 @@ slam_toolbox:
     odom_frame: odom
     map_frame: map
     scan_topic: /scan
-    odom_topic: crobot_drive_controller/odom
+    odom_topic: odometry/filtered
