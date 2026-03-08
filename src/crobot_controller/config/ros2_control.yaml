@@ -33,7 +33,7 @@ crobot_drive_controller:
     wheel_radius: 0.035               # 35mm radius
 
     max_ankle_angle: 1.5708           # rad (90 degrees) - maximum steering angle
-    assumed_servo_speed_: 1.5708      # rad/s - estimated maximum servo slew rate (actual value is probably 90 deg/s)
+    assumed_servo_speed_: 1.8      # rad/s - estimated maximum servo slew rate (actual value is probably 90 deg/s)
 
     max_linear_velocity: 0.5          # m/s
     max_angular_velocity: 1.5         # rad/s
