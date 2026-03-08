@@ -57,6 +57,8 @@ controller_interface::CallbackReturn CrobotDriveController::on_configure(
     params_.wheel_joints = get_node()->get_parameter("wheel_joints").as_string_array();
     params_.ankle_joints = get_node()->get_parameter("ankle_joints").as_string_array();
 
+    params_.imu_joint = get_node()->get_parameter("imu_joint").as_string();
+
     if (params_.wheel_joints.size() != 4 || params_.ankle_joints.size() != 4)
     {
         RCLCPP_ERROR(get_node()->get_logger(),
