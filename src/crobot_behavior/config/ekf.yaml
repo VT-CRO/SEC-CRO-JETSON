@@ -72,7 +72,6 @@ ekf_filter_node:
     #if vslam jumps more than 2 meters, reject it
     pose0_rejection_threshold: 0.3   # rejects teleports automatically
 
-    ################################################
     # IMU — yaw rate only, bias already removed in hardware interface
     imu0: /imu/raw
     imu0_config: [false, false, false,
