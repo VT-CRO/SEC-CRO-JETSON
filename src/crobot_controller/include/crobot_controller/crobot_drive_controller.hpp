@@ -69,6 +69,10 @@ private:
         // Topics
         std::string cmd_vel_topic = "/cmd_vel";
         std::string odom_topic    = "~/odom";
+
+        // Ankle angle limits (radians)
+        std::vector<double> ankle_min_angles = {-1.885, -0.524, -0.436, -1.728};  // [FL, FR, BL, BR]
+        std::vector<double> ankle_max_angles = { 0.471,  1.676,  1.920,  0.628};
     } params_;
 
     // Command velocity subscriber

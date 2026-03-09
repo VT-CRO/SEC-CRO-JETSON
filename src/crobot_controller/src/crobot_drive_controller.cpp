@@ -42,6 +42,9 @@ controller_interface::CallbackReturn CrobotDriveController::on_init()
 
         auto_declare<std::string>("cmd_vel_topic", params_.cmd_vel_topic);
         auto_declare<std::string>("odom_topic",    params_.odom_topic);
+
+        auto_declare<std::vector<double>>("ankle_min_angles", params_.ankle_min_angles);
+        auto_declare<std::vector<double>>("ankle_max_angles", params_.ankle_max_angles);
     }
     catch (const std::exception & e)
     {
@@ -81,6 +84,9 @@ controller_interface::CallbackReturn CrobotDriveController::on_configure(
 
     params_.cmd_vel_topic = get_node()->get_parameter("cmd_vel_topic").as_string();
     params_.odom_topic    = get_node()->get_parameter("odom_topic").as_string();
+
+    params_.ankle_min_angles = get_node()->get_parameter("ankle_min_angles").as_double_array();
+    params_.ankle_max_angles = get_node()->get_parameter("ankle_max_angles").as_double_array();
 
     cmd_vel_sub_ = get_node()->create_subscription<geometry_msgs::msg::Twist>(
         params_.cmd_vel_topic, rclcpp::SystemDefaultsQoS(),
@@ -230,6 +236,9 @@ controller_interface::return_type CrobotDriveController::update(
             error       += M_PI;
         }
 
+        target_angle = std::clamp(target_angle,
+            params_.ankle_min_angles[i], params_.ankle_max_angles[i]);
+
         // Advance the assumed ankle position at the physical servo slew rate
         double max_step = params_.assumed_servo_speed_ * dt;
         if (std::abs(error) <= max_step)
@@ -237,6 +246,9 @@ controller_interface::return_type CrobotDriveController::update(
         else
             assumed_ankle_angles_[i] = normalizeAngle(
                 current_assumed + std::copysign(max_step, error));
+
+        assumed_ankle_angles_[i] = std::clamp(assumed_ankle_angles_[i], 
+            params_.ankle_min_angles[i], params_.ankle_max_angles[i]);
 
         // Remaining error after the model step
         double remaining_error = normalizeAngle(target_angle - assumed_ankle_angles_[i]);
