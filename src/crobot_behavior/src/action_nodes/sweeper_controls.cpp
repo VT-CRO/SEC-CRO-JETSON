@@ -21,6 +21,7 @@ BT::PortsList SweeperControl::providedPorts()
         BT::InputPort<std::string>("sweeper_command")
     };
 }
+
   
 BT::NodeStatus SweeperControl::onStart() {
     if (done_) {
@@ -28,6 +29,7 @@ BT::NodeStatus SweeperControl::onStart() {
     }
 
     auto sweeperCommand = getInput("sweeper_command", sweeperString);
+    
    
     if (!sweeperCommand)
     {
