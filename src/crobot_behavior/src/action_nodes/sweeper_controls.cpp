@@ -11,8 +11,6 @@ SweeperControl::SweeperControl(const std::string &name,
 : BT::StatefulActionNode(name, config), node_ptr_(node_ptr) 
 {
      publisher_ = node_ptr->create_publisher<std_msgs::msg::Float64MultiArray>("/sweeper_position_controller/commands", 10);
-
-
 }
 
 BT::PortsList SweeperControl::providedPorts()   
