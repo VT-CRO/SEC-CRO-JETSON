@@ -42,6 +42,9 @@ controller_interface::CallbackReturn CrobotDriveController::on_init()
 
         auto_declare<std::string>("cmd_vel_topic", params_.cmd_vel_topic);
         auto_declare<std::string>("odom_topic",    params_.odom_topic);
+
+        auto_declare<std::vector<double>>("ankle_min_angles", params_.ankle_min_angles);
+        auto_declare<std::vector<double>>("ankle_max_angles", params_.ankle_max_angles);
     }
     catch (const std::exception & e)
     {
@@ -81,6 +84,9 @@ controller_interface::CallbackReturn CrobotDriveController::on_configure(
 
     params_.cmd_vel_topic = get_node()->get_parameter("cmd_vel_topic").as_string();
     params_.odom_topic    = get_node()->get_parameter("odom_topic").as_string();
+
+    params_.ankle_min_angles = get_node()->get_parameter("ankle_min_angles").as_double_array();
+    params_.ankle_max_angles = get_node()->get_parameter("ankle_max_angles").as_double_array();
 
     cmd_vel_sub_ = get_node()->create_subscription<geometry_msgs::msg::Twist>(
         params_.cmd_vel_topic, rclcpp::SystemDefaultsQoS(),
@@ -216,19 +222,28 @@ controller_interface::return_type CrobotDriveController::update(
         // Shortest-path angular error
         double error = normalizeAngle(target_angle - current_assumed);
 
+        double flipped_angle_back = normalizeAngle(target_angle - M_PI);
+        bool back_flip_valid = (flipped_angle_back >= params_.ankle_min_angles[i] && flipped_angle_back <= params_.ankle_max_angles[i]);
+
+        double flipped_angle_forward = normalizeAngle(target_angle + M_PI);
+        bool front_flip_valid = (flipped_angle_forward >= params_.ankle_min_angles[i] && flipped_angle_forward <= params_.ankle_max_angles[i]);
+
         // Swerve optimization: if turning > 90°, flip 180° and negate velocity
-        if (error > M_PI / 2.0)
+        if (error > M_PI / 2.0 && back_flip_valid)
         {
-            target_angle = normalizeAngle(target_angle - M_PI);
+            target_angle = flipped_angle_back;
             target_vel   = -target_vel;
             error       -= M_PI;
         }
-        else if (error < -M_PI / 2.0)
+        else if (error < -M_PI / 2.0 && front_flip_valid)
         {
-            target_angle = normalizeAngle(target_angle + M_PI);
+            target_angle = flipped_angle_forward;
             target_vel   = -target_vel;
             error       += M_PI;
         }
+
+        target_angle = std::clamp(target_angle,
+            params_.ankle_min_angles[i], params_.ankle_max_angles[i]);
 
         // Advance the assumed ankle position at the physical servo slew rate
         double max_step = params_.assumed_servo_speed_ * dt;
@@ -237,6 +252,9 @@ controller_interface::return_type CrobotDriveController::update(
         else
             assumed_ankle_angles_[i] = normalizeAngle(
                 current_assumed + std::copysign(max_step, error));
+
+        assumed_ankle_angles_[i] = std::clamp(assumed_ankle_angles_[i], 
+            params_.ankle_min_angles[i], params_.ankle_max_angles[i]);
 
         // Remaining error after the model step
         double remaining_error = normalizeAngle(target_angle - assumed_ankle_angles_[i]);
@@ -386,19 +404,19 @@ void CrobotDriveController::updateOdometry(
     // Angular velocity from command
     double omega = 0.0;
 
-    // for (int i = 0; i < 2; ++i) {
-    //     // Wheel velocity from encoder (state interface 4+i), sign-corrected
-    //     double wheel_omega = state_interfaces_[i].get_value();
+    for (int i = 0; i < 2; ++i) {
+        // Wheel velocity from encoder (state interface 4+i), sign-corrected
+        double wheel_omega = state_interfaces_[i].get_value();
 
-    //     // Contribution to angular velocity from this wheel's tangential speed
-    //     omega += -wheel_omega *
-    //              std::sin(assumed_ankle_angles_[i]) *  // sin(steering angle)
-    //              (params_.wheel_separation_length / 2.0);  // distance from center
-    // }
+        // Contribution to angular velocity from this wheel's tangential speed
+        omega += -wheel_omega *
+                 std::sin(assumed_ankle_angles_[i]) *  // sin(steering angle)
+                 (params_.wheel_separation_length / 2.0);  // distance from center
+    }
 
     // omega /= 2.0;
 
-    omega = state_interfaces_[2].get_value();  // Use IMU angular velocity
+    // omega = state_interfaces_[2].get_value() * M_PI / 180.0;  // Use IMU angular velocity
 
     // Integrate pose in world frame
     odom_state_.x     += (vx * std::cos(odom_state_.theta) - vy * std::sin(odom_state_.theta)) * dt;
@@ -425,10 +443,16 @@ void CrobotDriveController::updateOdometry(
         msg.pose.pose.orientation.y = 0.0;
         msg.pose.pose.orientation.z = std::sin(odom_state_.theta / 2.0);
         msg.pose.pose.orientation.w = std::cos(odom_state_.theta / 2.0);
+        msg.pose.covariance[0] = 0.01;
+        msg.pose.covariance[7] = 0.01;
+        msg.pose.covariance[35] = 1e4; // some uncertainty on orientation
 
         msg.twist.twist.linear.x  = odom_state_.linear_x;
         msg.twist.twist.linear.y  = odom_state_.linear_y;
         msg.twist.twist.angular.z = odom_state_.angular_z;
+        msg.twist.covariance[0] = 0.001; // variance on x
+        msg.twist.covariance[7] = 0.001; // variance on y
+        msg.twist.covariance[35] = 1e4; // very high variance on angular velocity since it's not directly measured
 
         odom_pub_->unlockAndPublish();
     }

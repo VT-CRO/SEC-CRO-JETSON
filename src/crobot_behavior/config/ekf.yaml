@@ -47,37 +47,61 @@ ekf_filter_node:
     map_frame: map
     odom_frame: odom
     base_link_frame: base_link
+
+    # if set to...
+    # odom: node publishes odom -> base_link (fuses continuous data, like IMU and wheel encoders)
+    # map: node publishes map -> odom (fuses global data like SLAM)
     world_frame: odom   # IMPORTANT
 
     # Wheel odometry (velocity only)
+    # x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az
     odom0: /crobot_drive_controller/odom
-    odom0_config: [false, false, false,
-                   false, false, false,
-                   true,  false, false,
+    odom0_config: [true, true, false,
+                   false, false, true,
+                   true,  true, false,
                    false, false, true,
                    false, false, false]
+
     odom0_differential: false
     odom0_relative: false
 
     #VSLAM as absolute pose input
-    pose0: /visual_slam/tracking/odometry
-    pose0_config:
+    odom1: /visual_slam/tracking/odometry
+    odom1_config:
         [true, true, false,
         false, false, true,
         false, false, false,
         false, false, false,
         false, false, false]
-    pose0_relative: false
+    odom1_relative: false
     #if vslam jumps more than 2 meters, reject it
-    pose0_rejection_threshold: 0.5   # rejects teleports automatically
+    odom1_rejection_threshold: 0.5   # rejects teleports automatically
 
-    # IMU (yaw + angular velocity)
-    # imu0: /camera0/imu
-    # imu0_config: [false, false, false,
-    #               false, false, true,
-    #               false, false, false,
-    #               false, false, true,
-    #               false, false, false]
-    # imu0_differential: false
-    # imu0_relative: false
-    # imu0_remove_gravitational_acceleration: true
+    # IMU — yaw rate only, bias already removed in hardware interface
+    imu0: /imu/raw
+    imu0_config: [false, false, false,
+                  false, false, false,   # no absolute orientation (it drifts)
+                  false, false, false,   # no linear acceleration
+                  false, false, true,    # ONLY omega_z ← this is the one we trust
+                  false, false, false]
+    imu0_differential: false
+    imu0_relative: false
+    imu0_remove_gravitational_acceleration: false  # we're not using accel at all
+
+
+    # 15 x 15 matrix 
+    process_noise_covariance: [ 0.01,  0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # x
+                                0.0,   0.025,   0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # y
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # z
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # roll
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # pitch
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.04,   0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # yaw
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.01,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # vx
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.025,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # vy
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # vz
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # vroll
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    # vptich
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.025,  0.0,    0.0,    0.0,    # vyaw
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.01,   0.0,    0.0,    # ax
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.025,  0.0,    # ay
+                                0.0,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0]    # az

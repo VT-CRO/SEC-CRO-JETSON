@@ -40,13 +40,16 @@ crobot_drive_controller:
     max_linear_velocity: 0.5          # m/s
     max_angular_velocity: 1.5         # rad/s
 
-    enable_odom_tf: true
+    enable_odom_tf: false
     odom_frame_id: odom
     base_frame_id: base_link
 
     # use ~ for namespace
     cmd_vel_topic: /cmd_vel
     odom_topic: ~/odom                # will be /crobot_drive_controller/odom
+
+    ankle_min_angles: [-1.885, -0.524, -0.436, -1.728]  # [FL, FR, BL, BR]
+    ankle_max_angles: [ 0.471,  1.676,  1.920,  0.628]
 
 sweeper_position_controller:
   ros__parameters:

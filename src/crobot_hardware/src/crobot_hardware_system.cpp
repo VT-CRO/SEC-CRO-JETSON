@@ -9,6 +9,8 @@
 
 using json = nlohmann::json;
 
+using namespace std;
+
 namespace crobot_hardware
 {
     hardware_interface::CallbackReturn CrobotHardware::on_init(
@@ -228,6 +230,11 @@ namespace crobot_hardware
             return hardware_interface::CallbackReturn::ERROR;
         }
 
+        // Create a node for publishing IMU data
+        imu_node_ = rclcpp::Node::make_shared("crobot_imu_publisher");
+        imu_pub_ = imu_node_->create_publisher<sensor_msgs::msg::Imu>(
+            "/imu/raw", rclcpp::SensorDataQoS());
+
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
@@ -323,7 +330,43 @@ namespace crobot_hardware
                     first_read_ = false;
                 }
 
-                imu_vel = response["yaw"];
+                double raw_yaw_rate_rad = response["yaw"];
+
+                // Collect stationary bias samples at startup
+                if (!bias_calibrated_) {
+                    imu_yaw_bias_ += raw_yaw_rate_rad;
+                    bias_sample_count_++;
+                    if (bias_sample_count_ >= BIAS_SAMPLES) {
+                        imu_yaw_bias_ /= BIAS_SAMPLES;
+                        bias_calibrated_ = true;
+                        RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"),
+                            "IMU yaw bias calibrated: %.6f rad/s", imu_yaw_bias_);
+                    }
+                }
+
+                double corrected_yaw_rate = raw_yaw_rate_rad - (bias_calibrated_ ? imu_yaw_bias_ : 0.0);
+                imu_vel = corrected_yaw_rate;  // keep state interface working too
+
+                // Publish sensor_msgs/Imu
+                auto imu_msg = sensor_msgs::msg::Imu();
+                imu_msg.header.stamp = time;
+                imu_msg.header.frame_id = "base_link";  // must match your URDF
+
+                imu_msg.angular_velocity.x = 0.0;
+                imu_msg.angular_velocity.y = 0.0;
+                imu_msg.angular_velocity.z = corrected_yaw_rate;
+
+                // Tell EKF the variance on omega_z (~0.01 rad²/s² is reasonable for a decent IMU)
+                imu_msg.angular_velocity_covariance[8] = 0.0000001;
+                
+                // Mark orientation and linear accel as unknown (diagonal = -1 means "don't use")
+                imu_msg.orientation_covariance[0] = -1.0;
+                imu_msg.linear_acceleration_covariance[0] = -1.0;
+
+                imu_pub_->publish(imu_msg);
+
+                // Spin the imu_node_ so it actually sends
+                rclcpp::spin_some(imu_node_);
             } catch (json::parse_error &e) {
                 RCLCPP_WARN(rclcpp::get_logger("CrobotHardware"), "Bad serial packet: %s, raw string: %s", e.what(), line.c_str());
                 return hardware_interface::return_type::OK; 
@@ -345,7 +388,7 @@ namespace crobot_hardware
         j["cmd"] = "write";
 
         const double RAD_TO_DEG = 180.0 / M_PI;
-        const float hardware_conversion_factor = 1.0;
+        const float hardware_conversion_factor = 0.9;
 
         j["ankles"]["front_left"] = (int)(130.0 + ankles_[0].cmd * RAD_TO_DEG / hardware_conversion_factor);
         j["ankles"]["front_right"] = (int)(53.0 + ankles_[1].cmd * RAD_TO_DEG / hardware_conversion_factor);
@@ -364,7 +407,7 @@ namespace crobot_hardware
 
         std::string j_str = j.dump() + "\n";
 
-        RCLCPP_DEBUG(rclcpp::get_logger("CrobotHardware"), "Sending JSON: %s", j_str.c_str());
+        // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Sending JSON: %s", j_str.c_str());
 
         int bytesSent = serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 

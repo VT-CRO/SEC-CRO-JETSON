@@ -1,18 +1,32 @@
 <root main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <SequenceStar>
-      <!-- <SweeperControl name="Sweeper Control" sweeper_command="1.0"/> -->
-      <!-- <GoToPose name="StartingPosition" goalPoses="0.3942241072654724,-0.559873104095459,0"/> -->
-      <GoToPose name="Button" goalPoses="0.6633011698722839,0.0,0"/> 
-      <GoToPose name="Keypad" goalPoses="0.3078280985355377,-0.9105874300003052,0"/> 
-      <!-- <GoToPose name="Position_1" goalPoses="-0.432,-0.00937,0"/>
-      <GoToPose name="Position_2" goalPoses="1.744858741760254,0.007635449059307575,0"/>
-      <GoToPose name="Position_3_with_midpoint" goalPoses="0.5305623412132263,-0.5350819230079651,1.57;-0.47404271364212036,0.5535049438476562,0"/> -->
+
+      <!-- ═══════════════════════════════════════════════════════════════
+           BUTTON TASK
+           1. Nav2 drives the robot to the button position.
+           2. PressButton takes over cmd_vel directly:
+              - drives forward slowly into the button 3 times
+              - briefly reverses between each press
+              - backs up to clear the area when done
+           3. SequenceStar moves on to the next task.
+           ═══════════════════════════════════════════════════════════════ -->
+
+      <SweeperControl sweeper_command = "2.25"/>
+
+      <GoToPose name="navigate_to_button"
+                goalPoses="0.7571644186973572,-0.009385672397911549,0.0"/>
+
+      <PressButton name="press_button"
+                   num_presses="3"
+                   forward_speed="0.10"
+                   forward_secs="1.5"
+                   backward_speed="0.10"
+                   backward_secs="1.5"
+                   backup_secs="4.0"/>
+
+      <SweeperControl sweeper_command = "1.0"/>
 
     </SequenceStar>
   </BehaviorTree>
-
-  <!-- <BehaviorTree ID="init">
-
-  </BehaviorTree> -->
 </root>
