@@ -8,6 +8,7 @@
 #include "crobot_behavior/action_nodes/press_button.hpp"   // <-- ADD THIS
 #include "crobot_behavior/NavigationServer.hpp"
 #include "crobot_behavior/action_nodes/sweeper_controls.hpp"
+#include "crobot_behavior/action_nodes/update_footprint.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 
 
@@ -36,6 +37,15 @@ int main(int argc, char** argv)
     [node](const std::string& name, const BT::NodeConfiguration& config)
     {
       return std::make_unique<SweeperControl>(name, config, node);
+    }
+  );
+
+  // --- Register UpdateFootprint ---
+  factory.registerBuilder<UpdateFootprint>(
+    "UpdateFootprint",
+    [node](const std::string& name, const BT::NodeConfiguration& config)
+    {
+      return std::make_unique<UpdateFootprint>(name, config, node);
     }
   );
 
