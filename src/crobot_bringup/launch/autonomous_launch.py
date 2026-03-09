@@ -250,5 +250,5 @@ def generate_launch_description():
         delayed_foxglove,
         # delay_initial_pose,
         # pointcloud_to_laserscan,
-        # map_odom_publisher,
+        map_odom_publisher,
     ])

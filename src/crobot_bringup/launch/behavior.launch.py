@@ -12,13 +12,13 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    # Robot State Publisher - publishes URDF and transforms
-    rsp = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory('crobot_description'), 'launch', 'rsp.launch.py'
-        )]),
-        launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
-    )
+    # # Robot State Publisher - publishes URDF and transforms
+    # rsp = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([os.path.join(
+    #         get_package_share_directory('crobot_description'), 'launch', 'rsp.launch.py'
+    #     )]),
+    #     launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
+    # )
 
     # Controller Manager node
     robot_controllers = PathJoinSubstitution([
@@ -45,6 +45,6 @@ def generate_launch_description():
             }]
     )
     return LaunchDescription([
-        rsp,
+        # rsp,
         crobot_behavior
     ])
