@@ -8,6 +8,7 @@
 #include "crobot_behavior/action_nodes/press_button.hpp"   // <-- ADD THIS
 #include "crobot_behavior/NavigationServer.hpp"
 #include "crobot_behavior/action_nodes/sweeper_controls.hpp"
+#include "geometry_msgs/msg/twist.hpp"
 
 
 int main(int argc, char** argv)
@@ -53,13 +54,42 @@ int main(int argc, char** argv)
   auto tree = factory.createTreeFromFile(xml_path);
 
   rclcpp::Rate rate(20);
-  while (rclcpp::ok())
-  {
-    tree.tickRoot();
+  
+  while (rclcpp::ok()) {
+    BT::NodeStatus status = tree.tickRoot();
+
     rclcpp::spin_some(node);
     rclcpp::spin_some(navigationNode);
+
+    if (status == BT::NodeStatus::SUCCESS || status == BT::NodeStatus::FAILURE) {
+      geometry_msgs::msg::Twist stop_msg;
+
+      stop_msg.linear.x = 0.0;
+      stop_msg.linear.y = 0.0;
+      stop_msg.linear.z = 0.0;
+      stop_msg.angular.x = 0.0;
+      stop_msg.angular.y = 0.0;
+      stop_msg.angular.z = 0.0;
+
+      // stop!!!!!!!!
+      for (int i = 0; i < 5; ++i) {
+        stop_pub->publish(stop_msg);
+        rclcpp::spin_some(node);
+        rclcpp::sleep_for(std::chrono::milliseconds(50));
+      }
+
+      if (status == BT::NodeStatus::SUCCESS) {
+        RCLCPP_INFO(node->get_logger(), "Behavior tree completed successfully. Stopping...");
+      } else {
+        RCLCPP_WARN(node->get_logger(), "Behavior tree failed. Stopping...");
+      }
+
+      break;
+    }
+
     rate.sleep();
   }
 
   rclcpp::shutdown();
+  return 0;
 }

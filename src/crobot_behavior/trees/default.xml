@@ -27,16 +27,6 @@
 
       <SweeperControl sweeper_command = "1.0"/>
 
-      <GoToPose name="navigate_to_button"
-                goalPoses="0.3817110061645508,-0.009385672397911549,0.0"/>
-
-      <!-- ═══════════════════════════════════════════════════════════════
-           NEXT TASK — replace this with whatever comes after the button
-           ═══════════════════════════════════════════════════════════════ -->
-
-      <!-- <GoToPose name="navigate_to_keypad"
-                  goalPoses="0.3078280985355377,-0.9105874300003052,0"/> -->
-
     </SequenceStar>
   </BehaviorTree>
 </root>
