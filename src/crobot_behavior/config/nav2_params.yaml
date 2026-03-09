@@ -105,7 +105,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         inflation_radius: 0.1 # radius of inflation around obstacles. Lower = less inflation but higher chance of accidental collision
-        cost_scaling_factor: 2.0  # higher = steeper dropoff from obstacles
+        cost_scaling_factor: 1.0  # higher = steeper dropoff from obstacles
 
 local_costmap:
   local_costmap:
