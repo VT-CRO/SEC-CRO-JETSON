@@ -22,7 +22,7 @@
                    forward_speed="0.10"
                    forward_secs="1.5"
                    backward_speed="0.10"
-                   backward_secs="1.5"
+                   backward_secs="1.0"
                    backup_secs="4.0"/>
 
       <SweeperControl sweeper_command = "1.0"/>

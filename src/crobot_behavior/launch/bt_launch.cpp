@@ -17,6 +17,8 @@ int main(int argc, char** argv)
   auto node = rclcpp::Node::make_shared("bt_launch");
   auto navigationNode = std::make_shared<NavigationServer>(rclcpp::NodeOptions());
 
+  auto stop_pub = node->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
+
   BT::BehaviorTreeFactory factory;
 
   // --- Register GoToPose ---
