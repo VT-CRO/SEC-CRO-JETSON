@@ -222,16 +222,22 @@ controller_interface::return_type CrobotDriveController::update(
         // Shortest-path angular error
         double error = normalizeAngle(target_angle - current_assumed);
 
+        double flipped_angle_back = normalizeAngle(target_angle - M_PI);
+        bool back_flip_valid = (flipped_angle_back >= params_.ankle_min_angles[i] && flipped_angle_back <= params_.ankle_max_angles[i]);
+
+        double flipped_angle_forward = normalizeAngle(target_angle + M_PI);
+        bool front_flip_valid = (flipped_angle_forward >= params_.ankle_min_angles[i] && flipped_angle_forward <= params_.ankle_max_angles[i]);
+
         // Swerve optimization: if turning > 90°, flip 180° and negate velocity
-        if (error > M_PI / 2.0)
+        if (error > M_PI / 2.0 && back_flip_valid)
         {
-            target_angle = normalizeAngle(target_angle - M_PI);
+            target_angle = flipped_angle_back;
             target_vel   = -target_vel;
             error       -= M_PI;
         }
-        else if (error < -M_PI / 2.0)
+        else if (error < -M_PI / 2.0 && front_flip_valid)
         {
-            target_angle = normalizeAngle(target_angle + M_PI);
+            target_angle = flipped_angle_forward;
             target_vel   = -target_vel;
             error       += M_PI;
         }
