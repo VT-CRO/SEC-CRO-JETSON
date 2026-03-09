@@ -7,11 +7,11 @@
       <GoToPose name="Keypad" goalPoses="0.3078280985355377,-0.9105874300003052,0"/>  -->
 
       <!-- button task -->
-      <GoToPose name = "button_1" goalPoses = "0.7571644186973572, -0.009385672397911549, 0.0"/>
+      <GoToPose name = "button_1" goalPoses = "0.7947080000000000, -0.02815280482172966, 0.0"/>
       <GoToPose name = "button_2" goalPoses = "0.6069830656051636, -0.009385672397911549, 0.0"/>
-      <GoToPose name = "button_3" goalPoses = "0.7571644186973572, -0.009385672397911549, 0.0"/>
+      <GoToPose name = "button_3" goalPoses = "0.7947080000000000, -0.02815280482172966, 0.0"/>
       <GoToPose name = "button_4" goalPoses = "0.6069830656051636, -0.009385672397911549, 0.0"/>
-      <GoToPose name = "button_5" goalPoses = "0.7571644186973572, -0.009385672397911549, 0.0"/>
+      <GoToPose name = "button_5" goalPoses = "0.7947080000000000, -0.02815280482172966, 0.0"/>
       <GoToPose name = "back_up" goalPoses = "0.4004836678504944, -0.009385672397911549, 0.0"/>
 
 
