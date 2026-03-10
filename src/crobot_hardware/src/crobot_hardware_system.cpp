@@ -408,7 +408,7 @@ namespace crobot_hardware
         std::string j_str = j.dump() + "\n";
 
         // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Sending JSON: %s", j_str.c_str());
-        RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Sweeper position: %d", (int)(40.0 + sweeper_.cmd * RAD_TO_DEG));
+        // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Sweeper position: %d", (int)(40.0 + sweeper_.cmd * RAD_TO_DEG));
         
         int bytesSent = serial_comm_.writeBytes(j_str.c_str(), j_str.size());
 
