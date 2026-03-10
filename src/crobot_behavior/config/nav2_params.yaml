@@ -170,7 +170,7 @@ controller_server:
       PathAngleCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 5.0   # keep low — omni doesn't need to face the path
+        cost_weight: 25.0   # keep low — omni doesn't need to face the path
         offset_from_furthest: 4
         threshold_to_consider: 0.4
         max_angle_to_furthest: 1.0

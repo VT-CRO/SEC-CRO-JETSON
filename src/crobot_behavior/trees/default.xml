@@ -1,22 +1,9 @@
 <root main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <SequenceStar>
-
-      <!-- ═══════════════════════════════════════════════════════════════
-           BUTTON TASK
-           1. Nav2 drives the robot to the button position.
-           2. PressButton takes over cmd_vel directly:
-              - drives forward slowly into the button 3 times
-              - briefly reverses between each press
-              - backs up to clear the area when done
-           3. SequenceStar moves on to the next task.
-           ═══════════════════════════════════════════════════════════════ -->
-
-      <SweeperControl sweeper_command = "2.25"/>
-      <SweeperControl sweeper_command = "2.25"/>
-      <SweeperControl sweeper_command = "2.25"/>
       <UpdateFootprint name="footprint_normal" extended="false"/>
       <!-- setting this three tiems because it no work right -->      
+      <SweeperControl sweeper_command = "3.0"/>
 
       <GoToPose name="navigate_to_button"
                 goalPoses="0.7571644186973572,-0.009385672397911549,0.0"/>
@@ -33,15 +20,13 @@
 
       <!-- setting this three tiems because it no work right -->
       <SweeperControl sweeper_command = "1.0"/>
-      <SweeperControl sweeper_command = "1.0"/>
-      <SweeperControl sweeper_command = "1.0"/>
 
       <!-- go near crater option 1 -->
       <GoToPose name = "point_1" goalPoses = "0.694587230682373, -0.4472743570804596, 0.0"/>
       <GoToPose name = "point_2" goalPoses = "1.0575226545333862, -1.2417306900024414, 0.0"/>
 
       <!-- go around crater  option 2 -->
-      <GoToPose name = "point_3" goalPoses = "0.44427818059921265, -2.2738945484161377, 0.0"/>
+      <!-- <GoToPose name = "point_3" goalPoses = "0.44427818059921265, -2.2738945484161377, 0.0"/> -->
 
     </SequenceStar>
   </BehaviorTree>
