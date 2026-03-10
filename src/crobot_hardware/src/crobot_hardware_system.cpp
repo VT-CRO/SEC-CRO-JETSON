@@ -333,19 +333,19 @@ namespace crobot_hardware
                 double raw_yaw_rate_rad = response["yaw"];
 
                 // Collect stationary bias samples at startup
-                if (!bias_calibrated_) {
-                    imu_yaw_bias_ += raw_yaw_rate_rad;
-                    bias_sample_count_++;
-                    if (bias_sample_count_ >= BIAS_SAMPLES) {
-                        imu_yaw_bias_ /= BIAS_SAMPLES;
-                        bias_calibrated_ = true;
-                        RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"),
-                            "IMU yaw bias calibrated: %.6f rad/s", imu_yaw_bias_);
-                    }
-                }
+                // if (!bias_calibrated_) {
+                //     imu_yaw_bias_ += raw_yaw_rate_rad;
+                //     bias_sample_count_++;
+                //     if (bias_sample_count_ >= BIAS_SAMPLES) {
+                //         imu_yaw_bias_ /= BIAS_SAMPLES;
+                //         bias_calibrated_ = true;
+                //         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"),
+                //             "IMU yaw bias calibrated: %.6f rad/s", imu_yaw_bias_);
+                //     }
+                // }
 
-                double corrected_yaw_rate = raw_yaw_rate_rad - (bias_calibrated_ ? imu_yaw_bias_ : 0.0);
-                imu_vel = corrected_yaw_rate;  // keep state interface working too
+                // double corrected_yaw_rate = raw_yaw_rate_rad - (bias_calibrated_ ? imu_yaw_bias_ : 0.0);
+                // imu_vel = corrected_yaw_rate;  // keep state interface working too
 
                 // Publish sensor_msgs/Imu
                 auto imu_msg = sensor_msgs::msg::Imu();
@@ -354,8 +354,9 @@ namespace crobot_hardware
 
                 imu_msg.angular_velocity.x = 0.0;
                 imu_msg.angular_velocity.y = 0.0;
-                imu_msg.angular_velocity.z = corrected_yaw_rate;
-
+                // imu_msg.angular_velocity.z = corrected_yaw_rate;
+                imu_msg.angular_velocity.z = raw_yaw_rate_rad;
+                
                 // Tell EKF the variance on omega_z (~0.01 rad²/s² is reasonable for a decent IMU)
                 imu_msg.angular_velocity_covariance[8] = 0.0000001;
                 

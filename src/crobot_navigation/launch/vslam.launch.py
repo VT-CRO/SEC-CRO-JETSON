@@ -64,7 +64,7 @@ def generate_launch_description():
             #change this to false if using EKF (ekef publishes this automatically)
             'publish_odom_to_base_tf': False,
             'use_imu': True,
-            'enable_loop_closure': False,
+            'enable_loop_closure': True,
             'enable_image_denoising': True,
             'enable_localization_n_mapping': True,
             'rectified_images': True,
