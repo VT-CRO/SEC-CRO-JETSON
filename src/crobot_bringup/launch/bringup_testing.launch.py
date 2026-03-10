@@ -46,7 +46,8 @@ def generate_launch_description():
     spawn_controllers = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['crobot_drive_controller', 'sweeper_position_controller', 'winch_velocity_controller'],
+        # arguments=['crobot_drive_controller', 'sweeper_position_controller', 'winch_velocity_controller'],
+        arguments=['crobot_drive_controller'],
         output='screen'
     )
 

@@ -8,11 +8,11 @@ controller_manager:
     crobot_drive_controller:
       type: crobot_controller/CrobotDriveController
 
-    sweeper_position_controller:
-      type: position_controllers/JointGroupPositionController
+    # sweeper_position_controller:
+    #   type: position_controllers/JointGroupPositionController
 
-    winch_velocity_controller:
-      type: velocity_controllers/JointGroupVelocityController
+    # winch_velocity_controller:
+    #   type: velocity_controllers/JointGroupVelocityController
 
 crobot_drive_controller:
   ros__parameters:
@@ -56,12 +56,12 @@ crobot_drive_controller:
     ankle_min_angles: [-1.885, -0.524, -0.436, -1.728]  # [FL, FR, BL, BR]
     ankle_max_angles: [ 0.471,  1.676,  1.920,  0.628]
 
-sweeper_position_controller:
-  ros__parameters:
-    joints:
-      - sweeper_joint
+# sweeper_position_controller:
+#   ros__parameters:
+#     joints:
+#       - sweeper_joint
 
-winch_velocity_controller:
-  ros__parameters:
-    joints:
-      - winch_joint
+# winch_velocity_controller:
+#   ros__parameters:
+#     joints:
+#       - winch_joint
