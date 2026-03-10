@@ -23,6 +23,7 @@ add_library(crobot_behavior_lib SHARED
   src/action_nodes/sweeper_controls.cpp
   src/action_nodes/press_button.cpp
   src/action_nodes/update_footprint.cpp
+  src/action_nodes/turn_crank.cpp
 )
 
 ament_target_dependencies(crobot_behavior_lib
