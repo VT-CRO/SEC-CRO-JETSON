@@ -12,11 +12,11 @@
            3. SequenceStar moves on to the next task.
            ═══════════════════════════════════════════════════════════════ -->
 
+      <SweeperControl sweeper_command = "2.25"/>
+      <SweeperControl sweeper_command = "2.25"/>
+      <SweeperControl sweeper_command = "2.25"/>
       <UpdateFootprint name="footprint_normal" extended="false"/>
-      <!-- setting this three tiems because it no work right -->
-      <SweeperControl sweeper_command = "2.25"/>
-      <SweeperControl sweeper_command = "2.25"/>
-      <SweeperControl sweeper_command = "2.25"/>
+      <!-- setting this three tiems because it no work right -->      
 
       <GoToPose name="navigate_to_button"
                 goalPoses="0.7571644186973572,-0.009385672397911549,0.0"/>
