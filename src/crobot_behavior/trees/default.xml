@@ -41,7 +41,7 @@
       <GoToPose name = "point_2" goalPoses = "1.0575226545333862, -1.2417306900024414, 0.0"/>
 
       <!-- go around crater  option 2 -->
-      <!-- <GoToPose name = "point_3" goalPoses = "0.44427818059921265, -2.2738945484161377, 0.0"/> -->
+      <GoToPose name = "point_3" goalPoses = "0.44427818059921265, -2.2738945484161377, 0.0"/>
 
     </SequenceStar>
   </BehaviorTree>
