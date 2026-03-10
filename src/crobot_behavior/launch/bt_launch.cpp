@@ -59,6 +59,14 @@ int main(int argc, char** argv)
     }
   );
 
+  // register crank
+  factory.registerBuilder<TurnCrank>(
+    "TurnCrank",
+    [node](const std::string& name, const BT::NodeConfiguration& config) {
+      return std::make_unique<TurnCrank>(name, config, node);
+    }
+  );
+
   std::string pkg_path =
     ament_index_cpp::get_package_share_directory("crobot_behavior");
 
