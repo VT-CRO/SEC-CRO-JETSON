@@ -7,7 +7,7 @@
 
 #include "controller_interface/controller_interface.hpp"
 #include "geometry_msgs/msg/twist.hpp"
-#include "std_msgs/msg/float64_multi_array.hpp"
+#include "std_msgs/msg/float64.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
@@ -86,12 +86,12 @@ private:
     realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::Twist>> received_cmd_vel_;
 
     // Sweeper position subscriber
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr sweeper_sub_;
-    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64MultiArray>> received_sweeper_pos_;
+    rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr sweeper_sub_;
+    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64>> received_sweeper_pos_;
     
     // Winch velocity subscriber
-    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr winch_sub_;
-    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64MultiArray>> received_winch_vel_;
+    rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr winch_sub_;
+    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64>> received_winch_vel_;
 
     // Odometry publisher
     std::shared_ptr<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>> odom_pub_;
