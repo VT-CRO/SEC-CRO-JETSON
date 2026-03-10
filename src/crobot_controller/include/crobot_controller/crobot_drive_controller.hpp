@@ -7,6 +7,7 @@
 
 #include "controller_interface/controller_interface.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "std_msgs/msg/float64_multi_array.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
@@ -44,6 +45,9 @@ private:
         std::vector<std::string> wheel_joints;  // [fl, fr, bl, br]
         std::vector<std::string> ankle_joints;  // [fl, fr, bl, br]
 
+        std::string sweeper_joint;
+        std::string winch_joint;
+
         std::string imu_joint;
 
         // Robot geometry (meters)
@@ -69,6 +73,8 @@ private:
         // Topics
         std::string cmd_vel_topic = "/cmd_vel";
         std::string odom_topic    = "~/odom";
+        std::string sweeper_topic = "/sweeper_position_controller/commands";
+        std::string winch_topic   = "/winch_velocity_controller/commands";
 
         // Ankle angle limits (radians)
         std::vector<double> ankle_min_angles = {-1.885, -0.524, -0.436, -1.728};  // [FL, FR, BL, BR]
@@ -78,6 +84,14 @@ private:
     // Command velocity subscriber
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
     realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::Twist>> received_cmd_vel_;
+
+    // Sweeper position subscriber
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr sweeper_sub_;
+    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64MultiArray>> received_sweeper_pos_;
+    
+    // Winch velocity subscriber
+    rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr winch_sub_;
+    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64MultiArray>> received_winch_vel_;
 
     // Odometry publisher
     std::shared_ptr<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>> odom_pub_;

@@ -403,7 +403,7 @@ namespace crobot_hardware
         j["wheels"]["back_right"] = std::clamp((int)(wheels_[3].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);    
         
         j["sweeper"] = (int)(40.0 + sweeper_.cmd * RAD_TO_DEG);
-        j["winch"] = (int)(winch_.cmd * 255.0);
+        j["winch"] = std::clamp((int)(winch_.cmd * 255.0), -255, 255);
 
         std::string j_str = j.dump() + "\n";
 
