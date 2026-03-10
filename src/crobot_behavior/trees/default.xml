@@ -13,6 +13,9 @@
            ═══════════════════════════════════════════════════════════════ -->
 
       <UpdateFootprint name="footprint_normal" extended="false"/>
+      <!-- setting this three tiems because it no work right -->
+      <SweeperControl sweeper_command = "2.25"/>
+      <SweeperControl sweeper_command = "2.25"/>
       <SweeperControl sweeper_command = "2.25"/>
 
       <GoToPose name="navigate_to_button"
@@ -27,6 +30,10 @@
                    backup_secs="5.5"/>
 
       <UpdateFootprint name="footprint_extended_ducks" extended="true"/>
+
+      <!-- setting this three tiems because it no work right -->
+      <SweeperControl sweeper_command = "1.0"/>
+      <SweeperControl sweeper_command = "1.0"/>
       <SweeperControl sweeper_command = "1.0"/>
 
       <!-- go near crater option 1 -->
