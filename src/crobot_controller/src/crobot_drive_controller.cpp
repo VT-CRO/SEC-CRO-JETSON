@@ -224,6 +224,7 @@ controller_interface::return_type CrobotDriveController::update(
             command_interfaces_[i + 4].set_value(0.0);
         }
         command_interfaces_[9].set_value(0.0); // winch
+        RCLCPP_INFO(get_node()->get_logger(), "Failing to read from relevant topics");
         return controller_interface::return_type::OK;
     }
 
