@@ -9,6 +9,7 @@
 #include "crobot_behavior/NavigationServer.hpp"
 #include "crobot_behavior/action_nodes/sweeper_controls.hpp"
 #include "crobot_behavior/action_nodes/update_footprint.hpp"
+#include "crobot_behavior/action_nodes/turn_crank.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 
 
