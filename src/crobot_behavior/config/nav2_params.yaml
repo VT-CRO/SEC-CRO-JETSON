@@ -1,21 +1,21 @@
-amcl:
-  ros__parameters:
-    use_sim_time: false
-    base_frame_id: base_link
-    odom_frame_id: odom
-    global_frame_id: map
-    scan_topic: scan
-    min_particles: 500
-    max_particles: 2000
-    laser_max_range: 10.0
-    laser_min_range: 0.1
-    laser_max_beams: 60
-    alpha1: 0.2
-    alpha2: 0.2
-    alpha3: 0.2
-    alpha4: 0.2
-    alpha5: 0.2
-    transform_tolerance: 0.5
+# amcl:
+#   ros__parameters:
+#     use_sim_time: false
+#     base_frame_id: base_link
+#     odom_frame_id: odom
+#     global_frame_id: map
+#     scan_topic: scan
+#     min_particles: 500
+#     max_particles: 2000
+#     laser_max_range: 10.0
+#     laser_min_range: 0.1
+#     laser_max_beams: 60
+#     alpha1: 0.2
+#     alpha2: 0.2
+#     alpha3: 0.2
+#     alpha4: 0.2
+#     alpha5: 0.2
+#     transform_tolerance: 0.5
 
 map_server:
   ros__parameters:
