@@ -33,12 +33,8 @@ planner_server:
     # use_sim_time: false
     # expected_planner_frequency: 2.0
 #     # planner_plugins: ["GridBased"]
-#     GridBased:
-#       plugin: "nav2_smac_planner/SmacPlannerHybrid"
-#       minimum_turning_radius: 0.3    # your robot's tightest Ackermann turn
-#       allow_reverse_expansion: true  # lets it plan backward paths
-#       smooth_path: true
-#       motion_model_for_search: "REEDS_SHEPP"  # allows forward + reverse + turns
+#
+
 
 # planner_server:
 #   ros__parameters:
@@ -53,17 +49,22 @@ planner_server:
 
 # planner_server:
 #   ros__parameters:
-#     use_sim_time: false
 #     expected_planner_frequency: 2.0
+#     use_sim_time: false
 #     planner_plugins: ["GridBased"]
-
 #     GridBased:
-#       plugin: "nav2_smac_planner/SmacPlannerHybrid"
-#       minimum_turning_radius: 0.20
-#       allow_reverse_expansion: true
-#       smooth_path: true
-#       motion_model_for_search: "REEDS_SHEPP"
+#       plugin: "nav2_smac_planner/SmacPlanner2D"
+#       # tolerance: 0.1
+#       use_final_approach_orientation: false
+#       allow_reverse_expansion: false
+#       smooth_path: true  
 
+#       # smoother:
+#       #   max_iterations: 1000
+#       #   w_curve: 30.0
+#       #   w_dist: 0.0
+#       #   w_smooth: 30000.0
+#       #   w_cost: 0.02
       
 
 controller_server:
@@ -112,19 +113,21 @@ controller_server:
       model_dt: 0.05
       batch_size: 2000
       vx_std: 0.2
-      vy_std: 0.2          # non-zero because you're omni
-      wz_std: 0.6 
-      vx_max: 0.10
+      vy_std: 0.0          # non-zero because you're omni
+      wz_std: 0.3
+      vx_max: 0.5
       vx_min: -0.10
-      vy_max: 0.10         # enable lateral motion
-      vy_min: -0.10
+      wz_min: 0.0
+      vy_max: 0.0         # enable lateral motion
+      vy_min: -0.0
       wz_max: 2.5
+      az_max: 3.0
       iteration_count: 1
       prune_distance: 1.5
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      motion_model: "Omni"  # THIS is the key change from differential
+      motion_model: "DiffDrive"  # THIS is the key change from differential
       visualize: true       # set false in competition to save CPU
       TrajectoryVisualizer:
         trajectory_step: 5
@@ -155,7 +158,7 @@ controller_server:
       PathAlignCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 14.0
+        cost_weight: 5.0
         max_path_occupancy_ratio: 0.05
         trajectory_point_step: 3
         threshold_to_consider: 0.4
@@ -165,12 +168,12 @@ controller_server:
         enabled: true
         cost_power: 1
         cost_weight: 5.0
-        offset_from_furthest: 5
+        offset_from_furthest: 25
         threshold_to_consider: 1.0
       PathAngleCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 15.0   # keep low — omni doesn't need to face the path
+        cost_weight: 10.0   # keep low — omni doesn't need to face the path
         offset_from_furthest: 4
         threshold_to_consider: 0.4
         max_angle_to_furthest: 1.0
@@ -178,7 +181,8 @@ controller_server:
       PreferForwardCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 5.0   # nudges the robot to prefer driving forward over backward
+        cost_weight: 20.0   # nudges the robot to prefer driving forward over backward
+        mode: 0  
       ObstaclesCritic:
         consider_footprint: true
         repulsion_weight: 1.5
@@ -203,7 +207,7 @@ bt_navigator:
 goal_checker:
   ros__parameters:
     plugin: "nav2_controller::SimpleGoalChecker"
-    xy_goal_tolerance: 0.10      # within 5cm of goal
+    xy_goal_tolerance: 0.15      # within 15cm of goal
     yaw_goal_tolerance: 0.25     # ~14 degrees
     stateful: true
 
@@ -230,7 +234,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         inflation_radius: 0.05 # radius of inflation around obstacles. Lower = less inflation but higher chance of accidental collision
-        cost_scaling_factor: 1.0  # higher = steeper dropoff from obstacles
+        cost_scaling_factor: 0.5  # higher = steeper dropoff from obstacles
 
 local_costmap:
   local_costmap:
@@ -255,7 +259,7 @@ local_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         inflation_radius: 0.2
-        cost_scaling_factor: 5.0  # higher = steeper dropoff from obstacles
+        cost_scaling_factor: 1.0  # higher = steeper dropoff from obstacles
 
 #SIM PARAMETERS
 # velocity_smoother:
@@ -284,17 +288,25 @@ velocity_smoother:
     odom_topic: odometry/filtered
     odom_duration: 0.1
 
-lifecycle_manager:
+# lifecycle_manager:
+#   ros__parameters:
+#     use_sim_time: false
+#     bond_timeout: 30.0 
+#     autostart: true
+#     node_names:
+#       - map_server
+#       # - amcl
+#       - planner_server
+#       - controller_server
+#       - bt_navigator
+#       - velocity_smoother
+
+lifecycle_manager_navigation:
   ros__parameters:
     use_sim_time: false
     autostart: true
-    node_names:
-      - map_server
-      # - amcl
-      - planner_server
-      - controller_server
-      - bt_navigator
-      - velocity_smoother
+    node_names: ['map_server', 'planner_server', 'controller_server', 'bt_navigator', 'waypoint_follower']
+    bond_timeout: 10.0 
 
 slam_toolbox:
   ros__parameters:
