@@ -9,9 +9,9 @@ UpdateFootprint::UpdateFootprint(
 : BT::SyncActionNode(name, config), node_ptr_(node_ptr)
 {
     // Nav2 costmap nodes subscribe to "<namespace>/footprint"
-    local_pub_  = node_ptr_->create_publisher<geometry_msgs::msg::PolygonStamped>(
+    local_pub_  = node_ptr_->create_publisher<geometry_msgs::msg::Polygon>(
         "/local_costmap/footprint",  rclcpp::SystemDefaultsQoS());
-    global_pub_ = node_ptr_->create_publisher<geometry_msgs::msg::PolygonStamped>(
+    global_pub_ = node_ptr_->create_publisher<geometry_msgs::msg::Polygon>(
         "/global_costmap/footprint", rclcpp::SystemDefaultsQoS());
 }
 
@@ -49,12 +49,12 @@ BT::NodeStatus UpdateFootprint::tick()
 }
 
 // ── Helper ───────────────────────────────────────────────────────────────────
-geometry_msgs::msg::PolygonStamped
+geometry_msgs::msg::Polygon
 UpdateFootprint::buildFootprint(bool extended) const
 {
-    geometry_msgs::msg::PolygonStamped fp;
-    fp.header.stamp    = node_ptr_->now();
-    fp.header.frame_id = "base_link";
+    geometry_msgs::msg::Polygon fp;
+    // fp.header.stamp    = node_ptr_->now();
+    // fp.header.frame_id = "base_link";
 
     const double front = kHalfFront + (extended ? kSweeperExt : 0.0);
 
@@ -75,7 +75,7 @@ UpdateFootprint::buildFootprint(bool extended) const
         return p;
     };
 
-    fp.polygon.points = {
+    fp.points = {
         pt(-kHalfBack,  -kHalfWidth),  // back-left
         pt( front,      -kHalfWidth),  // front-left
         pt( front,       kHalfWidth),  // front-right

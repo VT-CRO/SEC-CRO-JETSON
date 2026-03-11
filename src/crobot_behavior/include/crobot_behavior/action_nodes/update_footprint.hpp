@@ -1,7 +1,7 @@
 #pragma once
 #include <behaviortree_cpp_v3/action_node.h>
 #include <rclcpp/rclcpp.hpp>
-#include <geometry_msgs/msg/polygon_stamped.hpp>
+#include <geometry_msgs/msg/polygon.hpp>
 
 /**
  * UpdateFootprint
@@ -29,8 +29,8 @@ private:
     rclcpp::Node::SharedPtr node_ptr_;
 
     // Two publishers – one per costmap namespace
-    rclcpp::Publisher<geometry_msgs::msg::PolygonStamped>::SharedPtr local_pub_;
-    rclcpp::Publisher<geometry_msgs::msg::PolygonStamped>::SharedPtr global_pub_;
+    rclcpp::Publisher<geometry_msgs::msg::Polygon>::SharedPtr local_pub_;
+    rclcpp::Publisher<geometry_msgs::msg::Polygon>::SharedPtr global_pub_;
 
     // ── Footprint dimensions (metres) ──────────────────────────────────────
     // Measured from base_link (centre of robot).
@@ -41,5 +41,5 @@ private:
     static constexpr double kHalfFront   = 0.1524;  // +x (front half, normal)
     static constexpr double kSweeperExt  = 0.090;   // extra forward reach
 
-    geometry_msgs::msg::PolygonStamped buildFootprint(bool extended) const;
+    geometry_msgs::msg::Polygon buildFootprint(bool extended) const;
 };
