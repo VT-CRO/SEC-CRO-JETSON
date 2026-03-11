@@ -18,9 +18,9 @@
                    backup_secs="5.5"/>
 
       <!-- <UpdateFootprint name="footprint_extended_ducks" extended="true"/> -->
+      <!-- <SweeperControl sweeper_command = "0.0"/>
       <SweeperControl sweeper_command = "0.0"/>
-      <SweeperControl sweeper_command = "0.0"/>
-      <SweeperControl sweeper_command = "0.0"/>
+      <SweeperControl sweeper_command = "0.0"/> -->
 
       <!-- <UpdateFootprint name="footprint_normal" extended="false"/>     
       <SweeperControl sweeper_command = "3.0"/>
@@ -29,11 +29,12 @@
       <SweeperControl sweeper_command = "0.0"/> -->
 
       <!-- go near crater option 1 -->
-      <GoToPose name = "point_1" goalPoses = "0.694587230682373, -0.4472743570804596, -1.047"/>
-      <GoToPose name = "point_2" goalPoses = "1.0575226545333862, -1.2417306900024414, -1.5708"/>
+      <!-- <GoToPose name = "point_1" goalPoses = "0.694587230682373, -0.4472743570804596, -1.047"/>
+      <GoToPose name = "point_2" goalPoses = "1.0575226545333862, -1.2417306900024414, -1.5708"/> -->
 
       <!-- go around crater  option 2 -->
-      <GoToPose name = "point_3" goalPoses = "0.44427818059921265, -2.2738945484161377, 0.0"/>
+      <GoToPose name = "p1" goalPoses = "0.5193758010864258, -0.39722955226898193, 0.0"/>
+      <GoToPose name = "p2" goalPoses = "1.0000000000, -1.5500000000, 0.0"/>
 
       <SweeperControl sweeper_command = "3.0"/>
 
