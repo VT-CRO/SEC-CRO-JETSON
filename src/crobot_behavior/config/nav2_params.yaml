@@ -116,8 +116,8 @@ controller_server:
       wz_std: 0.4
       vx_max: 0.10
       vx_min: -0.10
-      vy_max: 0.10         # enable lateral motion
-      vy_min: -0.10
+      vy_max: 0.0         # enable lateral motion
+      vy_min: -0.0
       wz_max: 2.5
       iteration_count: 1
       prune_distance: 1.5
