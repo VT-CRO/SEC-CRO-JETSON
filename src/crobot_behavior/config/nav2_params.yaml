@@ -179,6 +179,10 @@ controller_server:
         enabled: true
         cost_power: 1
         cost_weight: 5.0   # nudges the robot to prefer driving forward over backward
+      ObstaclesCritic:
+        consider_footprint: true
+        repulsion_weight: 1.5
+        near_goal_distance: 0.5
       
 
 bt_navigator:
