@@ -201,7 +201,7 @@ controller_interface::CallbackReturn CrobotDriveController::on_deactivate(
         command_interfaces_[i].set_value(0.0);      // ankle angles → 0
         command_interfaces_[i + 4].set_value(0.0);  // wheel velocities → 0
     }
-    command_interfaces_[8].set_value(0.0); // winch
+    command_interfaces_[9].set_value(0.0); // winch
     RCLCPP_INFO(get_node()->get_logger(), "Deactivated CrobotDriveController");
     return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -223,7 +223,7 @@ controller_interface::return_type CrobotDriveController::update(
             command_interfaces_[i].set_value(0.0);
             command_interfaces_[i + 4].set_value(0.0);
         }
-        command_interfaces_[8].set_value(0.0); // winch
+        command_interfaces_[9].set_value(0.0); // winch
         RCLCPP_INFO(get_node()->get_logger(), "Failing to read from relevant topics");
         return controller_interface::return_type::OK;
     }
@@ -312,8 +312,8 @@ controller_interface::return_type CrobotDriveController::update(
         command_interfaces_[i].set_value(commands.ankle_angles[i]);     // position (rad)
         command_interfaces_[i + 4].set_value(commands.wheel_vels[i]);   // velocity (rad/s)
     }
-    command_interfaces_[7].set_value((*sweeper_pos)->data);
-    command_interfaces_[8].set_value((*winch_vel)->data);
+    command_interfaces_[8].set_value((*sweeper_pos)->data);
+    command_interfaces_[9].set_value((*winch_vel)->data);
 
     updateOdometry(time, period);
     return controller_interface::return_type::OK;
