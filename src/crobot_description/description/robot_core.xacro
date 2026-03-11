@@ -30,17 +30,17 @@
   <link name="chassis">
     <visual>
       <!-- visual origin relative to chassis link frame (center) -->
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0.04445 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="${body_length} ${body_width} ${body_height}"/>
+        <box size="0.4 ${body_width} ${body_height}"/>
       </geometry>
       <material name="white"/>
     </visual>
 
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0.04445 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="${body_length} ${body_width} ${body_height}"/>
+        <box size="0.4 ${body_width} ${body_height}"/>
       </geometry>
     </collision>
 
