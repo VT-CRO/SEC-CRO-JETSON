@@ -3,9 +3,11 @@
     <SequenceStar>
       <!-- <UpdateFootprint name="footprint_normal" extended="false"/> -->
       <SweeperControl sweeper_command = "3.0"/>
+      <SweeperControl sweeper_command = "3.0"/>
+      <SweeperControl sweeper_command = "3.0"/>
 
       <GoToPose name="navigate_to_button"
-                goalPoses="0.7571644186973572,-0.009385672397911549,0.0"/>
+                goalPoses="0.7571644186973572,-0.0091000,0.0"/>
 
       <PressButton name="press_button"
                    num_presses="3"
@@ -16,6 +18,8 @@
                    backup_secs="5.5"/>
 
       <!-- <UpdateFootprint name="footprint_extended_ducks" extended="true"/> -->
+      <SweeperControl sweeper_command = "0.0"/>
+      <SweeperControl sweeper_command = "0.0"/>
       <SweeperControl sweeper_command = "0.0"/>
 
       <!-- <UpdateFootprint name="footprint_normal" extended="false"/>     
