@@ -31,6 +31,8 @@
       <!-- go around crater  option 2 -->
       <GoToPose name = "point_3" goalPoses = "0.44427818059921265, -2.2738945484161377, 0.0"/>
 
+      <SweeperControl sweeper_command = "3.0"/>
+
       <!-- crank, but we need to be in a valid position first -->
       <!-- i'm gonna set the speeds to zero for now, 
           but maybe set to 0.1 and -0.1 later -->
