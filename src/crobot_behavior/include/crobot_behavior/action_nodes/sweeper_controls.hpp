@@ -26,5 +26,6 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr publisher_;
     std_msgs::msg::Float64 msg;
     std::string sweeperString;
-    bool done_ = false;
+    rclcpp::Time start_time_;
+    static constexpr double TIMEOUT_SEC = 30.0;
 };
