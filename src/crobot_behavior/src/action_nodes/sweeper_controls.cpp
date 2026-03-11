@@ -35,8 +35,6 @@ BT::NodeStatus SweeperControl::onStart() {
 
     double position = std::stod(std::string(sweeperString));
 
-    msg.layout.dim.resize(1);
-
     msg.data = {position};
 
     RCLCPP_INFO(node_ptr_->get_logger(), "[%s] Initalization Successful", (this->name()).c_str());
