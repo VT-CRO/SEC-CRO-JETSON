@@ -1,7 +1,7 @@
 <root main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <SequenceStar>
-      <UpdateFootprint name="footprint_normal" extended="false"/>
+      <!-- <UpdateFootprint name="footprint_normal" extended="false"/> -->
       <SweeperControl sweeper_command = "3.0"/>
 
       <GoToPose name="navigate_to_button"
@@ -15,7 +15,7 @@
                    backward_secs="1.0"
                    backup_secs="5.5"/>
 
-      <UpdateFootprint name="footprint_extended_ducks" extended="true"/>
+      <!-- <UpdateFootprint name="footprint_extended_ducks" extended="true"/> -->
       <SweeperControl sweeper_command = "0.0"/>
 
       <!-- <UpdateFootprint name="footprint_normal" extended="false"/>     
