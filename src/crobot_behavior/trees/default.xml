@@ -2,10 +2,9 @@
   <BehaviorTree ID="MainTree">
     <SequenceStar>
       <UpdateFootprint name="footprint_normal" extended="false"/>
-      <!-- setting this three tiems because it no work right -->      
       <SweeperControl sweeper_command = "3.0"/>
 
-      <GoToPose name="navigate_to_button"
+      <!-- <GoToPose name="navigate_to_button"
                 goalPoses="0.7571644186973572,-0.009385672397911549,0.0"/>
 
       <PressButton name="press_button"
@@ -14,16 +13,20 @@
                    forward_secs="1.5"
                    backward_speed="0.10"
                    backward_secs="1.0"
-                   backup_secs="5.5"/>
+                   backup_secs="5.5"/> -->
 
       <UpdateFootprint name="footprint_extended_ducks" extended="true"/>
+      <SweeperControl sweeper_command = "1.0"/>
 
-      <!-- setting this three tiems because it no work right -->
+      <UpdateFootprint name="footprint_normal" extended="false"/>     
+      <SweeperControl sweeper_command = "3.0"/>
+
+      <UpdateFootprint name="footprint_extended_ducks" extended="true"/>
       <SweeperControl sweeper_command = "1.0"/>
 
       <!-- go near crater option 1 -->
-      <GoToPose name = "point_1" goalPoses = "0.694587230682373, -0.4472743570804596, 0.0"/>
-      <GoToPose name = "point_2" goalPoses = "1.0575226545333862, -1.2417306900024414, 0.0"/>
+      <!-- <GoToPose name = "point_1" goalPoses = "0.694587230682373, -0.4472743570804596, 0.0"/>
+      <GoToPose name = "point_2" goalPoses = "1.0575226545333862, -1.2417306900024414, 0.0"/> -->
 
       <!-- go around crater  option 2 -->
       <!-- <GoToPose name = "point_3" goalPoses = "0.44427818059921265, -2.2738945484161377, 0.0"/> -->
@@ -31,12 +34,12 @@
       <!-- crank, but we need to be in a valid position first -->
       <!-- i'm gonna set the speeds to zero for now, 
           but maybe set to 0.1 and -0.1 later -->
-      <TurnCrank  name = "turn_crank" 
+      <!-- <TurnCrank  name = "turn_crank" 
                   run_seconds = "10.0" 
                   fwd_speed = "0.0"
                   right_speed = "-0.0"
                   winch_speed = "1.5"
-                  />
+                  /> -->
 
     </SequenceStar>
   </BehaviorTree>
