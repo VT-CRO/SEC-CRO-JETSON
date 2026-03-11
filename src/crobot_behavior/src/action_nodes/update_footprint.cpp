@@ -10,9 +10,9 @@ UpdateFootprint::UpdateFootprint(
 {
     // Nav2 costmap nodes subscribe to "<namespace>/footprint"
     local_pub_  = node_ptr_->create_publisher<geometry_msgs::msg::Polygon>(
-        "/local_costmap/footprint",  rclcpp::SystemDefaultsQoS());
+        "/local_costmap/footprint",  10);
     global_pub_ = node_ptr_->create_publisher<geometry_msgs::msg::Polygon>(
-        "/global_costmap/footprint", rclcpp::SystemDefaultsQoS());
+        "/global_costmap/footprint", 10);
 }
 
 // ── Port list ────────────────────────────────────────────────────────────────
