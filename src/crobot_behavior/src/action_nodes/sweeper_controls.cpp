@@ -2,7 +2,6 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "crobot_behavior/action_nodes/sweeper_controls.hpp"
-#include "std_msgs/msg/float64_multi_array.hpp"
 #include <string>
 
 SweeperControl::SweeperControl(const std::string &name,
@@ -10,7 +9,7 @@ SweeperControl::SweeperControl(const std::string &name,
  rclcpp::Node::SharedPtr node_ptr)
 : BT::StatefulActionNode(name, config), node_ptr_(node_ptr) 
 {
-     publisher_ = node_ptr->create_publisher<std_msgs::msg::Float64MultiArray>("/sweeper_position_controller/commands", 10);
+     publisher_ = node_ptr->create_publisher<std_msgs::msg::Float64>("/sweeper_position_controller/commands", 10);
 }
 
 BT::PortsList SweeperControl::providedPorts()   

@@ -2,7 +2,9 @@
 #include <behaviortree_cpp_v3/action_node.h>
 #include <rclcpp/rclcpp.hpp>
 #include "rclcpp_action/rclcpp_action.hpp"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include "std_msgs/msg/float64_multi_array.hpp"
+
 
 class SweeperControl : public BT::StatefulActionNode
 {
@@ -21,8 +23,8 @@ public:
 
 private:
     rclcpp::Node::SharedPtr node_ptr_;
-    rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisher_;
-    std_msgs::msg::Float64MultiArray msg;
+    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr publisher_;
+    std_msgs::msg::Float64 msg;
     std::string sweeperString;
     bool done_ = false;
 };

@@ -4,6 +4,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include "geometry_msgs/msg/twist.hpp"
 #include "std_msgs/msg/float64_multi_array.hpp"
+#include "std_msgs/msg/float64.hpp"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 class TurnCrank : public BT::StatefulActionNode
 {
@@ -21,7 +23,7 @@ private:
 
     rclcpp::Node::SharedPtr node_ptr_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr winch_pub_;
+    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr winch_pub_;
 
     Phase phase_ = Phase::TURNING;
     rclcpp::Time start_time_;
