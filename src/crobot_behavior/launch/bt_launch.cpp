@@ -69,7 +69,7 @@ int main(int argc, char** argv)
   );
 
   // register embedded node
-  factory.registerBuilder<EmbeddedMode>(
+  factory.registerBuilder<EmbeddedModeControl>(
     "EmbeddedModeControl",
     [node](const std::string& name, const BT::NodeConfiguration& config) {
       return std::make_unique<EmbeddedModeControl>(name, config, node);

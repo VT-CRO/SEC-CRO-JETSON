@@ -445,7 +445,7 @@ namespace crobot_hardware
         // j["cmd"] = "write";
 
         if (embedded_mode_ == EmbeddedMode::CRATER_RUN) {
-            J["cmd"] = "craterRun";
+            j["cmd"] = "craterRun";
         } else {
             j["cmd"] = "write";
 
