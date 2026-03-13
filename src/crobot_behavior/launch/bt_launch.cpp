@@ -83,7 +83,7 @@ int main(int argc, char** argv)
     "PlayBag",
     [node](const std::string& name, const BT::NodeConfiguration& config)
     {
-      return std::make_unique<GetThatBag>(name, config, node);
+      return std::make_unique<GetThatBag>(name, config);
     }
   );
 
