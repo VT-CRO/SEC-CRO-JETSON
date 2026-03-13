@@ -11,6 +11,7 @@
 #include "crobot_behavior/action_nodes/update_footprint.hpp"
 #include "crobot_behavior/action_nodes/turn_crank.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "crobot_behavior/action_nodes/embedded_mode.hpp"
 
 
 int main(int argc, char** argv)
@@ -64,6 +65,14 @@ int main(int argc, char** argv)
     "TurnCrank",
     [node](const std::string& name, const BT::NodeConfiguration& config) {
       return std::make_unique<TurnCrank>(name, config, node);
+    }
+  );
+
+  // register embedded node
+  factory.registerBuilder<EmbeddedMode>(
+    "EmbeddedModeControl",
+    [node](const std::string& name, const BT::NodeConfiguration& config) {
+      return std::make_unique<EmbeddedModeControl>(name, config, node);
     }
   );
 

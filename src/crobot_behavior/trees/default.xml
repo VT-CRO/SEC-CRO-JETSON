@@ -51,6 +51,11 @@
                   winch_speed = "1.5"
                   />
 
+      <!-- crater -->
+      <EmbeddedModeControl mode="craterRun"/>
+      <Wait milliseconds="500"/>
+      <EmbeddedModeControl mode="write"/>
+
     </SequenceStar>
   </BehaviorTree>
 </root>
