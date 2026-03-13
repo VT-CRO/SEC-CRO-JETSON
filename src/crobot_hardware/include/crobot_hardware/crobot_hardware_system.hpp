@@ -5,6 +5,7 @@
 #include "crobot_hardware/serial_comm.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
+#include "std_msgs/msg/int32.hpp"
 
 namespace crobot_hardware
 {
@@ -114,6 +115,9 @@ namespace crobot_hardware
         int bias_sample_count_ = 0;
         static constexpr int BIAS_SAMPLES = 60; // ~2 seconds at 100Hz
         bool bias_calibrated_ = false;
+
+        rclcpp::Node::SharedPtr photoresistor_node_;
+        rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr photoresistor_pub_;
     };
 }
 
