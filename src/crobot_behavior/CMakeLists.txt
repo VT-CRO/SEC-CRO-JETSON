@@ -26,6 +26,8 @@ add_library(crobot_behavior_lib SHARED
   src/action_nodes/turn_crank.cpp
   src/action_nodes/embedded_mode.cpp
   # src/action_nodes/timer.cpp
+  src/action_nodes/get_that_bag.cpp
+  src/action_nodes/wait_for_light.cpp
 )
 
 ament_target_dependencies(crobot_behavior_lib

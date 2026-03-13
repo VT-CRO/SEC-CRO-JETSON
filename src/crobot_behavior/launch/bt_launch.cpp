@@ -10,6 +10,8 @@
 #include "crobot_behavior/action_nodes/sweeper_controls.hpp"
 #include "crobot_behavior/action_nodes/update_footprint.hpp"
 #include "crobot_behavior/action_nodes/turn_crank.hpp"
+#include "crobot_behavior/action_nodes/wait_for_light.hpp"
+#include "crobot_behavior/action_nodes/get_that_bag.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "crobot_behavior/action_nodes/embedded_mode.hpp"
 
@@ -73,6 +75,21 @@ int main(int argc, char** argv)
     "EmbeddedModeControl",
     [node](const std::string& name, const BT::NodeConfiguration& config) {
       return std::make_unique<EmbeddedModeControl>(name, config, node);
+  // register photoresistor wait
+  factory.registerBuilder<WaitForLight>(
+    "WaitForLight",
+    [node](const std::string& name, const BT::NodeConfiguration& config)
+    {
+      return std::make_unique<WaitForLight>(name, config, node);
+    }
+  );
+
+  // Register rosbag playing
+  factory.registerBuilder<GetThatBag>(
+    "PlayBag",
+    [node](const std::string& name, const BT::NodeConfiguration& config)
+    {
+      return std::make_unique<GetThatBag>(name, config);
     }
   );
 

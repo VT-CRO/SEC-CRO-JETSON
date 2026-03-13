@@ -263,6 +263,9 @@ namespace crobot_hardware
                     embedded_mode_ = EmbeddedMode::NORMAL;
                 }
             });
+        photoresistor_node_ = rclcpp::Node::make_shared("crobot_photoresistor_publisher");
+        photoresistor_pub_  = photoresistor_node_->create_publisher<std_msgs::msg::Int32>(
+            "/photoresistor", rclcpp::SensorDataQoS());
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -417,7 +420,16 @@ namespace crobot_hardware
 
                 // Spin the imu_node_ so it actually sends
                 rclcpp::spin_some(imu_node_);
-                // rclcpp::spin_some(mode_node_);
+
+                int photoresistor_val = response["photoresistor"];
+
+                auto photoresistor_msg = std_msgs::msg::Int32();
+
+                photoresistor_msg.data = photoresistor_val;
+
+                photoresistor_pub_->publish(photoresistor_msg);
+
+                rclcpp::spin_some(photoresistor_node_);
             }
             catch (json::parse_error &e)
             {
