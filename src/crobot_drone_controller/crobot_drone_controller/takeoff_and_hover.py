@@ -18,7 +18,7 @@ class TakeoffAndHover(Node):
         self.declare_parameter('takeoff_altitude', 1.5) # altitude is in meters
         self.declare_parameter('mode', 'GUIDED_NOGPS') # we don't have gps
         self.declare_parameter('connect_timeout_s', 15.0) # after 15 seconds, we will stop waiting to connect
-        self.declare_parameter('hover_time_s', 15.0)
+        self.declare_parameter('hover_time_s', 5.0)
 
         # check state stuff: https://docs.ros.org/en/api/mavros_msgs/html/msg/State.html
         self.state = State()
@@ -42,17 +42,17 @@ class TakeoffAndHover(Node):
         self.state = msg
 
     def wait_for_service(self, client, name):
-        while rclpy.ok() and not client.wait_for_service(timeout_seconds = 1.0):
+        while rclpy.ok() and not client.wait_for_service(timeout_sec = 1.0):
             self.get_logger().info(f"Waiting for {name} service...")
 
-    def call_and_wait(self, client, request, label, timeout_seconds = 5.0):
+    def call_and_wait(self, client, request, label, timeout_sec = 5.0):
         future = client.call_async(request)
         start = time.time()
 
         while rclpy.ok() and not future.done():
-            rclpy.spin_once(self, timeout_seconds = 0.1)
+            rclpy.spin_once(self, timeout_sec = 0.1)
 
-            if (time.time() - start > timeout_seconds):
+            if (time.time() - start > timeout_sec):
                 self.get_logger().error(f"{label} timed out")
                 return None
         
@@ -60,7 +60,7 @@ class TakeoffAndHover(Node):
             self.get_logger().error(f"{label} [failed]: no response")
             return None
         
-        self.get_logger().error(f"{label} response received")
+        self.get_logger().info(f"{label} response received")
         return future.result()
 
 
@@ -100,7 +100,7 @@ class TakeoffAndHover(Node):
         self.wait_for(self.set_mode_cli, "set_mode")
         self.wait_for(self.arm_cli, "arming")
         self.wait_for(self.takeoff_cli, "takeoff")
-        self.wait_for(self.takeoff_cli, "land")
+        self.wait_for(self.land_cli, "land")
 
         self.get_logger().info("Waiting for FCU connection...")
         while rclpy.ok() and not self.state.connected:
