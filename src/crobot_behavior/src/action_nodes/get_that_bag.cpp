@@ -19,7 +19,7 @@ BT::PortsList GetThatBag::providedPorts()
 BT::NodeStatus GetThatBag::tick() {
     std::string path;
     getInput("path", path);
-    std::string command = "ros2 bag play" + path;
+    std::string command = "ros2 bag play " + path;
     system(command.c_str());
     return BT::NodeStatus::SUCCESS;
 }
