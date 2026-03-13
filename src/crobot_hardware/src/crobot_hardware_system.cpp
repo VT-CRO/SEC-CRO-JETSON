@@ -64,10 +64,10 @@ namespace crobot_hardware
         winch_.name = cfg_.winch_name;
 
         // More definitions (no clue what these do, it's 4am lol)
-        shoulder_name = cfg_.shoulder_name;
-        elbow_name = cfg_.elbow_name;
-        gripper_name = cfg.gripper_name;
-        flagdropper_name = cfg.flagdropper_name;
+        shoulder_.name = cfg_.shoulder_name;
+        elbow_.name = cfg_.elbow_name;
+        gripper_.name = cfg_.gripper_name;
+        flagdropper_.name = cfg_.flagdropper_name;
 
         // for (const hardware_interface::ComponentInfo & joint : info_.joints)
         // {
@@ -217,7 +217,7 @@ namespace crobot_hardware
 
         // Really out of my depth now, but I don't think I'm doing things super wrong
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
-            shoulder_.name, hardware_interface::HW_IF_VELOCITY, &soulder_.cmd));
+            shoulder_.name, hardware_interface::HW_IF_VELOCITY, &shoulder_.cmd));
 
         command_interfaces.emplace_back(hardware_interface::CommandInterface(
             elbow_.name, hardware_interface::HW_IF_VELOCITY, &elbow_.cmd));
@@ -450,10 +450,10 @@ namespace crobot_hardware
         // I have code in Crobot.ino that defines my thoughts a bit more clearly- probably worth a read?
         j["flag"] = (int)(80.0 + flagdropper_.cmd * RAD_TO_DEG); // initial value + angle change(?)
         j["shoulder"] = (int)(shoulder_.cmd * RAD_TO_DEG);       // Just our desired angle?
-        j["elbow"] = (int)(180.0 - shoulder_.cmd * RAD_TO_DEG)   // initial value - angle change(?)
-            j["gripper"] = (int)(shoulder_.cmd * RAD_TO_DEG)     // open to angle set
+        j["elbow"] = (int)(180.0 - shoulder_.cmd * RAD_TO_DEG);   // initial value - angle change(?)
+        j["gripper"] = (int)(shoulder_.cmd * RAD_TO_DEG);     // open to angle set
 
-            std::string j_str = j.dump() + "\n";
+        std::string j_str = j.dump() + "\n";
 
         // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Sending JSON: %s", j_str.c_str());
         // RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Sweeper position: %d", (int)(40.0 + sweeper_.cmd * RAD_TO_DEG));
