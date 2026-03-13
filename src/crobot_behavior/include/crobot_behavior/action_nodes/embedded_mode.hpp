@@ -25,5 +25,5 @@ private:
     std_msgs::msg::String msg_;
     std::string mode_string_;
     rclcpp::Time start_time_;
-    static constexpr double TIMEOUT_SEC = 5.0;
+    static constexpr double TIMEOUT_SEC = 30.0;
 };
