@@ -10,6 +10,7 @@
 #include "crobot_behavior/action_nodes/sweeper_controls.hpp"
 #include "crobot_behavior/action_nodes/update_footprint.hpp"
 #include "crobot_behavior/action_nodes/turn_crank.hpp"
+#include "crobot_behavior/action_nodes/wait_for_light.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 
 
@@ -64,6 +65,15 @@ int main(int argc, char** argv)
     "TurnCrank",
     [node](const std::string& name, const BT::NodeConfiguration& config) {
       return std::make_unique<TurnCrank>(name, config, node);
+    }
+  );
+
+  // register photoresistor wait
+  factory.registerBuilder<WaitForLight>(
+    "WaitForLight",
+    [node](const std::string& name, const BT::NodeConfiguration& config)
+    {
+      return std::make_unique<WaitForLight>(name, config, node);
     }
   );
 

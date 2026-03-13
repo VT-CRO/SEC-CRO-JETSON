@@ -405,6 +405,8 @@ namespace crobot_hardware
 
                 // Spin the imu_node_ so it actually sends
                 rclcpp::spin_some(imu_node_);
+
+                response["photoresistor"];
             }
             catch (json::parse_error &e)
             {
