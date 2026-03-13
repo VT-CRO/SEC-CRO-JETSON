@@ -2,10 +2,9 @@
   <BehaviorTree ID="MainTree">
     <SequenceStar>
       <!-- crater -->
-      <EmbeddedModeControl mode="craterRun"/>
-      <Wait milliseconds="500"/>
       <EmbeddedModeControl mode="write"/>
-
+      <EmbeddedModeControl mode="craterRun"/>
+      <!-- <Wait milliseconds="500"/> -->
     </SequenceStar>
   </BehaviorTree>
 </root>
