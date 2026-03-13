@@ -7,7 +7,7 @@ WaitForLight::WaitForLight(
 ) : BT::StatefulActionNode(name, config), node_ptr_(node_ptr)
 {
     sub_ = node_ptr->create_subscription<std_msgs::msg::Int32>(
-        "/photoresistor", 10,
+        "/photoresistor", rclcpp::SensorDataQoS(),
         [this](const std_msgs::msg::Int32::SharedPtr msg) {
             last_value_ = msg->data;
         }
