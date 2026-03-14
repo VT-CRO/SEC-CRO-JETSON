@@ -75,6 +75,7 @@ private:
         std::string odom_topic    = "~/odom";
         std::string sweeper_topic = "/sweeper_position_controller/commands";
         std::string winch_topic   = "/winch_velocity_controller/commands";
+        std::string flagdropper_topic = "/flagdropper_controller/commands";
 
         // Ankle angle limits (radians)
         std::vector<double> ankle_min_angles = {-1.885, -0.524, -0.436, -1.728};  // [FL, FR, BL, BR]
@@ -92,6 +93,10 @@ private:
     // Winch velocity subscriber
     rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr winch_sub_;
     realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64>> received_winch_vel_;
+
+    // flag dropper subscriber
+    rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr flagdropper_sub_;
+    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64>> received_flagdropper_sub_;
 
     // Odometry publisher
     std::shared_ptr<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>> odom_pub_;

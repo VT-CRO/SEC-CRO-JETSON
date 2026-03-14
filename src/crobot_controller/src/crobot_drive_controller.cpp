@@ -45,6 +45,14 @@ controller_interface::CallbackReturn CrobotDriveController::on_init()
 
         auto_declare<std::string>("sweeper_topic", params_.sweeper_topic);
         auto_declare<std::string>("winch_topic", params_.winch_topic);
+
+
+        // these weren't here before, but i think they should be, so check this? - olivia
+        auto_declare<std::string>("sweeper_joint", params_.sweeper_joint);
+        auto_declare<std::string>("winch_joint", params_.winch_joint);
+
+        auto_declare<std::string>("flagdropper_joint", "flagdropper_joint");
+        auto_declare<std::string>("flagdropper_topic", params_.flagdropper_topic);
         
         auto_declare<std::vector<double>>("ankle_min_angles", params_.ankle_min_angles);
         auto_declare<std::vector<double>>("ankle_max_angles", params_.ankle_max_angles);
@@ -65,6 +73,7 @@ controller_interface::CallbackReturn CrobotDriveController::on_configure(
 
     params_.sweeper_joint = get_node()->get_parameter("sweeper_joint").as_string();
     params_.winch_joint   = get_node()->get_parameter("winch_joint").as_string();
+    params_.flagdropper_joint = get_node()->get_parameter("flagdropper_joint").as_string();
 
     params_.imu_joint = get_node()->get_parameter("imu_joint").as_string();
 
@@ -92,6 +101,7 @@ controller_interface::CallbackReturn CrobotDriveController::on_configure(
     params_.odom_topic    = get_node()->get_parameter("odom_topic").as_string();
     params_.sweeper_topic = get_node()->get_parameter("sweeper_topic").as_string();
     params_.winch_topic   = get_node()->get_parameter("winch_topic").as_string();
+    params_.flagdropper_topic = get_node()->get_parameter("flagdropper_topic").as_string();
 
     params_.ankle_min_angles = get_node()->get_parameter("ankle_min_angles").as_double_array();
     params_.ankle_max_angles = get_node()->get_parameter("ankle_max_angles").as_double_array();
@@ -116,6 +126,14 @@ controller_interface::CallbackReturn CrobotDriveController::on_configure(
         [this](const std::shared_ptr<std_msgs::msg::Float64> msg)
         {
             received_winch_vel_.writeFromNonRT(msg);
+        }
+    );
+
+    flagdropper_sub_ = get_node()->create_subscription<std_msgs::msg::Float64>(
+        params_.flagdropper_topic, rclcpp::SystemDefaultsQoS(),
+        [this](const std::shared_ptr<std_msgs::msg::Float64> msg)
+        {
+            received_flagdropper_pos_.writeFromNonRT(msg);
         }
     );
 
@@ -144,6 +162,8 @@ CrobotDriveController::command_interface_configuration() const
     config.names.push_back(params_.sweeper_joint + "/" + hardware_interface::HW_IF_POSITION);
 
     config.names.push_back(params_.winch_joint + "/" + hardware_interface::HW_IF_VELOCITY);
+
+    config.names.push_back(params_.flagdropper_joint + "/" + hardware_interface::HW_IF_VELOCITY);
 
     return config;
 }
@@ -186,6 +206,8 @@ controller_interface::CallbackReturn CrobotDriveController::on_activate(
     received_sweeper_pos_.writeFromNonRT(std::make_shared<std_msgs::msg::Float64>());
     received_winch_vel_.writeFromNonRT(std::make_shared<std_msgs::msg::Float64>());
 
+    received_flagdropper_pos_.writeFromNonRT(std::make_shared<std_msgs::msg::Float64>());
+
     for (auto & a : assumed_ankle_angles_)
         a = 0.0;
 
@@ -202,6 +224,7 @@ controller_interface::CallbackReturn CrobotDriveController::on_deactivate(
         command_interfaces_[i + 4].set_value(0.0);  // wheel velocities → 0
     }
     command_interfaces_[9].set_value(0.0); // winch
+    command_interfaces_[10].set_value(0.0); // flagdropper
     RCLCPP_INFO(get_node()->get_logger(), "Deactivated CrobotDriveController");
     return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -216,6 +239,8 @@ controller_interface::return_type CrobotDriveController::update(
     auto cmd_vel = received_cmd_vel_.readFromRT();
     auto sweeper_pos = received_sweeper_pos_.readFromRT();
     auto winch_vel = received_winch_vel_.readFromRT();
+    auto flagdropper_pos = received_flagdropper_pos_.readFromRT();
+
     if ((!cmd_vel || !(*cmd_vel)) || (!sweeper_pos || !(*sweeper_pos)) || (!winch_vel || !(*winch_vel)))
     {
         for (size_t i = 0; i < 4; ++i)
@@ -224,8 +249,15 @@ controller_interface::return_type CrobotDriveController::update(
             command_interfaces_[i + 4].set_value(0.0);
         }
         command_interfaces_[9].set_value(0.0); // winch
+        command_interfaces_[10].set_value(0.0); // flagdropper
         RCLCPP_INFO(get_node()->get_logger(), "Failing to read from relevant topics");
         return controller_interface::return_type::OK;
+    }
+
+    double flag_cmd = 0.0;
+    if (flagdropper_pos && *flagdropper_pos)
+    {
+        flag_cmd = (*flagdropper_pos)->data;
     }
 
     double linear_x = std::clamp((*cmd_vel)->linear.x,
@@ -314,6 +346,7 @@ controller_interface::return_type CrobotDriveController::update(
     }
     command_interfaces_[8].set_value((*sweeper_pos)->data);
     command_interfaces_[9].set_value((*winch_vel)->data);
+    command_interfaces_[10].set_value(flag_cmd);
 
     updateOdometry(time, period);
     return controller_interface::return_type::OK;

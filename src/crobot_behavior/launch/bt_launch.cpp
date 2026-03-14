@@ -14,6 +14,7 @@
 #include "crobot_behavior/action_nodes/get_that_bag.hpp"
 #include "crobot_behavior/action_nodes/embedded_mode.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "crobot_behavior/action_nodes/flag_dropper.hpp"
 
 
 int main(int argc, char** argv)
@@ -93,6 +94,14 @@ int main(int argc, char** argv)
     "EmbeddedModeControl",
     [node](const std::string& name, const BT::NodeConfiguration& config) {
       return std::make_unique<EmbeddedModeControl>(name, config, node);
+    }
+  );
+
+  // register flag node
+  factory.registerBuilder<FlagDropper>(
+    "FlagDropper",
+    [node](const std::string& name, const BT::NodeConfiguration& config) {
+      return std::make_unique<FlagDropper>(name, config, node);
     }
   );
 

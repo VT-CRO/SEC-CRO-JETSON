@@ -31,6 +31,8 @@ crobot_drive_controller:
     sweeper_joint: sweeper_joint
     winch_joint: winch_joint
 
+    flagdropper_joint: flagdropper_joint
+    
     imu_joint: base_to_imu_joint
 
     wheel_separation_width: 0.175     # 175mm left-right

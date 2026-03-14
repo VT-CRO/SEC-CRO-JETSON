@@ -91,7 +91,6 @@ namespace crobot_hardware
             int timeout_ms = 1000;
         } cfg_;
 
-        /////////////////////////////////////////////////////////////////////////////////////
         enum class EmbeddedMode {
             NORMAL,
             CRATER_RUN
@@ -99,7 +98,6 @@ namespace crobot_hardware
         EmbeddedMode embedded_mode_ = EmbeddedMode::NORMAL;
         rclcpp::Subscription<std_msgs::msg::String>::SharedPtr mode_sub_;
         rclcpp::Node::SharedPtr mode_node_;
-        /////////////////////////////////////////////////////////////////////////////////////
 
         // fl, fr, bl, br)
         std::vector<Motor> wheels_;
