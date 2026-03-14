@@ -49,6 +49,7 @@ private:
         std::string winch_joint;
 
         std::string imu_joint;
+        std::string flagdropper_joint;
 
         // Robot geometry (meters)
         double wheel_separation_width  = 0.150;   // left-right wheel spacing
@@ -96,7 +97,7 @@ private:
 
     // flag dropper subscriber
     rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr flagdropper_sub_;
-    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64>> received_flagdropper_sub_;
+    realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64>> received_flagdropper_pos_;
 
     // Odometry publisher
     std::shared_ptr<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>> odom_pub_;

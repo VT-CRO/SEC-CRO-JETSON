@@ -1,17 +1,17 @@
-#include "crobot_behavior/action_nodes/flag_dropper_control.hpp"
+#include "crobot_behavior/action_nodes/flag_dropper.hpp"
 #include <string>
 
-FlagDropperControl::FlagDropperControl(const std::string &name, const BT::NodeConfiguration& config, rclcpp::Node::SharedPtr node_ptr)
+FlagDropper::FlagDropper(const std::string &name, const BT::NodeConfiguration& config, rclcpp::Node::SharedPtr node_ptr)
 : BT::StatefulActionNode(name, config), node_ptr_(node_ptr) {
     publisher_ = node_ptr_->create_publisher<std_msgs::msg::Float64>(
         "/flagdropper_controller/commands", 10);
 }
 
-BT::PortsList FlagDropperControl::providedPorts() {
+BT::PortsList FlagDropper::providedPorts() {
     return { BT::InputPort<std::string>("flag_command") };
 }
 
-BT::NodeStatus FlagDropperControl::onStart() {
+BT::NodeStatus FlagDropper::onStart() {
     auto result = getInput("flag_command", flag_string_);
     if (!result) {
         throw BT::RuntimeError("Missing required input [flag_command]");
@@ -28,7 +28,7 @@ BT::NodeStatus FlagDropperControl::onStart() {
     return BT::NodeStatus::RUNNING;
 }
 
-BT::NodeStatus FlagDropperControl::onRunning() {
+BT::NodeStatus FlagDropper::onRunning() {
     double time_elapsed = (node_ptr_->now() - start_time_).seconds();
 
     if (time_elapsed > TIMEOUT_SEC) {
@@ -54,6 +54,6 @@ BT::NodeStatus FlagDropperControl::onRunning() {
     return BT::NodeStatus::SUCCESS;
 }
 
-void FlagDropperControl::onHalted() {
+void FlagDropper::onHalted() {
     RCLCPP_WARN(node_ptr_->get_logger(), "[%s] Halted", name().c_str());
 }

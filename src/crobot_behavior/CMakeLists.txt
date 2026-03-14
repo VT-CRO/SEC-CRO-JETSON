@@ -28,7 +28,7 @@ add_library(crobot_behavior_lib SHARED
   # src/action_nodes/timer.cpp
   src/action_nodes/get_that_bag.cpp
   src/action_nodes/wait_for_light.cpp
-  src/action_nodes/flagdropper.cpp
+  src/action_nodes/flag_dropper.cpp
 )
 
 ament_target_dependencies(crobot_behavior_lib

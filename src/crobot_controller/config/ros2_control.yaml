@@ -55,6 +55,8 @@ crobot_drive_controller:
     sweeper_topic: /sweeper_position_controller/commands
     winch_topic: /winch_velocity_controller/commands
 
+    flagdropper_topic: /flagdropper_controller/commands
+
     ankle_min_angles: [-1.885, -0.524, -0.436, -1.728]  # [FL, FR, BL, BR]
     ankle_max_angles: [ 0.471,  1.676,  1.920,  0.628]
 
