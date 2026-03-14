@@ -93,7 +93,8 @@ namespace crobot_hardware
 
         enum class EmbeddedMode {
             NORMAL,
-            CRATER_RUN
+            CRATER_RUN,
+            LAUNCH_DRONE
         };
         EmbeddedMode embedded_mode_ = EmbeddedMode::NORMAL;
         rclcpp::Subscription<std_msgs::msg::String>::SharedPtr mode_sub_;

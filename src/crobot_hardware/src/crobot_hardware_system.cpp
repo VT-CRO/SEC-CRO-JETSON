@@ -259,6 +259,9 @@ namespace crobot_hardware
                 if (msg->data == "craterRun") {
                     embedded_mode_ = EmbeddedMode::CRATER_RUN;
                 }
+                else if (msg->data == "launchDrone") {
+                    embedded_mode_ = EmbeddedMode::LAUNCH_DRONE;
+                }
                 else if (msg->data == "write") {
                     embedded_mode_ = EmbeddedMode::NORMAL;
                 }
@@ -458,6 +461,8 @@ namespace crobot_hardware
 
         if (embedded_mode_ == EmbeddedMode::CRATER_RUN) {
             j["cmd"] = "craterRun";
+        } else if (embedded_mode_ == EmbeddedMode::LAUNCH_DRONE) {
+            j["cmd"] = "launchDrone";
         } else {
             j["cmd"] = "write";
 
