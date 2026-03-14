@@ -2,8 +2,11 @@
   <BehaviorTree ID="MainTree">
     <SequenceStar>
       <EmbeddedModeControl mode="write"/>
-      <WaitForLight threshold="750"/>
-      <PlayBag path="/ssd/olivia_test_ws/recordings/try1"/>
+      <WaitForLight threshold="730"/>
+      <!-- <PlayBag path="/ssd/olivia_test_ws/recordings/button_strafe_in_wall"/>
+      <PlayBag path="/ssd/olivia_test_ws/recordings/keypad_5"/> -->
+      <PlayBag path="/ssd/olivia_test_ws/recordings/better_button"/>
+      <PlayBag path="/ssd/olivia_test_ws/recordings/something"/>
       
       <!-- crater -->
       <EmbeddedModeControl mode="craterRun"/>

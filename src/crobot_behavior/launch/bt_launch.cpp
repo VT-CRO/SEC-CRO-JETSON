@@ -12,8 +12,8 @@
 #include "crobot_behavior/action_nodes/turn_crank.hpp"
 #include "crobot_behavior/action_nodes/wait_for_light.hpp"
 #include "crobot_behavior/action_nodes/get_that_bag.hpp"
-#include "geometry_msgs/msg/twist.hpp"
 #include "crobot_behavior/action_nodes/embedded_mode.hpp"
+#include "geometry_msgs/msg/twist.hpp"
 
 
 int main(int argc, char** argv)
@@ -70,11 +70,6 @@ int main(int argc, char** argv)
     }
   );
 
-  // register embedded node
-  factory.registerBuilder<EmbeddedModeControl>(
-    "EmbeddedModeControl",
-    [node](const std::string& name, const BT::NodeConfiguration& config) {
-      return std::make_unique<EmbeddedModeControl>(name, config, node);
   // register photoresistor wait
   factory.registerBuilder<WaitForLight>(
     "WaitForLight",
@@ -90,6 +85,14 @@ int main(int argc, char** argv)
     [node](const std::string& name, const BT::NodeConfiguration& config)
     {
       return std::make_unique<GetThatBag>(name, config);
+    }
+  );
+
+  // register embedded node
+  factory.registerBuilder<EmbeddedModeControl>(
+    "EmbeddedModeControl",
+    [node](const std::string& name, const BT::NodeConfiguration& config) {
+      return std::make_unique<EmbeddedModeControl>(name, config, node);
     }
   );
 
