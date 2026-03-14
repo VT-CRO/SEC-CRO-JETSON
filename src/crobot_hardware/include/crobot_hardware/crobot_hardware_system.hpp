@@ -5,6 +5,8 @@
 #include "crobot_hardware/serial_comm.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
+#include "std_msgs/msg/string.hpp"
+
 #include "std_msgs/msg/int32.hpp"
 
 namespace crobot_hardware
@@ -88,6 +90,16 @@ namespace crobot_hardware
             int baud_rate = 115200;
             int timeout_ms = 1000;
         } cfg_;
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        enum class EmbeddedMode {
+            NORMAL,
+            CRATER_RUN
+        };
+        EmbeddedMode embedded_mode_ = EmbeddedMode::NORMAL;
+        rclcpp::Subscription<std_msgs::msg::String>::SharedPtr mode_sub_;
+        rclcpp::Node::SharedPtr mode_node_;
+        /////////////////////////////////////////////////////////////////////////////////////
 
         // fl, fr, bl, br)
         std::vector<Motor> wheels_;

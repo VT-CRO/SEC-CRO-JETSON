@@ -1,8 +1,12 @@
 <root main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <SequenceStar>
+      <EmbeddedModeControl mode="write"/>
       <WaitForLight threshold="750"/>
       <PlayBag path="/ssd/olivia_test_ws/recordings/try1"/>
+      
+      <!-- crater -->
+      <EmbeddedModeControl mode="craterRun"/>
     </SequenceStar>
   </BehaviorTree>
 </root>

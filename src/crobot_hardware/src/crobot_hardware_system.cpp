@@ -236,6 +236,8 @@ namespace crobot_hardware
     {
         RCLCPP_INFO(rclcpp::get_logger("CrobotHardware"), "Configuring...");
 
+        
+
         if (!serial_comm_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms))
         {
             RCLCPP_ERROR(
@@ -252,6 +254,15 @@ namespace crobot_hardware
         imu_pub_ = imu_node_->create_publisher<sensor_msgs::msg::Imu>(
             "/imu/raw", rclcpp::SensorDataQoS());
 
+        mode_node_ = rclcpp::Node::make_shared("crobot_embedded_mode_node");
+        mode_sub_ = mode_node_->create_subscription<std_msgs::msg::String>("/crobot_embedded_mode", 10, [this](const std_msgs::msg::String::SharedPtr msg) {
+                if (msg->data == "craterRun") {
+                    embedded_mode_ = EmbeddedMode::CRATER_RUN;
+                }
+                else if (msg->data == "write") {
+                    embedded_mode_ = EmbeddedMode::NORMAL;
+                }
+            });
         photoresistor_node_ = rclcpp::Node::make_shared("crobot_photoresistor_publisher");
         photoresistor_pub_  = photoresistor_node_->create_publisher<std_msgs::msg::Int32>(
             "/photoresistor", rclcpp::SensorDataQoS());
@@ -432,6 +443,9 @@ namespace crobot_hardware
     hardware_interface::return_type CrobotHardware::write(
         const rclcpp::Time &time, const rclcpp::Duration &period)
     {
+        if (mode_node_) {
+            rclcpp::spin_some(mode_node_);
+        }
         if (!serial_comm_.isConnected())
         {
             RCLCPP_ERROR(rclcpp::get_logger("CrobotHardware"),
@@ -440,32 +454,38 @@ namespace crobot_hardware
         }
 
         json j;
-        j["cmd"] = "write";
+        // j["cmd"] = "write";
 
-        const double RAD_TO_DEG = 180.0 / M_PI;
-        const float hardware_conversion_factor = 0.9;
+        if (embedded_mode_ == EmbeddedMode::CRATER_RUN) {
+            j["cmd"] = "craterRun";
+        } else {
+            j["cmd"] = "write";
 
-        j["ankles"]["front_left"] = (int)(130.0 + ankles_[0].cmd * RAD_TO_DEG / hardware_conversion_factor);
-        j["ankles"]["front_right"] = (int)(53.0 + ankles_[1].cmd * RAD_TO_DEG / hardware_conversion_factor);
-        j["ankles"]["back_left"] = (int)(57.0 + ankles_[2].cmd * RAD_TO_DEG / hardware_conversion_factor);
-        j["ankles"]["back_right"] = (int)(110.0 + ankles_[3].cmd * RAD_TO_DEG / hardware_conversion_factor);
+            const double RAD_TO_DEG = 180.0 / M_PI;
+            const float hardware_conversion_factor = 0.9;
 
-        const double MAX_WHEEL_SPEED = cfg_.max_wheel_speed_meters / cfg_.wheel_radius; // r/s corresponding to full command (255)
+            j["ankles"]["front_left"] = (int)(130.0 + ankles_[0].cmd * RAD_TO_DEG / hardware_conversion_factor);
+            j["ankles"]["front_right"] = (int)(53.0 + ankles_[1].cmd * RAD_TO_DEG / hardware_conversion_factor);
+            j["ankles"]["back_left"] = (int)(57.0 + ankles_[2].cmd * RAD_TO_DEG / hardware_conversion_factor);
+            j["ankles"]["back_right"] = (int)(110.0 + ankles_[3].cmd * RAD_TO_DEG / hardware_conversion_factor);
 
-        j["wheels"]["front_left"] = std::clamp((int)(wheels_[0].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
-        j["wheels"]["front_right"] = std::clamp((int)(wheels_[1].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
-        j["wheels"]["back_left"] = std::clamp((int)(wheels_[2].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
-        j["wheels"]["back_right"] = std::clamp((int)(wheels_[3].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
+            const double MAX_WHEEL_SPEED = cfg_.max_wheel_speed_meters / cfg_.wheel_radius; // r/s corresponding to full command (255)
 
-        j["sweeper"] = (int)(40.0 + sweeper_.cmd * RAD_TO_DEG);
-        j["winch"] = std::clamp((int)(winch_.cmd * 255.0), -255, 255);
+            j["wheels"]["front_left"] = std::clamp((int)(wheels_[0].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
+            j["wheels"]["front_right"] = std::clamp((int)(wheels_[1].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
+            j["wheels"]["back_left"] = std::clamp((int)(wheels_[2].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
+            j["wheels"]["back_right"] = std::clamp((int)(wheels_[3].cmd / MAX_WHEEL_SPEED * 255.0), -255, 255);
 
-        // You may want to take the time to validate how I define these, I'm really freaking tired :(
-        // I have code in Crobot.ino that defines my thoughts a bit more clearly- probably worth a read?
-        j["flag"] = (int)(80.0 + flagdropper_.cmd * RAD_TO_DEG); // initial value + angle change(?)
-        j["shoulder"] = (int)(shoulder_.cmd * RAD_TO_DEG);       // Just our desired angle?
-        j["elbow"] = (int)(180.0 - shoulder_.cmd * RAD_TO_DEG);   // initial value - angle change(?)
-        j["gripper"] = (int)(shoulder_.cmd * RAD_TO_DEG);     // open to angle set
+            j["sweeper"] = (int)(40.0 + sweeper_.cmd * RAD_TO_DEG);
+            j["winch"] = std::clamp((int)(winch_.cmd * 255.0), -255, 255);
+
+            // You may want to take the time to validate how I define these, I'm really freaking tired :(
+            // I have code in Crobot.ino that defines my thoughts a bit more clearly- probably worth a read?
+            j["flag"] = (int)(80.0 + flagdropper_.cmd * RAD_TO_DEG); // initial value + angle change(?)
+            j["shoulder"] = (int)(shoulder_.cmd * RAD_TO_DEG);       // Just our desired angle?
+            j["elbow"] = (int)(180.0 - shoulder_.cmd * RAD_TO_DEG);   // initial value - angle change(?)
+            j["gripper"] = (int)(shoulder_.cmd * RAD_TO_DEG);     // open to angle set
+        }
 
         std::string j_str = j.dump() + "\n";
 
