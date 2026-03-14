@@ -2,7 +2,7 @@
 
 #include <behaviortree_cpp_v3/action_node.h>
 #include <rclcpp/rclcpp.hpp>
-#include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/float64.hpp"
 
 class FlagDropper : public BT::StatefulActionNode
 {
@@ -21,9 +21,9 @@ public:
 
 private:
     rclcpp::Node::SharedPtr node_ptr_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    std_msgs::msg::String msg_;
-    std::string mode_string_;
+    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr publisher_;
+    std_msgs::msg::Float64 msg_;
+    std::string flag_string_;
     rclcpp::Time start_time_;
     static constexpr double TIMEOUT_SEC = 30.0;
 };
