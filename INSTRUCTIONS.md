@@ -4,7 +4,7 @@
 
 2. Keep record of the IP, and then you can disconnect the jetson from the monitor.
 
-3. Open three terminals on your laptop and ssh into the jetson using `ssh vtcro@172.16.96.205`, but replace `172.16.96.205` with the actual IP address.
+3. Open three terminals on your laptop and ssh into the jetson in each terminal using `ssh vtcro@172.16.96.205`, but replace `172.16.96.205` with the actual IP address. You should know what the password is.
 
 4. In one terminal, run bringup
 ```
