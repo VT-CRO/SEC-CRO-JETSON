@@ -1,4 +1,4 @@
-# Teleop Operation
+# Teleop Instructions
 
 1. Get the IP address of the jetson. This can be done by connecting it to a monitor, opening a terminal and running ```hostname -I```. The IP will be the first string of numbers, e.g. `172.16.96.205`
 
